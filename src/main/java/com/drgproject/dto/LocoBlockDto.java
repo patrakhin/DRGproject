@@ -1,7 +1,6 @@
 package com.drgproject.dto;
 
-import com.drgproject.entity.BlockShipment;
-import com.drgproject.entity.BlockSupply;
+import com.drgproject.entity.Storage;
 import jakarta.validation.constraints.NotNull;
 
 import java.io.Serializable;
@@ -12,102 +11,74 @@ import java.util.Objects;
  * DTO for {@link com.drgproject.entity.LocoBlock}
  */
 public class LocoBlockDto implements Serializable {
+    @NotNull(message = "NotNull")
     private Long id;
     @NotNull
-    private StorageDto storage;
+    private Storage storage;
     @NotNull
-    private BlockSupply blockSupply;
-    @NotNull
-    private BlockShipment blockShipment;
     private String systemType;
+    @NotNull
     private String blockName;
+    @NotNull
     private String blockNumber;
-    private String status;
+    @NotNull
     private LocalDate dateCreate;
 
     public LocoBlockDto(){}
 
-    public LocoBlockDto(StorageDto storage, BlockSupply blockSupply, BlockShipment blockShipment,
-                        String systemType, String blockName, String blockNumber, String status, LocalDate dateCreate) {
+    public LocoBlockDto(Storage storage, String systemType,
+                        String blockName, String blockNumber) {
         this.storage = storage;
-        this.blockSupply = blockSupply;
-        this.blockShipment = blockShipment;
         this.systemType = systemType;
         this.blockName = blockName;
         this.blockNumber = blockNumber;
-        this.status = status;
-        this.dateCreate = dateCreate;
     }
 
     public Long getId() {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public @NotNull StorageDto getStorage() {
+    public Storage getStorage() {
         return storage;
-    }
-
-    public void setStorage(@NotNull StorageDto storage) {
-        this.storage = storage;
-    }
-
-    public @NotNull BlockSupply getBlockSupply() {
-        return blockSupply;
-    }
-
-    public void setBlockSupply(@NotNull BlockSupply blockSupply) {
-        this.blockSupply = blockSupply;
-    }
-
-    public @NotNull BlockShipment getBlockShipment() {
-        return blockShipment;
-    }
-
-    public void setBlockShipment(@NotNull BlockShipment blockShipment) {
-        this.blockShipment = blockShipment;
     }
 
     public String getSystemType() {
         return systemType;
     }
 
-    public void setSystemType(String systemType) {
-        this.systemType = systemType;
-    }
-
     public String getBlockName() {
         return blockName;
-    }
-
-    public void setBlockName(String blockName) {
-        this.blockName = blockName;
     }
 
     public String getBlockNumber() {
         return blockNumber;
     }
 
-    public void setBlockNumber(String blockNumber) {
-        this.blockNumber = blockNumber;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
     public LocalDate getDateCreate() {
         return dateCreate;
     }
 
-    public void setDateCreate(LocalDate dateCreate) {
+    public void setId(@NotNull(message = "NotNull") Long id) {
+        this.id = id;
+    }
+
+    public void setStorage(@NotNull Storage storage) {
+        this.storage = storage;
+    }
+
+    public void setSystemType(@NotNull String systemType) {
+        this.systemType = systemType;
+    }
+
+    public void setBlockName(@NotNull String blockName) {
+        this.blockName = blockName;
+    }
+
+    public void setBlockNumber(@NotNull String blockNumber) {
+        this.blockNumber = blockNumber;
+    }
+
+    public void setDateCreate(@NotNull LocalDate dateCreate) {
         this.dateCreate = dateCreate;
     }
 
@@ -118,18 +89,15 @@ public class LocoBlockDto implements Serializable {
         LocoBlockDto entity = (LocoBlockDto) o;
         return Objects.equals(this.id, entity.id) &&
                 Objects.equals(this.storage, entity.storage) &&
-                Objects.equals(this.blockSupply, entity.blockSupply) &&
-                Objects.equals(this.blockShipment, entity.blockShipment) &&
                 Objects.equals(this.systemType, entity.systemType) &&
                 Objects.equals(this.blockName, entity.blockName) &&
                 Objects.equals(this.blockNumber, entity.blockNumber) &&
-                Objects.equals(this.status, entity.status) &&
                 Objects.equals(this.dateCreate, entity.dateCreate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, storage, blockSupply, blockShipment, systemType, blockName, blockNumber, status, dateCreate);
+        return Objects.hash(id, storage, systemType, blockName, blockNumber, dateCreate);
     }
 
     @Override
@@ -137,12 +105,9 @@ public class LocoBlockDto implements Serializable {
         return getClass().getSimpleName() + "(" +
                 "id = " + id + ", " +
                 "storage = " + storage + ", " +
-                "blockSupply = " + blockSupply + ", " +
-                "blockShipment = " + blockShipment + ", " +
                 "systemType = " + systemType + ", " +
                 "blockName = " + blockName + ", " +
                 "blockNumber = " + blockNumber + ", " +
-                "status = " + status + ", " +
                 "dateCreate = " + dateCreate + ")";
     }
 }

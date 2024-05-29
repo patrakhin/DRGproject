@@ -1,12 +1,9 @@
 package com.drgproject.dto;
 
-import com.drgproject.entity.BlockShipment;
-import com.drgproject.entity.BlockSupply;
+import com.drgproject.entity.LocoBlockTransaction;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
@@ -14,29 +11,30 @@ import java.util.Objects;
  * DTO for {@link com.drgproject.entity.Employee}
  */
 public class EmployeeDto implements Serializable {
-    private final Long id;
-    private final String fio;
-    private final String post;
-    private final String unit;
-    private final String region;
-    private final String numberTable;
-    private final LocalDate operationDate;
     @NotNull
-    private final List<BlockSupply> blockSupplies;
+    private Long id;
     @NotNull
-    @Size
-    private final List<BlockShipment> blockShipments;
+    private String fio;
+    @NotNull
+    private String post;
+    @NotNull
+    private String unit;
+    @NotNull
+    private String region;
+    @NotNull
+    private String numberTable;
+    @NotNull
+    private List<LocoBlockTransaction> transactions;
 
-    public EmployeeDto(Long id, String fio, String post, String unit, String region, String numberTable, LocalDate operationDate, List<BlockSupply> blockSupplies, List<BlockShipment> blockShipments) {
-        this.id = id;
+    public EmployeeDto(){}
+
+    public EmployeeDto(String fio, String post, String unit, String region,
+                       String numberTable) {
         this.fio = fio;
         this.post = post;
         this.unit = unit;
         this.region = region;
         this.numberTable = numberTable;
-        this.operationDate = operationDate;
-        this.blockSupplies = blockSupplies;
-        this.blockShipments = blockShipments;
     }
 
     public Long getId() {
@@ -63,16 +61,36 @@ public class EmployeeDto implements Serializable {
         return numberTable;
     }
 
-    public LocalDate getOperationDate() {
-        return operationDate;
+    public List<LocoBlockTransaction> getTransactions() {
+        return transactions;
     }
 
-    public List<BlockSupply> getBlockSupplies() {
-        return blockSupplies;
+    public void setId(@NotNull Long id) {
+        this.id = id;
     }
 
-    public List<BlockShipment> getBlockShipments() {
-        return blockShipments;
+    public void setFio(@NotNull String fio) {
+        this.fio = fio;
+    }
+
+    public void setPost(@NotNull String post) {
+        this.post = post;
+    }
+
+    public void setUnit(@NotNull String unit) {
+        this.unit = unit;
+    }
+
+    public void setRegion(@NotNull String region) {
+        this.region = region;
+    }
+
+    public void setNumberTable(@NotNull String numberTable) {
+        this.numberTable = numberTable;
+    }
+
+    public void setTransactions(@NotNull List<LocoBlockTransaction> transactions) {
+        this.transactions = transactions;
     }
 
     @Override
@@ -86,14 +104,12 @@ public class EmployeeDto implements Serializable {
                 Objects.equals(this.unit, entity.unit) &&
                 Objects.equals(this.region, entity.region) &&
                 Objects.equals(this.numberTable, entity.numberTable) &&
-                Objects.equals(this.operationDate, entity.operationDate) &&
-                Objects.equals(this.blockSupplies, entity.blockSupplies) &&
-                Objects.equals(this.blockShipments, entity.blockShipments);
+                Objects.equals(this.transactions, entity.transactions);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, fio, post, unit, region, numberTable, operationDate, blockSupplies, blockShipments);
+        return Objects.hash(id, fio, post, unit, region, numberTable, transactions);
     }
 
     @Override
@@ -105,8 +121,6 @@ public class EmployeeDto implements Serializable {
                 "unit = " + unit + ", " +
                 "region = " + region + ", " +
                 "numberTable = " + numberTable + ", " +
-                "operationDate = " + operationDate + ", " +
-                "blockSupplies = " + blockSupplies + ", " +
-                "blockShipments = " + blockShipments + ")";
+                "transactions = " + transactions + ")";
     }
 }

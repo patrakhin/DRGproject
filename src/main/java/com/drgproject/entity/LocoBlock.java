@@ -15,14 +15,6 @@ public class LocoBlock {
     @JoinColumn(name = "storage_id")
     private Storage storage;
 
-    @ManyToOne
-    @JoinColumn(name = "block_supply_id")
-    private BlockSupply blockSupply;
-
-    @ManyToOne
-    @JoinColumn(name = "block_shipment_id")
-    private BlockShipment blockShipment;
-
     @Column(name = "system_type")
     private String systemType;
 
@@ -31,9 +23,6 @@ public class LocoBlock {
 
     @Column(name = "block_number")
     private String blockNumber;
-
-    @Column(name = "status")
-    private String status;
 
     @Column(name = "date_create", updatable = false)
     private LocalDate dateCreate;
@@ -45,15 +34,12 @@ public class LocoBlock {
 
     public LocoBlock(){}
 
-    public LocoBlock(Storage storage, BlockSupply blockSupply, BlockShipment blockShipment,
-                     String systemType, String blockName, String blockNumber, String status, LocalDate dateCreate) {
+    public LocoBlock(Storage storage, String systemType, String blockName,
+                     String blockNumber, LocalDate dateCreate) {
         this.storage = storage;
-        this.blockSupply = blockSupply;
-        this.blockShipment = blockShipment;
         this.systemType = systemType;
         this.blockName = blockName;
         this.blockNumber = blockNumber;
-        this.status = status;
         this.dateCreate = dateCreate;
     }
 
@@ -73,22 +59,6 @@ public class LocoBlock {
 
     public void setStorage(Storage storage) {
         this.storage = storage;
-    }
-
-    public BlockSupply getBlockSupply() {
-        return blockSupply;
-    }
-
-    public void setBlockSupply(BlockSupply blockSupply) {
-        this.blockSupply = blockSupply;
-    }
-
-    public BlockShipment getBlockShipment() {
-        return blockShipment;
-    }
-
-    public void setBlockShipment(BlockShipment blockShipment) {
-        this.blockShipment = blockShipment;
     }
 
     public String getSystemType() {
@@ -113,14 +83,6 @@ public class LocoBlock {
 
     public void setBlockNumber(String blockNumber) {
         this.blockNumber = blockNumber;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
     }
 
     public LocalDate getDateCreate() {
