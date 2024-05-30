@@ -23,7 +23,7 @@ public class Employee {
     @Column(name = "region")
     private String region;
 
-    @Column(name = "numberTable")
+    @Column(name = "number_table")
     private String numberTable;
 
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
