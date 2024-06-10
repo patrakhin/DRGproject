@@ -40,12 +40,11 @@ public class Locomotive {
 
     public Locomotive(){}
 
-    public Locomotive(String locomotiveNumber, String section, String systemType, String homeDepot, LocalDate dateCreate) {
+    public Locomotive(String locomotiveNumber, String section, String systemType, String homeDepot) {
         this.locomotiveNumber = locomotiveNumber;
         this.section = section;
         this.systemType = systemType;
         this.homeDepot = homeDepot;
-        this.dateCreate = dateCreate;
     }
 
     public Long getId() {

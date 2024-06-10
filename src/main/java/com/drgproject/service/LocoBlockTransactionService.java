@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -54,9 +55,9 @@ public class LocoBlockTransactionService {
         Optional<LocoBlockTransaction> optionalTransaction = locoBlockTransactionRepository.findById(id);
         if (optionalTransaction.isPresent()) {
             LocoBlockTransaction transaction = optionalTransaction.get();
-            transaction.setStorage(transactionDto.getStorage());
-            transaction.setLocoBlock(transactionDto.getLocoBlock());
-            transaction.setEmployee(transactionDto.getEmployee());
+            /*transaction.setStorage(transactionDto.getStorage());
+            transaction.setLocoBlock(transactionDto.getLocoBlocks());
+            transaction.setEmployee(transactionDto.getEmployee());*/
             transaction.setTransactionType(transactionDto.getTransactionType());
             transaction.setQuantity(transactionDto.getQuantity());
             transaction = locoBlockTransactionRepository.save(transaction);
@@ -71,61 +72,77 @@ public class LocoBlockTransactionService {
     }
 
     @Transactional
-    public LocoBlockTransactionDto addLocoBlockToStorage(Long storageId, Long locoBlockId, Long employeeId) {
-        Optional<Storage> storage = storageRepository.findById(storageId);
-        Optional<LocoBlock> locoBlock = locoBlockRepository.findById(locoBlockId);
+    public LocoBlockTransactionDto addLocoBlockToStorage(String storageName, String nameBlock, String systemType,
+                                                         String blockNumber, String numberTable) {
+        Optional<Storage> storage = storageRepository.findStorageByStorageName(storageName);
+        Optional<LocoBlock> locoBlock = locoBlockRepository.findLocoBlockByBlockNameAndBlockNumberAndSystemType(nameBlock,
+                blockNumber, systemType);
 
-        Employee employee = employeeRepository.findById(employeeId).orElse(null);
+        Employee employee = employeeRepository.findEmployeeByNumberTable(numberTable).orElse(null);
         if (employee == null){
-            throw new IllegalArgumentException("Employee with number " + employeeId + " not found");
+            throw new IllegalArgumentException("Employee with number " + numberTable + " not found");
         }
 
         if (storage.isPresent() && locoBlock.isPresent()) {
             LocoBlockTransaction transaction = new LocoBlockTransaction();
-            transaction.setStorage(storage.get());
-            transaction.setLocoBlock(locoBlock.get());
-            transaction.setEmployee(employee); // Set employeeId after implementing Employee entity
+            transaction.setStorageId(storage.get().getId());
+            transaction.setLocoBlockId(locoBlock.get().getId());
+            transaction.setEmployeeId(employee.getId()); // Set employeeId after implementing Employee entity
             transaction.setTransactionType("на складе");
             transaction.setQuantity(1);
             transaction = locoBlockTransactionRepository.save(transaction);
             return convertToDTO(transaction);
         }
-        throw new IllegalArgumentException("Storage with number " + storageId +
-                " LockBlock with number " + locoBlockId +  " not found");
+        throw new IllegalArgumentException("Storage with name " + storageName +
+                " LockBlock with number " + blockNumber +  " not found");
     }
 
     @Transactional
-    public LocoBlockTransactionDto removeLocoBlockFromStorage(Long storageId, String blockNumber, Long employeeId) {
-        List<LocoBlock> locoBlocks = locoBlockRepository.findByBlockNumber(blockNumber).stream().toList();
+    public LocoBlockTransactionDto removeLocoBlockFromStorage(String storageName, String nameBlock, String systemType,
+                                                              String blockNumber, String numberTable) {
+        Optional<Storage> storage = storageRepository.findStorageByStorageName(storageName);
+        if(storage.isEmpty()){
+            throw new IllegalArgumentException("Storage with name " + storageName + " not found.");
+        }
+        Long storageIdFromStorage = storage.get().getId();
 
-        if (locoBlocks.isEmpty()) {
-            throw new IllegalArgumentException("LocoBlock with number " + blockNumber + " not found.");
+        Optional<LocoBlock> locoBlock = locoBlockRepository.findLocoBlockByBlockNameAndBlockNumberAndSystemType(nameBlock,
+                blockNumber,systemType);
+        if (locoBlock.isEmpty()){
+            throw new IllegalArgumentException("Block with number " + blockNumber + " not found.");
+        }
+        Long locoBlockFromSearch = locoBlock.get().getId();
+
+        List <LocoBlockTransaction> locoBlockTransaction = locoBlockTransactionRepository
+                .findLocoBlockTransactionByTransactionType("на складе")
+                .stream().toList();
+        if (locoBlockTransaction.isEmpty()) {
+            throw new IllegalArgumentException("LocoBlock with " + "на складе" + " not found.");
         }
 
-        Employee employee = employeeRepository.findById(employeeId).orElse(null);
+        LocoBlockTransaction locoBlockTransactionOne = locoBlockTransaction.stream()
+                .filter(logTransaction -> Objects.equals(logTransaction.getStorageId(), storageIdFromStorage))
+                .filter(logTransaction -> Objects.equals(logTransaction.getLocoBlockId(), locoBlockFromSearch))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "LocoBlockTransaction with storageId " + storageIdFromStorage +
+                                " and locoBlockId " + locoBlockFromSearch + " not found."));
+
+
+        Employee employee = employeeRepository.findEmployeeByNumberTable(numberTable).orElse(null);
         if (employee == null){
-            throw new IllegalArgumentException("User with numberTable " + employeeId + " not found");
+            throw new IllegalArgumentException("User with numberTable " + numberTable + " not found");
         }
-        for (LocoBlock locoBlock : locoBlocks) {
-            if (locoBlock.getStorage().getId().equals(storageId)) {
-                LocoBlockTransaction transaction = new LocoBlockTransaction();
-                transaction.setStorage(locoBlock.getStorage());
-                transaction.setLocoBlock(locoBlock);
-                transaction.setEmployee(employee); // Set employeeId after implementing Employee entity
-                transaction.setTransactionType("отгружен");
-                transaction.setQuantity(0);
-                locoBlockTransactionRepository.save(transaction);
-                return convertToDTO(transaction);
-            }
-        }
-        throw new IllegalArgumentException("LocoBlock with number " + blockNumber + " is not in the specified storage.");
+
+        locoBlockTransactionOne.setTransactionType("отгружен");
+        locoBlockTransactionOne.setQuantity(0);
+        /*locoBlockTransactionOne.setEmployee(employee);*/
+        locoBlockTransactionRepository.save(locoBlockTransactionOne);
+        return convertToDTO(locoBlockTransactionOne);
     }
 
     private LocoBlockTransactionDto convertToDTO(LocoBlockTransaction transaction) {
         LocoBlockTransactionDto transactionDto = new LocoBlockTransactionDto(
-                transaction.getStorage(),
-                transaction.getLocoBlock(),
-                transaction.getEmployee(),
                 transaction.getTransactionType(),
                 transaction.getQuantity()
         );
@@ -137,9 +154,6 @@ public class LocoBlockTransactionService {
     private LocoBlockTransaction convertToEntity(LocoBlockTransactionDto transactionDto) {
         LocoBlockTransaction transaction = new LocoBlockTransaction();
         transaction.setId(transactionDto.getId());
-        transaction.setStorage(transactionDto.getStorage());
-        transaction.setLocoBlock(transactionDto.getLocoBlock());
-        transaction.setEmployee(transactionDto.getEmployee());
         transaction.setTransactionType(transactionDto.getTransactionType());
         transaction.setQuantity(transactionDto.getQuantity());
         transaction.setDateCreate(transactionDto.getDateCreate());

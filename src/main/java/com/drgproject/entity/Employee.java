@@ -26,7 +26,8 @@ public class Employee {
     @Column(name = "number_table")
     private String numberTable;
 
-    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "employee_id", referencedColumnName = "id", insertable = false, updatable = false)
     private List<LocoBlockTransaction> transactions;
 
     public Employee(){}

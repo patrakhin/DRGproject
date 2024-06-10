@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Entity
-@Table(name = "storage")
+@Table(name = "storage_depot")
 public class Storage {
 
     @Id
@@ -23,10 +23,9 @@ public class Storage {
         dateCreate = LocalDate.now();
     }
 
-    @OneToMany(mappedBy = "storage", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<LocoBlock> locoBlock;
 
-    @OneToMany(mappedBy = "storage", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "storage_id", referencedColumnName = "id", insertable = false, updatable = false)
     private List<LocoBlockTransaction> transactions;
 
     public Storage(){}
@@ -60,19 +59,4 @@ public class Storage {
         this.dateCreate = dateCreate;
     }
 
-    public List<LocoBlock> getLocoBlock() {
-        return locoBlock;
-    }
-
-    public void setLocoBlock(List<LocoBlock> locoBlock) {
-        this.locoBlock = locoBlock;
-    }
-
-    public List<LocoBlockTransaction> getTransactions() {
-        return transactions;
-    }
-
-    public void setTransactions(List<LocoBlockTransaction> transactions) {
-        this.transactions = transactions;
-    }
 }

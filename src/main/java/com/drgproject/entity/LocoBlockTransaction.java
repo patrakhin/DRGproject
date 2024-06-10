@@ -10,17 +10,26 @@ public class LocoBlockTransaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "storage_id")
+/*    @ManyToOne
+    @JoinColumn(name = "storage_id", referencedColumnName = "id") //ok!
     private Storage storage;
 
     @ManyToOne
-    @JoinColumn(name = "locoblock_id")
-    private LocoBlock locoBlock;
+    @JoinColumn(name = "locoblock_id", referencedColumnName = "id") //ok!
+    private LocoBlock locoBlocks;
 
     @ManyToOne
-    @JoinColumn(name = "employee_id")
-    private Employee employee;
+    @JoinColumn(name = "employee_id", referencedColumnName = "id") //ok!
+    private Employee employee;*/
+
+    @Column(name = "storage_id")
+    private Long storageId;
+
+    @Column(name = "locoblock_id")
+    private Long locoBlockId;
+
+    @Column(name = "employee_id")
+    private Long employeeId;
 
     @Column(name = "transaction_type")
     private String transactionType; // "IN" for incoming, "OUT" for outgoing
@@ -52,7 +61,7 @@ public class LocoBlockTransaction {
         this.id = id;
     }
 
-    public Storage getStorage() {
+/*    public Storage getStorage() {
         return storage;
     }
 
@@ -61,11 +70,11 @@ public class LocoBlockTransaction {
     }
 
     public LocoBlock getLocoBlock() {
-        return locoBlock;
+        return locoBlocks;
     }
 
     public void setLocoBlock(LocoBlock locoBlock) {
-        this.locoBlock = locoBlock;
+        this.locoBlocks = locoBlock;
     }
 
     public Employee getEmployee() {
@@ -74,7 +83,7 @@ public class LocoBlockTransaction {
 
     public void setEmployee(Employee employee) {
         this.employee = employee;
-    }
+    }*/
 
     public String getTransactionType() {
         return transactionType;
@@ -98,5 +107,29 @@ public class LocoBlockTransaction {
 
     public void setDateCreate(LocalDate dateCreate) {
         this.dateCreate = dateCreate;
+    }
+
+    public Long getStorageId() {
+        return storageId;
+    }
+
+    public Long getLocoBlockId() {
+        return locoBlockId;
+    }
+
+    public Long getEmployeeId() {
+        return employeeId;
+    }
+
+    public void setStorageId(Long storageId) {
+        this.storageId = storageId;
+    }
+
+    public void setLocoBlockId(Long locoBlockId) {
+        this.locoBlockId = locoBlockId;
+    }
+
+    public void setEmployeeId(Long employeeId) {
+        this.employeeId = employeeId;
     }
 }

@@ -2,6 +2,7 @@ package com.drgproject.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.util.List;
 
 
 @Entity
@@ -11,9 +12,9 @@ public class LocoBlock {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "storage_id")
-    private Storage storage;
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "locoblock_id", referencedColumnName = "id", insertable = false, updatable = false)
+    private List<LocoBlockTransaction> locoBlocks;
 
     @Column(name = "system_type")
     private String systemType;
@@ -34,9 +35,8 @@ public class LocoBlock {
 
     public LocoBlock(){}
 
-    public LocoBlock(Storage storage, String systemType, String blockName,
+    public LocoBlock(String systemType, String blockName,
                      String blockNumber, LocalDate dateCreate) {
-        this.storage = storage;
         this.systemType = systemType;
         this.blockName = blockName;
         this.blockNumber = blockNumber;
@@ -53,12 +53,12 @@ public class LocoBlock {
         this.id = id;
     }
 
-    public Storage getStorage() {
-        return storage;
+    public List<LocoBlockTransaction> getLocoBlocks() {
+        return locoBlocks;
     }
 
-    public void setStorage(Storage storage) {
-        this.storage = storage;
+    public void setLocoBlocks(List<LocoBlockTransaction> locoBlocks) {
+        this.locoBlocks = locoBlocks;
     }
 
     public String getSystemType() {

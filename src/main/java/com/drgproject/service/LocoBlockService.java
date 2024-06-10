@@ -39,7 +39,6 @@ public class LocoBlockService {
         Optional<LocoBlock> optionalLocoBlock = locoBlockRepository.findById(id);
         if(optionalLocoBlock.isPresent()){
             LocoBlock locoBlock = optionalLocoBlock.get();
-            locoBlock.setStorage(locoBlockDto.getStorage());
             locoBlock.setSystemType(locoBlockDto.getSystemType());
             locoBlock.setBlockName(locoBlockDto.getBlockName());
             locoBlock.setBlockNumber(locoBlockDto.getBlockNumber());
@@ -58,7 +57,6 @@ public class LocoBlockService {
 
     private LocoBlockDto convertToDTO(LocoBlock locoBlock) {
         return new LocoBlockDto(
-                locoBlock.getStorage(),
                 locoBlock.getSystemType(),
                 locoBlock.getBlockName(),
                 locoBlock.getBlockNumber()
@@ -67,7 +65,6 @@ public class LocoBlockService {
 
     private LocoBlock convertToEntity(LocoBlockDto locoBlockDto) {
         return new LocoBlock(
-                locoBlockDto.getStorage(),
                 locoBlockDto.getSystemType(),
                 locoBlockDto.getBlockName(),
                 locoBlockDto.getBlockNumber(),

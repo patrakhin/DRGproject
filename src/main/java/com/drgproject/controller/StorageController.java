@@ -39,9 +39,23 @@ public class StorageController {
         StorageDto storage = storageService.getStorageById(id);
         if (storage != null) {
             return ResponseEntity.ok(storage);
-        } else {
-            return ResponseEntity.notFound().build();
         }
+        return ResponseEntity.notFound().build();
+    }
+
+    /**
+     * Получение Storage по его name.
+     *
+     * @param name Storage
+     * @return найденный id Storage или статус 404, если не найден
+     */
+    @GetMapping("/{name}")
+    public ResponseEntity<Long> getStorageByName(@PathVariable String name){
+        StorageDto storage = storageService.getStorageByName(name);
+        if (storage != null){
+            return ResponseEntity.ok(storage.getId());
+        }
+        return ResponseEntity.notFound().build();
     }
 
     /**

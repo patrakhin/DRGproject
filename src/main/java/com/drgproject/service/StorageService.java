@@ -29,6 +29,11 @@ public class StorageService {
     }
 
     @Transactional
+    public StorageDto getStorageByName(String storageName) {
+        return storageRepository.findStorageByStorageName(storageName).map(this::convertToDTO).orElse(null);
+    }
+
+    @Transactional
     public StorageDto createStorage(StorageDto storageDto) {
         Storage storage = convertToEntity(storageDto);
         storage = storageRepository.save(storage);
@@ -42,8 +47,6 @@ public class StorageService {
             Storage storage = optionalStorage.get();
             storage.setStorageName(storageDto.getStorageName());
             storage.setDateCreate(storageDto.getDateCreate());
-            storage.setLocoBlock(storageDto.getLocoBlock());
-            storage.setTransactions(storageDto.getTransactions());
             storage = storageRepository.save(storage);
             return convertToDTO(storage);
         }
@@ -61,19 +64,13 @@ public class StorageService {
                 storage.getDateCreate()
         );
         storageDto.setId(storage.getId());
-        storageDto.setLocoBlock(storage.getLocoBlock());
-        storageDto.setTransactions(storage.getTransactions());
         return storageDto;
     }
 
     private Storage convertToEntity(StorageDto storageDto) {
-        Storage storage = new Storage(
+        return new Storage(
                 storageDto.getStorageName(),
                 storageDto.getDateCreate()
         );
-        storage.setId(storageDto.getId());
-        storage.setLocoBlock(storageDto.getLocoBlock());
-        storage.setTransactions(storageDto.getTransactions());
-        return storage;
     }
 }

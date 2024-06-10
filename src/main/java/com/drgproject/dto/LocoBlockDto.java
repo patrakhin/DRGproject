@@ -14,8 +14,6 @@ public class LocoBlockDto implements Serializable {
     @NotNull(message = "NotNull")
     private Long id;
     @NotNull
-    private Storage storage;
-    @NotNull
     private String systemType;
     @NotNull
     private String blockName;
@@ -26,9 +24,8 @@ public class LocoBlockDto implements Serializable {
 
     public LocoBlockDto(){}
 
-    public LocoBlockDto(Storage storage, String systemType,
+    public LocoBlockDto(String systemType,
                         String blockName, String blockNumber) {
-        this.storage = storage;
         this.systemType = systemType;
         this.blockName = blockName;
         this.blockNumber = blockNumber;
@@ -36,10 +33,6 @@ public class LocoBlockDto implements Serializable {
 
     public Long getId() {
         return id;
-    }
-
-    public Storage getStorage() {
-        return storage;
     }
 
     public String getSystemType() {
@@ -60,10 +53,6 @@ public class LocoBlockDto implements Serializable {
 
     public void setId(@NotNull(message = "NotNull") Long id) {
         this.id = id;
-    }
-
-    public void setStorage(@NotNull Storage storage) {
-        this.storage = storage;
     }
 
     public void setSystemType(@NotNull String systemType) {
@@ -88,7 +77,6 @@ public class LocoBlockDto implements Serializable {
         if (o == null || getClass() != o.getClass()) return false;
         LocoBlockDto entity = (LocoBlockDto) o;
         return Objects.equals(this.id, entity.id) &&
-                Objects.equals(this.storage, entity.storage) &&
                 Objects.equals(this.systemType, entity.systemType) &&
                 Objects.equals(this.blockName, entity.blockName) &&
                 Objects.equals(this.blockNumber, entity.blockNumber) &&
@@ -97,14 +85,13 @@ public class LocoBlockDto implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, storage, systemType, blockName, blockNumber, dateCreate);
+        return Objects.hash(id, systemType, blockName, blockNumber, dateCreate);
     }
 
     @Override
     public String toString() {
         return getClass().getSimpleName() + "(" +
                 "id = " + id + ", " +
-                "storage = " + storage + ", " +
                 "systemType = " + systemType + ", " +
                 "blockName = " + blockName + ", " +
                 "blockNumber = " + blockNumber + ", " +

@@ -1,6 +1,7 @@
 package com.drgproject.controller;
 
 import com.drgproject.dto.LocoBlockTransactionDto;
+import com.drgproject.dto.LocoBlockTransactionRequestDto;
 import com.drgproject.service.LocoBlockTransactionService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -88,39 +89,46 @@ public class LocoBlockTransactionController {
     /**
      * Добавление LocoBlock на склад.
      *
-     * @param storageId  идентификатор склада
-     * @param locoBlockId идентификатор блока
-     * @param employeeId  идентификатор сотрудника
+     * @param requestDto DTO с данными для новой транзакции
      * @return созданная транзакция
      */
     @PostMapping("/add-to-storage")
     public ResponseEntity<LocoBlockTransactionDto> addLocoBlockToStorage(
-            @RequestParam Long storageId,
-            @RequestParam Long locoBlockId,
-            @RequestParam Long employeeId) {
+            @RequestBody LocoBlockTransactionRequestDto requestDto) {
         try {
-            LocoBlockTransactionDto newTransaction = transactionService.addLocoBlockToStorage(storageId, locoBlockId, employeeId);
+            LocoBlockTransactionDto newTransaction = transactionService.addLocoBlockToStorage(
+                    requestDto.getStorageName(),
+                    requestDto.getNameBlock(),
+                    requestDto.getSystemType(),
+                    requestDto.getBlockNumber(),
+                    requestDto.getNumberTable());
             return ResponseEntity.ok(newTransaction);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(null);
         }
     }
 
+
     /**
      * Удаление LocoBlock со склада.
      *
-     * @param storageId  идентификатор склада
+     * @param storageName  наименование склада
+     * @param nameBlock наименование блока
+     * @param systemType  тип системы
      * @param blockNumber номер блока
-     * @param employeeId  идентификатор сотрудника
+     * @param numberTable  табельный номер сотрудника
      * @return созданная транзакция
      */
     @PostMapping("/remove-from-storage")
     public ResponseEntity<LocoBlockTransactionDto> removeLocoBlockFromStorage(
-            @RequestParam Long storageId,
+            @RequestParam String storageName,
+            @RequestParam String nameBlock,
+            @RequestParam String systemType,
             @RequestParam String blockNumber,
-            @RequestParam Long employeeId) {
+            @RequestParam String numberTable) {
         try {
-            LocoBlockTransactionDto newTransaction = transactionService.removeLocoBlockFromStorage(storageId, blockNumber, employeeId);
+            LocoBlockTransactionDto newTransaction = transactionService.removeLocoBlockFromStorage(storageName, nameBlock,
+                    systemType, blockNumber, numberTable);
             return ResponseEntity.ok(newTransaction);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(null);
