@@ -1,10 +1,9 @@
 package com.drgproject.entity;
 
 import jakarta.persistence.*;
-import java.util.List;
 
 @Entity
-@Table(name = "employee")
+@Table(name = "employee_two")
 public class Employee {
 
     @Id
@@ -25,10 +24,6 @@ public class Employee {
 
     @Column(name = "number_table")
     private String numberTable;
-
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "employee_id", referencedColumnName = "id", insertable = false, updatable = false)
-    private List<LocoBlockTransaction> transactions;
 
     public Employee(){}
 
@@ -86,13 +81,5 @@ public class Employee {
 
     public void setNumberTable(String numberTable) {
         this.numberTable = numberTable;
-    }
-
-    public List<LocoBlockTransaction> getTransactions() {
-        return transactions;
-    }
-
-    public void setTransactions(List<LocoBlockTransaction> transactions) {
-        this.transactions = transactions;
     }
 }

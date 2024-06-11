@@ -1,6 +1,7 @@
 package com.drgproject.controller;
 
 import com.drgproject.dto.EmployeeDto;
+import com.drgproject.dto.EmployeeRequestDto;
 import com.drgproject.service.EmployeeService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.ResponseEntity;
@@ -47,13 +48,13 @@ public class EmployeeController {
     /**
      * Создание нового сотрудника на основе табельного номера пользователя.
      *
-     * @param numberTable табельный номер пользователя
+     * @param employeeRequestDto DTO табельного номера пользователя
      * @return созданный сотрудник
      */
     @PostMapping
-    public ResponseEntity<EmployeeDto> createEmployee(@RequestParam String numberTable){
+    public ResponseEntity<EmployeeDto> createEmployee(@RequestBody EmployeeRequestDto employeeRequestDto){
         try {
-            EmployeeDto newEmployee = employeeService.createEmployee(numberTable);
+            EmployeeDto newEmployee = employeeService.createEmployee(employeeRequestDto.getNumberTable());
             return ResponseEntity.ok(newEmployee);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(null);

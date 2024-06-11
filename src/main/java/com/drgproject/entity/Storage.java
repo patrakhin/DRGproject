@@ -2,10 +2,9 @@ package com.drgproject.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
-import java.util.List;
 
 @Entity
-@Table(name = "storage_depot")
+@Table(name = "storage_depot_two")
 public class Storage {
 
     @Id
@@ -23,16 +22,11 @@ public class Storage {
         dateCreate = LocalDate.now();
     }
 
-
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "storage_id", referencedColumnName = "id", insertable = false, updatable = false)
-    private List<LocoBlockTransaction> transactions;
-
     public Storage(){}
 
-    public Storage(String storageName, LocalDate dateCreate) {
+    public Storage(String storageName /*LocalDate dateCreate*/) {
         this.storageName = storageName;
-        this.dateCreate = dateCreate;
+        /*this.dateCreate = dateCreate;*/
     }
 
     public Long getId() {

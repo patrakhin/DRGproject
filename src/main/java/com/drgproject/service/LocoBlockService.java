@@ -11,10 +11,12 @@ import java.util.Optional;
 
 @Service
 public class LocoBlockService {
+    private final LocoBlockUniqNumService locoBlockUniqNumService;
     LocoBlockRepository locoBlockRepository;
 
-    public LocoBlockService(LocoBlockRepository locoBlockRepository) {
+    public LocoBlockService(LocoBlockRepository locoBlockRepository, LocoBlockUniqNumService locoBlockUniqNumService) {
         this.locoBlockRepository = locoBlockRepository;
+        this.locoBlockUniqNumService = locoBlockUniqNumService;
     }
 
     @Transactional
@@ -27,8 +29,14 @@ public class LocoBlockService {
        return locoBlockRepository.findById(id).map(this::convertToDTO).orElse(null);
     }
 
+    public LocoBlockDto getLocoBlockByUniqueId(Long uniqueId) {
+        return locoBlockRepository.findLocoBlockByUniqueId(uniqueId).map(this::convertToDTO).orElse(null);
+    }
+
     @Transactional
     public LocoBlockDto createLocoBlock(LocoBlockDto locoBlockDto){
+        locoBlockDto.setUniqueId(locoBlockUniqNumService.generateUniqueId(locoBlockDto.getSystemType(),
+                locoBlockDto.getBlockName(), locoBlockDto.getBlockNumber()));
         LocoBlock locoBlock = convertToEntity(locoBlockDto);
         locoBlockRepository.save(locoBlock);
         return convertToDTO(locoBlock);
@@ -42,7 +50,8 @@ public class LocoBlockService {
             locoBlock.setSystemType(locoBlockDto.getSystemType());
             locoBlock.setBlockName(locoBlockDto.getBlockName());
             locoBlock.setBlockNumber(locoBlockDto.getBlockNumber());
-            locoBlock.setDateCreate(locoBlockDto.getDateCreate());
+            locoBlock.setUniqueId(locoBlockUniqNumService.generateUniqueId(locoBlockDto.getSystemType(),
+                    locoBlockDto.getBlockName(), locoBlockDto.getBlockNumber()));
             locoBlock = locoBlockRepository.save(locoBlock);
             return convertToDTO(locoBlock);
         }
@@ -56,11 +65,14 @@ public class LocoBlockService {
 
 
     private LocoBlockDto convertToDTO(LocoBlock locoBlock) {
-        return new LocoBlockDto(
+        LocoBlockDto locoBlockDto = new LocoBlockDto(
                 locoBlock.getSystemType(),
                 locoBlock.getBlockName(),
-                locoBlock.getBlockNumber()
+                locoBlock.getBlockNumber(),
+                locoBlock.getUniqueId()
         );
+        locoBlockDto.setId(locoBlock.getId());
+        return locoBlockDto;
     }
 
     private LocoBlock convertToEntity(LocoBlockDto locoBlockDto) {
@@ -68,7 +80,7 @@ public class LocoBlockService {
                 locoBlockDto.getSystemType(),
                 locoBlockDto.getBlockName(),
                 locoBlockDto.getBlockNumber(),
-                locoBlockDto.getDateCreate()
+                locoBlockDto.getUniqueId()
         );
     }
 }

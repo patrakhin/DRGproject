@@ -60,8 +60,8 @@ public class StorageService {
 
     private StorageDto convertToDTO(Storage storage) {
         StorageDto storageDto = new StorageDto(
-                storage.getStorageName(),
-                storage.getDateCreate()
+                storage.getStorageName()
+                /*storage.getDateCreate()*/
         );
         storageDto.setId(storage.getId());
         return storageDto;
@@ -69,8 +69,8 @@ public class StorageService {
 
     private Storage convertToEntity(StorageDto storageDto) {
         return new Storage(
-                storageDto.getStorageName(),
-                storageDto.getDateCreate()
+                storageDto.getStorageName()
+                /*storageDto.getDateCreate()*/
         );
     }
 }

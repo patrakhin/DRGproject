@@ -47,7 +47,6 @@ public class EmployeeService {
                 userDTO.getRegion(),
                 userDTO.getNumberTable()
         );
-
         employee = employeeRepository.save(employee);
         return convertToDTO(employee);
     }
@@ -83,13 +82,15 @@ public class EmployeeService {
     }
 
     private EmployeeDto convertToDTO(Employee employee) {
-        return new EmployeeDto(
+        EmployeeDto employeeDto = new EmployeeDto(
                 employee.getFio(),
                 employee.getPost(),
                 employee.getUnit(),
                 employee.getRegion(),
                 employee.getNumberTable()
         );
+        employeeDto.setId(employee.getId());
+        return employeeDto;
     }
 
     private Employee convertToEntity(EmployeeDto employeeDto) {

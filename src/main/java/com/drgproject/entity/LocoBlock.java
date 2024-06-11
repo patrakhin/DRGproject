@@ -2,19 +2,13 @@ package com.drgproject.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
-import java.util.List;
-
 
 @Entity
-@Table(name = "loco_block")
+@Table(name = "loco_block_two")
 public class LocoBlock {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "locoblock_id", referencedColumnName = "id", insertable = false, updatable = false)
-    private List<LocoBlockTransaction> locoBlocks;
 
     @Column(name = "system_type")
     private String systemType;
@@ -24,6 +18,9 @@ public class LocoBlock {
 
     @Column(name = "block_number")
     private String blockNumber;
+
+    @Column(name = "unique_id")
+    private Long uniqueId;
 
     @Column(name = "date_create", updatable = false)
     private LocalDate dateCreate;
@@ -36,11 +33,11 @@ public class LocoBlock {
     public LocoBlock(){}
 
     public LocoBlock(String systemType, String blockName,
-                     String blockNumber, LocalDate dateCreate) {
+                     String blockNumber, Long uniqueId) {
         this.systemType = systemType;
         this.blockName = blockName;
         this.blockNumber = blockNumber;
-        this.dateCreate = dateCreate;
+        this.uniqueId = uniqueId;
     }
 
     // геттеры и сеттеры
@@ -51,14 +48,6 @@ public class LocoBlock {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public List<LocoBlockTransaction> getLocoBlocks() {
-        return locoBlocks;
-    }
-
-    public void setLocoBlocks(List<LocoBlockTransaction> locoBlocks) {
-        this.locoBlocks = locoBlocks;
     }
 
     public String getSystemType() {
@@ -83,6 +72,14 @@ public class LocoBlock {
 
     public void setBlockNumber(String blockNumber) {
         this.blockNumber = blockNumber;
+    }
+
+    public Long getUniqueId() {
+        return uniqueId;
+    }
+
+    public void setUniqueId(Long uniqueId) {
+        this.uniqueId = uniqueId;
     }
 
     public LocalDate getDateCreate() {

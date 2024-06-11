@@ -9,4 +9,5 @@ public interface LocoBlockRepository extends JpaRepository<LocoBlock, Long> {
 
     Optional<LocoBlock> findByBlockNumber(String blockNumber);
     Optional<LocoBlock> findLocoBlockByBlockNameAndBlockNumberAndSystemType(String blockName, String blockNumber, String systemType);
+    Optional<LocoBlock> findLocoBlockByUniqueId(Long uniqueId);
 }

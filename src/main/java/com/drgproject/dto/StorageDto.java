@@ -16,9 +16,15 @@ public class StorageDto implements Serializable {
     @NotNull(message = "NotNull")
     private LocalDate dateCreate;
 
-    public StorageDto(String storageName, LocalDate dateCreate) {
+    protected void onCreate() {
+        dateCreate = LocalDate.now();
+    }
+
+    public StorageDto(){}
+
+    public StorageDto(String storageName /*LocalDate dateCreate*/) {
         this.storageName = storageName;
-        this.dateCreate = dateCreate;
+        /*this.dateCreate = dateCreate;*/
     }
 
     public Long getId() {
@@ -30,6 +36,7 @@ public class StorageDto implements Serializable {
     }
 
     public LocalDate getDateCreate() {
+         onCreate();
         return dateCreate;
     }
 
@@ -37,7 +44,8 @@ public class StorageDto implements Serializable {
         this.id = id;
     }
 
-    public void setDateCreate(@NotNull(message = "NotNull") LocalDate dateCreate) {
-        this.dateCreate = dateCreate;
+    public void setDateCreate() {
+        onCreate();
     }
+
 }
