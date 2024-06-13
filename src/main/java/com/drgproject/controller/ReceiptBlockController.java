@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
 @RequestMapping("/receipt")
 public class ReceiptBlockController {
@@ -30,7 +31,7 @@ public class ReceiptBlockController {
     }
 
     /**
-     * Получение записи поступления LocoBlock по её ID.
+     * Получение записи поступления LocoBlock по его ID.
      *
      * @param id идентификатор записи
      * @return найденная запись или статус 404, если не найдена
