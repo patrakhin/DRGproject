@@ -1,6 +1,6 @@
-package com.drgproject.repository;
+package com.drgproject.repair;
 
-import com.drgproject.entity.RepairHistory;
+import com.drgproject.repair.entiny.RepairHistory;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface RepairHistoryRepository extends JpaRepository<RepairHistory, Long> {
