@@ -1,8 +1,9 @@
-package com.drgproject.repair.entiny;
+package com.drgproject.repair.entity;
 
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -16,7 +17,7 @@ public class Region {
     private String name;
 
     @OneToMany(mappedBy = "region", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<HomeDepot> depots;
+    private List<HomeDepot> depots = new ArrayList<>(); // Инициализация пустым списком;
 
     public Region() {
     }
@@ -24,6 +25,10 @@ public class Region {
     public Region(String name, List<HomeDepot> depots) {
         this.name = name;
         this.depots = depots;
+    }
+
+    public Region(String name) {
+        this.name = name;
     }
 
     public Long getId() {

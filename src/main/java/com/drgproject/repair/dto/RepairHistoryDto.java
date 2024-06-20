@@ -3,7 +3,7 @@ package com.drgproject.repair.dto;
 import java.time.LocalDate;
 
 /**
- * DTO for {@link com.drgproject.repair.entiny.RepairHistory}
+ * DTO for {@link com.drgproject.repair.entity.RepairHistory}
  */
 public class RepairHistoryDto {
     private Long id;

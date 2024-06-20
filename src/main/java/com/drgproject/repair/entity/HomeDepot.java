@@ -1,4 +1,4 @@
-package com.drgproject.repair.entiny;
+package com.drgproject.repair.entity;
 
 
 import jakarta.persistence.*;

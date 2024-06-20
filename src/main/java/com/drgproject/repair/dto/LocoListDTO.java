@@ -1,33 +1,17 @@
-package com.drgproject.repair.entiny;
+package com.drgproject.repair.dto;
 
-import jakarta.persistence.*;
-
-@Entity
-@Table(name = "loco_list")
-public class LocoList {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class LocoListDTO {
     private Long id;
-
-    @Column(name = "contract_number")
     private String contractNumber;
-
-    @Column(name = "type_loco")
     private String typeLoco;
-
-    @Column(name = "type_system")
     private String typeSystem;
-
-    @Column(name = "loco_number")
     private String locoNumber;
-
-    @Column(name = "comment")
     private String comment;
 
-    public LocoList() {
-    }
+    public LocoListDTO() {}
 
-    public LocoList(String contractNumber, String typeLoco, String typeSystem, String locoNumber, String comment) {
+    public LocoListDTO(Long id, String contractNumber, String typeLoco, String typeSystem, String locoNumber, String comment) {
+        this.id = id;
         this.contractNumber = contractNumber;
         this.typeLoco = typeLoco;
         this.typeSystem = typeSystem;
@@ -35,6 +19,15 @@ public class LocoList {
         this.comment = comment;
     }
 
+    public LocoListDTO(String contractNumber, String typeLoco, String typeSystem, String locoNumber, String comment) {
+        this.contractNumber = contractNumber;
+        this.typeLoco = typeLoco;
+        this.typeSystem = typeSystem;
+        this.locoNumber = locoNumber;
+        this.comment = comment;
+    }
+
+    // Геттеры и сеттеры
     public Long getId() {
         return id;
     }

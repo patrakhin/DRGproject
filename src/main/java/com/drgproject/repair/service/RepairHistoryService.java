@@ -1,9 +1,9 @@
 package com.drgproject.repair.service;
 
 import com.drgproject.repair.RepairHistoryMapper;
-import com.drgproject.repair.RepairHistoryRepository;
+import com.drgproject.repair.repository.RepairHistoryRepository;
 import com.drgproject.repair.dto.RepairHistoryDto;
-import com.drgproject.repair.entiny.RepairHistory;
+import com.drgproject.repair.entity.RepairHistory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

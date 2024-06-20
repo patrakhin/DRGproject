@@ -1,7 +1,7 @@
 package com.drgproject.repair;
 
 import com.drgproject.repair.dto.RepairHistoryDto;
-import com.drgproject.repair.entiny.RepairHistory;
+import com.drgproject.repair.entity.RepairHistory;
 
 import java.util.List;
 

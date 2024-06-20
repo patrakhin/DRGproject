@@ -1,21 +1,17 @@
-package com.drgproject.repair.entiny;
+package com.drgproject.repair.dto;
 
-import jakarta.persistence.*;
-
-@Entity
-@Table(name = "position_repair")
-public class PositionRepair {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class PositionRepairDTO {
     private Long id;
-
-    @Column(name = "pos_repair")
     private String posRepair;
 
-    public PositionRepair(){}
+    public PositionRepairDTO() {}
 
-    public PositionRepair(String posRepair) {
+    public PositionRepairDTO(Long id, String posRepair) {
+        this.id = id;
+        this.posRepair = posRepair;
+    }
+
+    public PositionRepairDTO(String posRepair) {
         this.posRepair = posRepair;
     }
 
