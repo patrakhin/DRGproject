@@ -2,6 +2,7 @@ package com.drgproject.repair.controller;
 
 import com.drgproject.repair.dto.LocoListDTO;
 import com.drgproject.repair.service.LocoListService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,13 +20,24 @@ public class LocoListController {
     }
 
     @GetMapping
-    public List<LocoListDTO> getAllLocos() {
-        return locoListService.getAllLocoLists();
+    public ResponseEntity<List<LocoListDTO>> getAllLocos() {
+        List<LocoListDTO> locoLists = locoListService.getAllLocoLists();
+        return new ResponseEntity<>(locoLists, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<LocoListDTO> getLocoById(@PathVariable Long id) {
         LocoListDTO locoListDTO = locoListService.getLocoListById(id);
+        if (locoListDTO != null) {
+            return ResponseEntity.ok(locoListDTO);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/{number_loco}")
+    public ResponseEntity<LocoListDTO> getLocoByNumberLoco(@PathVariable String number_loco) {
+        LocoListDTO locoListDTO = locoListService.getLocoListByNumberLoco(number_loco);
         if (locoListDTO != null) {
             return ResponseEntity.ok(locoListDTO);
         } else {
@@ -51,7 +63,6 @@ public class LocoListController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteLoco(@PathVariable Long id) {
-        locoListService.deleteLocoList(id);
-        return ResponseEntity.noContent().build();
+        return locoListService.deleteLocoList(id) ? new ResponseEntity<>(HttpStatus.NO_CONTENT) : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 }

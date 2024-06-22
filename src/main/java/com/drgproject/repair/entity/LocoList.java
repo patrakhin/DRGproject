@@ -1,6 +1,8 @@
 package com.drgproject.repair.entity;
 
 import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "loco_list")
@@ -23,6 +25,9 @@ public class LocoList {
 
     @Column(name = "comment")
     private String comment;
+
+    @OneToMany(mappedBy = "locoList", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<BlockOnLoco> blockOnLocos = new ArrayList<>();
 
     public LocoList() {
     }
@@ -81,5 +86,23 @@ public class LocoList {
 
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    public List<BlockOnLoco> getBlockOnLocos() {
+        return blockOnLocos;
+    }
+
+    public void setBlockOnLocos(List<BlockOnLoco> blockOnLocos) {
+        this.blockOnLocos = blockOnLocos;
+    }
+
+    public void addBlockOnLoco(BlockOnLoco blockOnLoco) {
+        blockOnLocos.add(blockOnLoco);
+        blockOnLoco.setLocoList(this);
+    }
+
+    public void removeBlockOnLoco(BlockOnLoco blockOnLoco) {
+        blockOnLocos.remove(blockOnLoco);
+        blockOnLoco.setLocoList(null);
     }
 }

@@ -1,5 +1,7 @@
 package com.drgproject.repair.dto;
 
+import java.util.List;
+
 public class LocoListDTO {
     private Long id;
     private String contractNumber;
@@ -7,27 +9,23 @@ public class LocoListDTO {
     private String typeSystem;
     private String locoNumber;
     private String comment;
+    private List<Long> blockOnLocos;
 
     public LocoListDTO() {}
 
-    public LocoListDTO(Long id, String contractNumber, String typeLoco, String typeSystem, String locoNumber, String comment) {
+    public LocoListDTO(Long id, String contractNumber, String typeLoco, String typeSystem,
+                       String locoNumber, String comment, List<Long> blockOnLocos) {
         this.id = id;
         this.contractNumber = contractNumber;
         this.typeLoco = typeLoco;
         this.typeSystem = typeSystem;
         this.locoNumber = locoNumber;
         this.comment = comment;
+        this.blockOnLocos = blockOnLocos;
     }
 
-    public LocoListDTO(String contractNumber, String typeLoco, String typeSystem, String locoNumber, String comment) {
-        this.contractNumber = contractNumber;
-        this.typeLoco = typeLoco;
-        this.typeSystem = typeSystem;
-        this.locoNumber = locoNumber;
-        this.comment = comment;
-    }
+    // Getters and Setters
 
-    // Геттеры и сеттеры
     public Long getId() {
         return id;
     }
@@ -74,5 +72,13 @@ public class LocoListDTO {
 
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    public List<Long> getBlockOnLocos() {
+        return blockOnLocos;
+    }
+
+    public void setBlockOnLocos(List<Long> blockOnLocos) {
+        this.blockOnLocos = blockOnLocos;
     }
 }

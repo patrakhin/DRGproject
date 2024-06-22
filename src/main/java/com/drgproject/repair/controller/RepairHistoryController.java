@@ -32,6 +32,14 @@ public class RepairHistoryController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/number_loco/{number_loco}")
+    public ResponseEntity<RepairHistoryDto> getRepairHistoryByLocoNumber(@PathVariable String number_loco) {
+
+        Optional<RepairHistoryDto> repairHistoryDTO = repairHistoryService.findByNumberLoco(number_loco);
+        return repairHistoryDTO.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
     @PostMapping
     public RepairHistoryDto createRepairHistory(@RequestBody RepairHistoryDto repairHistoryDTO) {
         return repairHistoryService.save(repairHistoryDTO);

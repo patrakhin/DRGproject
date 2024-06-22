@@ -16,8 +16,6 @@ public class RepairHistoryMapper {
         dto.setLocoNumber(repairHistory.getLocoNumber());
         dto.setPositionRepair(repairHistory.getPositionRepair());
         dto.setTypeSystem(repairHistory.getTypeSystem());
-        dto.setSystemName(repairHistory.getSystemName());
-        dto.setBlockNumber(repairHistory.getBlockNumber());
         dto.setEmployee(repairHistory.getEmployee());
         dto.setInspectionResult(repairHistory.getInspectionResult());
         dto.setWorkResult(repairHistory.getWorkResult());
@@ -38,8 +36,6 @@ public class RepairHistoryMapper {
         repairHistory.setLocoNumber(dto.getLocoNumber());
         repairHistory.setPositionRepair(dto.getPositionRepair());
         repairHistory.setTypeSystem(dto.getTypeSystem());
-        repairHistory.setSystemName(dto.getSystemName());
-        repairHistory.setBlockNumber(dto.getBlockNumber());
         repairHistory.setEmployee(dto.getEmployee());
         repairHistory.setInspectionResult(dto.getInspectionResult());
         repairHistory.setWorkResult(dto.getWorkResult());

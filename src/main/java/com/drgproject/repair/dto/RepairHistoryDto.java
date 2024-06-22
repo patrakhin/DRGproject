@@ -13,8 +13,6 @@ public class RepairHistoryDto {
     private String locoNumber;
     private String positionRepair;
     private String typeSystem;
-    private String systemName;
-    private String blockNumber;
     private String employee;
     private String inspectionResult;
     private String workResult;
@@ -30,8 +28,8 @@ public class RepairHistoryDto {
 
     // Parameterized constructor
     public RepairHistoryDto(String homeDepot, String typeLoco, String locoNumber,
-                            String positionRepair, String typeSystem, String systemName,
-                            String blockNumber, String employee, String inspectionResult,
+                            String positionRepair, String typeSystem,
+                            String employee, String inspectionResult,
                             String workResult, String controlBlockSeal, String powerBlockSeal,
                             String comBlockSeal, String remoteContrSeal, String repairDepot) {
         this.repairDate = LocalDate.now();
@@ -40,8 +38,6 @@ public class RepairHistoryDto {
         this.locoNumber = locoNumber;
         this.positionRepair = positionRepair;
         this.typeSystem = typeSystem;
-        this.systemName = systemName;
-        this.blockNumber = blockNumber;
         this.employee = employee;
         this.inspectionResult = inspectionResult;
         this.workResult = workResult;
@@ -107,22 +103,6 @@ public class RepairHistoryDto {
 
     public void setTypeSystem(String typeSystem) {
         this.typeSystem = typeSystem;
-    }
-
-    public String getSystemName() {
-        return systemName;
-    }
-
-    public void setSystemName(String systemName) {
-        this.systemName = systemName;
-    }
-
-    public String getBlockNumber() {
-        return blockNumber;
-    }
-
-    public void setBlockNumber(String blockNumber) {
-        this.blockNumber = blockNumber;
     }
 
     public String getEmployee() {

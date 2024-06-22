@@ -29,6 +29,11 @@ public class RepairHistoryService {
         return repairHistory.map(RepairHistoryMapper::toDto);
     }
 
+    public Optional<RepairHistoryDto> findByNumberLoco(String numberLoco) {
+        Optional<RepairHistory> repairHistory = repairHistoryRepository.findRepairHistoriesByLocoNumber(numberLoco);
+        return repairHistory.map(RepairHistoryMapper::toDto);
+    }
+
     public RepairHistoryDto save(RepairHistoryDto repairHistoryDTO) {
         RepairHistory repairHistory = RepairHistoryMapper.toEntity(repairHistoryDTO);
         RepairHistory savedRepairHistory = repairHistoryRepository.save(repairHistory);
