@@ -36,6 +36,11 @@ public class LocoListService {
         return locoList.map(this::convertToDTO).orElse(null);
     }
 
+    public LocoListDTO getLocoListByNumberLocoAndTypeLoco(String numberLoco, String typeLoco){
+        Optional<LocoList> locoListByType = locoListRepository.findLocoListByLocoNumberAndTypeLoco(numberLoco, typeLoco);
+        return locoListByType.map(this::convertToDTO).orElse(null);
+    }
+
     public LocoListDTO createLocoList(LocoListDTO locoListDTO) {
         LocoList locoList = new LocoList();
         locoList.setContractNumber(locoListDTO.getContractNumber());

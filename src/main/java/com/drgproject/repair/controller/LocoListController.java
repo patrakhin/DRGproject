@@ -45,6 +45,16 @@ public class LocoListController {
         }
     }
 
+    @GetMapping("/{number_loco}/{type_loco}")
+    public ResponseEntity<LocoListDTO> getLocoByNumberLocoAndType(@PathVariable String number_loco, @PathVariable String type_loco) {
+        LocoListDTO locoListDTO = locoListService.getLocoListByNumberLocoAndTypeLoco(number_loco, type_loco);
+        if (locoListDTO != null) {
+            return ResponseEntity.ok(locoListDTO);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     @PostMapping
     public ResponseEntity<LocoListDTO> createLoco(@RequestBody LocoListDTO locoListDTO) {
         LocoListDTO createdLoco = locoListService.createLocoList(locoListDTO);

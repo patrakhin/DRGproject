@@ -25,12 +25,19 @@ public class BlockOnLocoService {
     public List<BlockOnLocoDTO> getAllBlockOnLocos() {
         return blockOnLocoRepository.findAll().stream()
                 .map(this::convertToDTO)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public BlockOnLocoDTO getBlockOnLocoById(Long id) {
         Optional<BlockOnLoco> blockOnLoco = blockOnLocoRepository.findById(id);
         return blockOnLoco.map(this::convertToDTO).orElse(null);
+    }
+
+    public List<BlockOnLocoDTO> getAllBlockOnLocoByIdLocoList(Long id){
+        Optional<List<BlockOnLoco>> blockOnLocoByListLocoId = blockOnLocoRepository.findAllByLocoList_Id(id);
+        return blockOnLocoByListLocoId.map(blockOnLocos -> blockOnLocos.stream()
+                .map(this::convertToDTO)
+                .toList()).orElseGet(List::of);
     }
 
     public BlockOnLocoDTO createBlockOnLoco(BlockOnLocoDTO blockOnLocoDTO) {

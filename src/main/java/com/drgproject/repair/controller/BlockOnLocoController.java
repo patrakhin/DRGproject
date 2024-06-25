@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
 @RequestMapping("/block-on-locos")
 public class BlockOnLocoController {
@@ -28,6 +29,12 @@ public class BlockOnLocoController {
     public ResponseEntity<BlockOnLocoDTO> getBlockOnLocoById(@PathVariable Long id) {
         BlockOnLocoDTO blockOnLocoDTO = blockOnLocoService.getBlockOnLocoById(id);
         return blockOnLocoDTO != null ? new ResponseEntity<>(blockOnLocoDTO, HttpStatus.OK) : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @GetMapping("/id_loco/{loco_id}")
+    public ResponseEntity<List<BlockOnLocoDTO>> getAllBlockByListLoco(@PathVariable Long loco_id){
+        List<BlockOnLocoDTO> blockOnLocoByIdLocoList = blockOnLocoService.getAllBlockOnLocoByIdLocoList(loco_id);
+        return new ResponseEntity<>(blockOnLocoByIdLocoList, HttpStatus.OK);
     }
 
     @PostMapping
