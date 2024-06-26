@@ -13,7 +13,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/locoblock_unique")
 public class LocoBlockUniqNumController {
-    private LocoBlockUniqNumService locoBlockUniqNumService;
+    private final LocoBlockUniqNumService locoBlockUniqNumService;
 
     public LocoBlockUniqNumController(LocoBlockUniqNumService locoBlockUniqNumService) {
         this.locoBlockUniqNumService = locoBlockUniqNumService;

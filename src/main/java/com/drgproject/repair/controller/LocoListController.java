@@ -25,7 +25,7 @@ public class LocoListController {
         return new ResponseEntity<>(locoLists, HttpStatus.OK);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/id/{id}")
     public ResponseEntity<LocoListDTO> getLocoById(@PathVariable Long id) {
         LocoListDTO locoListDTO = locoListService.getLocoListById(id);
         if (locoListDTO != null) {
