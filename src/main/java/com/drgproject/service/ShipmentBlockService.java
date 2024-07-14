@@ -48,24 +48,28 @@ public class ShipmentBlockService {
                                                          String systemType,
                                                          String nameBlock,
                                                          String blockNumber) {
-        Long getUniqueId = locoBlockUniqNumService.generateUniqueId(systemType, nameBlock, blockNumber);
-        Optional<ReceiptBlock> locoBlockByUniqueId = receiptBlockRepository.findReceiptBlockByLocoBlockUniqueId(getUniqueId);
+        Long locoBlockUniqueId = locoBlockUniqNumService.generateUniqueId(systemType, nameBlock, blockNumber);
+        Optional<ReceiptBlock> receiptBlockByUniqueId = receiptBlockRepository.findReceiptBlockByLocoBlockUniqueId(locoBlockUniqueId);
+        Optional<ShipmentBlock> shipmentBlockByUniqueId = shipmentBlockRepository.findShipmentBlockByLocoBlockUniqueId(locoBlockUniqueId);
         Employee employee = employeeRepository.findEmployeeByNumberTable(numberTable).orElse(null);
         if (employee == null){
             throw new IllegalArgumentException("Employee with number " + numberTable + " not found");
         }
+        if (receiptBlockByUniqueId.isEmpty()){
+            throw new IllegalArgumentException(" LockBlock with unique number " + locoBlockUniqueId +  " not found");
+        }
 
-        if (locoBlockByUniqueId.isPresent()) {
+        if (receiptBlockByUniqueId.isPresent() && shipmentBlockByUniqueId.isEmpty()) {
             ShipmentBlock shipmentBlock = new ShipmentBlock();
-            shipmentBlock.setStorageName(locoBlockByUniqueId.get().getStorageName());
+            shipmentBlock.setStorageName(receiptBlockByUniqueId.get().getStorageName());
             shipmentBlock.setEmployeeNumber(employee.getNumberTable());
-            shipmentBlock.setLocoBlockUniqueId(getUniqueId);
+            shipmentBlock.setLocoBlockUniqueId(locoBlockUniqueId);
             shipmentBlock.setTransactionType("отгружен");
             shipmentBlock.setQuantity(1);
             shipmentBlock = shipmentBlockRepository.save(shipmentBlock);
             return convertToDTO(shipmentBlock);
         }
-        throw new IllegalArgumentException(" LockBlock with unique number " + getUniqueId +  " not found");
+        throw new IllegalArgumentException(" LockBlock with unique number " + locoBlockUniqueId +  " already shipped");
     }
 
 
