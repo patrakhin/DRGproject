@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -34,6 +35,28 @@ public class StorageService {
     }
 
     @Transactional
+    public List<StorageDto> getStoragesByRegion(String region){
+        return storageRepository.findAll().stream()
+                .filter(regions -> Objects.equals(regions.getStorageRegion(), region))
+                .map(this::convertToDTO)
+                .toList();
+    }
+
+    @Transactional
+    public List<StorageDto> getLocoBlockByRegionAndName (String region, String name){
+        return storageRepository.findAll().stream()
+                .filter(regions -> Objects.equals(regions.getStorageRegion(), region))
+                .map(this::convertToDTO)
+                .toList();
+    }
+
+    @Transactional
+    public StorageDto getStorageByRegionAndName(String region, String storageName) {
+        return storageRepository.findStorageByStorageNameAndStorageRegion(storageName, region).map(this::convertToDTO).orElse(null);
+    }
+
+
+    @Transactional
     public StorageDto createStorage(StorageDto storageDto) {
         Storage storage = convertToEntity(storageDto);
         storage = storageRepository.save(storage);
@@ -58,9 +81,15 @@ public class StorageService {
         storageRepository.deleteById(id);
     }
 
+    @Transactional
+    public void deleteStorageByName(String storageName){
+        storageRepository.deleteStorageByStorageName(storageName);
+    }
+
     private StorageDto convertToDTO(Storage storage) {
         StorageDto storageDto = new StorageDto(
-                storage.getStorageName()
+                storage.getStorageName(),
+                storage.getStorageRegion()
                 /*storage.getDateCreate()*/
         );
         storageDto.setId(storage.getId());
@@ -69,7 +98,8 @@ public class StorageService {
 
     private Storage convertToEntity(StorageDto storageDto) {
         return new Storage(
-                storageDto.getStorageName()
+                storageDto.getStorageName(),
+                storageDto.getStorageRegion()
                 /*storageDto.getDateCreate()*/
         );
     }

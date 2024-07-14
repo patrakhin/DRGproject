@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Поиск Региона</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <h1 class="text-center">Поиск Региона</h1>
+    <form th:action="@{/regions/byName}" method="get" class="mt-4">
+        <div class="mb-3">
+            <label for="name" class="form-label">Название Региона</label>
+            <input type="text" class="form-control" id="name" name="name" required>
+        </div>
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary">Поиск</button>
+        </div>
+        <div th:if="${errorMessage}" class="alert alert-danger mt-3" th:text="${errorMessage}"></div>
+        <div th:if="${region}" class="mt-3">
+            <h2>Найденный Регион:</h2>
+            <ul>
+                <li>ID: <span th:text="${region.id}"></span></li>
+                <li>Название: <span th:text="${region.name}"></span></li>
+            </ul>
+        </div>
+    </form>
+    <div class="text-center mt-4">
+        <a href="/regions" class="btn btn-primary">Вернуться на главную</a>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

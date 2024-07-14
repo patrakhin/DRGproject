@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -18,9 +19,35 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
+    //Для админа
     @Transactional
     public List<UserDTO> getAllUsers() {
         return userRepository.findAll().stream().map(this::convertToDTO).toList();
+    }
+
+    //Для регионала
+    @Transactional
+    public List<UserDTO> getUsersByRegion(String region) {
+        return userRepository.findAll().stream()
+                .filter(employee -> Objects.equals(employee.getRegion(), region))
+                .map(this::convertToDTO)
+                .toList();
+    }
+
+    //Для регионала
+    @Transactional
+    public UserDTO getUserByRegionAndNumberTable(String region, String numberTable){
+        return userRepository.findUserByRegionAndNumberTable(region, numberTable).map(this::convertToDTO).orElse(null);
+    }
+
+    //Для остальных
+    @Transactional
+    public List<UserDTO> getUsersByRegionAndDepot(String region, String depot) {
+        return userRepository.findAll().stream()
+                .filter(employee -> Objects.equals(employee.getRegion(), region))
+                .filter(employee -> Objects.equals(employee.getUnit(), depot))
+                .map(this::convertToDTO)
+                .toList();
     }
 
     @Transactional

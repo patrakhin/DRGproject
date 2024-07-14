@@ -2,13 +2,14 @@ package com.drgproject.repair.controller;
 
 import com.drgproject.repair.dto.SystemNameDTO;
 import com.drgproject.repair.service.SystemNameService;
-import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @CrossOrigin(origins = "*", allowedHeaders = "*")
-@RestController
+@Controller
 @RequestMapping("/system-names")
 public class SystemNameController {
 
@@ -19,43 +20,62 @@ public class SystemNameController {
     }
 
     @GetMapping
-    public List<SystemNameDTO> getAllSystemNames() {
-        return systemNameService.getAllSystemNames();
+    public String getAllSystemNames(Model model) {
+        List<SystemNameDTO> systemNames = systemNameService.getAllSystemNames();
+        model.addAttribute("systemNames", systemNames);
+        return "system_name_1_main";
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<SystemNameDTO> getSystemNameById(@PathVariable Long id) {
+    @GetMapping("/create")
+    public String showCreateSystemNameForm(Model model) {
+        model.addAttribute("systemName", new SystemNameDTO());
+        return "system_name_2_add";
+    }
+
+    @PostMapping("/create")
+    public String createSystemName(@ModelAttribute SystemNameDTO systemNameDTO, Model model) {
+        SystemNameDTO createdSystemName = systemNameService.createSystemName(systemNameDTO);
+        model.addAttribute("createdSystemName", createdSystemName);
+        return "system_name_2_add_success";
+    }
+
+    @GetMapping("/edit")
+    public String showEditSystemNameForm(@RequestParam long id, Model model) {
         SystemNameDTO systemNameDTO = systemNameService.getSystemNameById(id);
         if (systemNameDTO != null) {
-            return ResponseEntity.ok(systemNameDTO);
+            model.addAttribute("systemName", systemNameDTO);
+            return "system_name_3_update";
         } else {
-            return ResponseEntity.notFound().build();
+            model.addAttribute("errorMessage", "Системное имя с таким ID не найдено");
+            return "system_name_3_update";
         }
     }
 
-    @PostMapping
-    public ResponseEntity<SystemNameDTO> createSystemName(@RequestBody SystemNameDTO systemNameDTO) {
-        SystemNameDTO createdSystemName = systemNameService.createSystemName(systemNameDTO);
-        return ResponseEntity.ok(createdSystemName);
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<SystemNameDTO> updateSystemName(@PathVariable Long id, @RequestBody SystemNameDTO systemNameDTO) {
+    @PostMapping("/edit/{id}")
+    public String updateSystemName(@PathVariable long id, @ModelAttribute SystemNameDTO systemNameDTO, Model model) {
         SystemNameDTO updatedSystemName = systemNameService.updateSystemName(id, systemNameDTO);
         if (updatedSystemName != null) {
-            return ResponseEntity.ok(updatedSystemName);
+            model.addAttribute("updatedSystemName", updatedSystemName);
+            return "system_name_3_update_success";
         } else {
-            return ResponseEntity.notFound().build();
+            model.addAttribute("errorMessage", "Не удалось обновить системное имя");
+            return "system_name_3_update";
         }
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteSystemName(@PathVariable Long id) {
+    @GetMapping("/delete")
+    public String showDeleteSystemNameForm(Model model) {
+        return "system_name_4_delete";
+    }
+
+    @PostMapping("/deleteById")
+    public String deleteSystemName(@RequestParam long id, Model model) {
         boolean isDeleted = systemNameService.deleteSystemName(id);
         if (isDeleted) {
-            return ResponseEntity.noContent().build();
+            model.addAttribute("successMessage", "Системное имя успешно удалено");
         } else {
-            return ResponseEntity.notFound().build();
+            model.addAttribute("errorMessage", "Ошибка при удалении системного имени");
         }
+        return "system_name_4_delete";
     }
 }

@@ -5,10 +5,11 @@ import com.drgproject.repair.entity.HomeDepot;
 import com.drgproject.repair.entity.Region;
 import com.drgproject.repair.repository.RegionRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+
 
 @Service
 public class RegionService {
@@ -19,21 +20,31 @@ public class RegionService {
         this.regionRepository = regionRepository;
     }
 
+    @Transactional
     public List<RegionDTO> getAllRegions() {
-        return regionRepository.findAll().stream().map(this::convertToDTO).collect(Collectors.toList());
+        return regionRepository.findAll().stream().map(this::convertToDTO).toList();
     }
 
+    @Transactional
     public RegionDTO getRegionById(Long id) {
         Optional<Region> region = regionRepository.findById(id);
         return region.map(this::convertToDTO).orElse(null);
     }
 
+    @Transactional
+    public RegionDTO getRegionByName(String regionName) {
+        Optional<Region> region = regionRepository.findRegionByName(regionName);
+        return region.map(this::convertToDTO).orElse(null);
+    }
+
+    @Transactional
     public RegionDTO createRegion(RegionDTO regionDTO) {
         Region region = new Region(regionDTO.getName()/*, null*/);
         region = regionRepository.save(region);
         return convertToDTO(region);
     }
 
+    @Transactional
     public RegionDTO updateRegion(Long id, RegionDTO regionDTO) {
         Optional<Region> optionalRegion = regionRepository.findById(id);
         if (optionalRegion.isPresent()) {
@@ -45,12 +56,16 @@ public class RegionService {
         return null;
     }
 
-    public boolean deleteRegion(Long id) {
+    @Transactional
+    public void deleteRegion(Long id) {
         if (regionRepository.existsById(id)) {
             regionRepository.deleteById(id);
-            return true;
         }
-        return false;
+    }
+
+    @Transactional
+    public void deleteRegionByName(String regionName){
+        regionRepository.deleteRegionByName(regionName);
     }
 
     private RegionDTO convertToDTO(Region region) {

@@ -1,6 +1,7 @@
 package com.drgproject.entity;
 
 import jakarta.persistence.*;
+
 import java.time.LocalDate;
 
 @Entity
@@ -22,6 +23,9 @@ public class LocoBlock {
     @Column(name = "unique_id")
     private Long uniqueId;
 
+    @Column(name = "region")
+    private String region;
+
     @Column(name = "date_create", updatable = false)
     private LocalDate dateCreate;
 
@@ -33,11 +37,12 @@ public class LocoBlock {
     public LocoBlock(){}
 
     public LocoBlock(String systemType, String blockName,
-                     String blockNumber, Long uniqueId) {
+                     String blockNumber, Long uniqueId, String region) {
         this.systemType = systemType;
         this.blockName = blockName;
         this.blockNumber = blockNumber;
         this.uniqueId = uniqueId;
+        this.region = region;
     }
 
     // геттеры и сеттеры
@@ -82,6 +87,14 @@ public class LocoBlock {
         this.uniqueId = uniqueId;
     }
 
+    public String getRegion() {
+        return region;
+    }
+
+    public void setRegion(String region) {
+        this.region = region;
+    }
+
     public LocalDate getDateCreate() {
         return dateCreate;
     }
@@ -90,4 +103,3 @@ public class LocoBlock {
         this.dateCreate = dateCreate;
     }
 }
-

@@ -13,6 +13,9 @@ public class ReceiptBlock {
     @Column(name = "storage_name")
     private String storageName;
 
+    @Column(name = "region")
+    private String region;
+
     @Column(name = "employee_number")
     private String employeeNumber;
 
@@ -35,9 +38,10 @@ public class ReceiptBlock {
 
     public ReceiptBlock(){}
 
-    public ReceiptBlock(String storageName, String employeeNumber, Long locoBlockUniqueId,
+    public ReceiptBlock(String storageName, String region, String employeeNumber, Long locoBlockUniqueId,
                         String transactionType, int quantity) {
         this.storageName = storageName;
+        this.region = region;
         this.employeeNumber = employeeNumber;
         this.locoBlockUniqueId = locoBlockUniqueId;
         this.transactionType = transactionType;
@@ -58,6 +62,14 @@ public class ReceiptBlock {
 
     public void setStorageName(String storageName) {
         this.storageName = storageName;
+    }
+
+    public String getRegion() {
+        return region;
+    }
+
+    public void setRegion(String region) {
+        this.region = region;
     }
 
     public String getEmployeeNumber() {

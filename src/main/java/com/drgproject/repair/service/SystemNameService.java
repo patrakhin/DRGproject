@@ -3,12 +3,10 @@ package com.drgproject.repair.service;
 import com.drgproject.repair.dto.SystemNameDTO;
 import com.drgproject.repair.entity.SystemName;
 import com.drgproject.repair.repository.SystemNameRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class SystemNameService {
@@ -21,7 +19,7 @@ public class SystemNameService {
     }
 
     public List<SystemNameDTO> getAllSystemNames() {
-        return systemNameRepository.findAll().stream().map(this::convertToDTO).collect(Collectors.toList());
+        return systemNameRepository.findAll().stream().map(this::convertToDTO).toList();
     }
 
     public SystemNameDTO getSystemNameById(Long id) {

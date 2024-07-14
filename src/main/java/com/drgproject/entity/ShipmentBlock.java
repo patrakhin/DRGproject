@@ -27,6 +27,9 @@ public class ShipmentBlock {
     @Column(name = "quantity")
     private int quantity;
 
+    @Column(name = "region")
+    private  String region;
+
     @Column(name = "date_create", updatable = false)
     private LocalDate dateCreate;
 
@@ -38,12 +41,13 @@ public class ShipmentBlock {
     public ShipmentBlock(){}
 
     public ShipmentBlock(String storageName, String employeeNumber, Long locoBlockUniqueId,
-                         String transactionType, int quantity) {
+                         String transactionType, int quantity, String region) {
         this.storageName = storageName;
         this.employeeNumber = employeeNumber;
         this.locoBlockUniqueId = locoBlockUniqueId;
         this.transactionType = transactionType;
         this.quantity = quantity;
+        this.region = region;
     }
 
     public Long getId() {
@@ -92,6 +96,14 @@ public class ShipmentBlock {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
+    }
+
+    public String getRegion() {
+        return region;
+    }
+
+    public void setRegion(String region) {
+        this.region = region;
     }
 
     public LocalDate getDateCreate() {

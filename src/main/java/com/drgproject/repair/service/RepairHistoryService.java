@@ -44,4 +44,3 @@ public class RepairHistoryService {
         repairHistoryRepository.deleteById(id);
     }
 }
-

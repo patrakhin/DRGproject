@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.5</version>
+        <version>3.2.7</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com</groupId>
@@ -15,17 +15,22 @@
     <description>DRGproject</description>
     <properties>
         <java.version>17</java.version>
-        <springfox.version>3.0.0</springfox.version>
     </properties>
     <dependencies>
+        <!-- Spring Boot Starters -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
-        <!--<dependency>
+
+        <!-- Spring Security -->
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
-        </dependency>-->
+            <version>3.3.0</version>
+        </dependency>
+
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
@@ -38,40 +43,49 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
+
+        <!-- Database -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- Excel handling -->
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
             <version>5.2.3</version>
         </dependency>
 
-
-        <!-- https://mvnrepository.com/artifact/org.modelmapper/modelmapper -->
+        <!-- ModelMapper -->
         <dependency>
             <groupId>org.modelmapper</groupId>
             <artifactId>modelmapper</artifactId>
             <version>3.2.0</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/com.auth0/java-jwt -->
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>bootstrap</artifactId>
+            <version>5.1.3</version>
+        </dependency>
+
+        <!-- JWT -->
         <dependency>
             <groupId>com.auth0</groupId>
             <artifactId>java-jwt</artifactId>
             <version>4.4.0</version>
         </dependency>
+
+        <!-- Servlet API (if needed) -->
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
             <version>2.5</version>
         </dependency>
 
-
-
-
-        <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <scope>runtime</scope>
-        </dependency>
+        <!-- Testing -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -92,6 +106,4 @@
             </plugin>
         </plugins>
     </build>
-
-
 </project>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="eng">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Детали локомотива</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <h1 class="text-center">Детали локомотива</h1>
+    <div class="row mt-3">
+        <div class="col-12">
+            <p><strong>ID:</strong> <span th:text="${locoList.id}"></span></p>
+            <p><strong>Номер договора:</strong> <span th:text="${locoList.contractNumber}"></span></p>
+            <p><strong>Тип локомотива:</strong> <span th:text="${locoList.typeLoco}"></span></p>
+            <p><strong>Тип системы:</strong> <span th:text="${locoList.typeSystem}"></span></p>
+            <p><strong>Номер локомотива:</strong> <span th:text="${locoList.locoNumber}"></span></p>
+            <p><strong>Регион локомотива:</strong> <span th:text="${locoList.homeRegion}"></span></p>
+            <p><strong>Депо локомотива:</strong> <span th:text="${locoList.homeDepot}"></span></p>
+            <p><strong>Комментарий:</strong> <span th:text="${locoList.comment}"></span></p>
+            <p><strong>Блоки на локомотиве:</strong></p>
+            <ul>
+                <li th:each="blockId : ${locoList.blockOnLocos}" th:text="${blockId}"></li>
+            </ul>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col-12 text-end">
+            <a href="/locos" class="btn btn-primary">Вернуться к списку локомотивов</a>
+            <a th:href="@{/locos/edit/{id}(id=${locoList.id})}" class="btn btn-warning">Редактировать</a>
+            <a th:href="@{/locos/delete/{id}(id=${locoList.id})}" class="btn btn-danger">Удалить</a>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col-12 text-end">
+            <a href="/locos" class="btn btn-link">Главная страница локомотивов</a>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

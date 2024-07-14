@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -25,8 +26,36 @@ public class LocoBlockService {
     }
 
     @Transactional
+    public List<LocoBlockDto> getLocoBlocksByRegion (String region){
+        return locoBlockRepository.findAll().stream()
+                .filter(regions -> Objects.equals(regions.getRegion(),region))
+                .map(this::convertToDTO)
+                .toList();
+    }
+
+    @Transactional
+    public List<LocoBlockDto> getLocoBlockByName (String name){
+        return locoBlockRepository.findAll().stream()
+                .filter(names -> Objects.equals(names.getBlockName(),name))
+                .map(this::convertToDTO)
+                .toList();
+    }
+
+    @Transactional
+    public List<LocoBlockDto> getLocoBlockByRegionAndName (String region, String name){
+        return locoBlockRepository.findLocoBlockByRegionAndBlockName(region, name).stream()
+                .map(this::convertToDTO)
+                .toList();
+    }
+
+    @Transactional
     public LocoBlockDto getLocoBlockById(Long id) {
-       return locoBlockRepository.findById(id).map(this::convertToDTO).orElse(null);
+        return locoBlockRepository.findById(id).map(this::convertToDTO).orElse(null);
+    }
+
+    @Transactional
+    public LocoBlockDto getLocoBlockByBlockNumber(String blockNumber){
+        return locoBlockRepository.findLocoBlockByBlockNumber(blockNumber).map(this::convertToDTO).orElse(null);
     }
 
     public LocoBlockDto getLocoBlockByUniqueId(Long uniqueId) {
@@ -50,12 +79,18 @@ public class LocoBlockService {
             locoBlock.setSystemType(locoBlockDto.getSystemType());
             locoBlock.setBlockName(locoBlockDto.getBlockName());
             locoBlock.setBlockNumber(locoBlockDto.getBlockNumber());
-            locoBlock.setUniqueId(locoBlockUniqNumService.generateUniqueId(locoBlockDto.getSystemType(),
-                    locoBlockDto.getBlockName(), locoBlockDto.getBlockNumber()));
+            locoBlock.setRegion(locoBlockDto.getRegion());
+            locoBlock.setUniqueId(locoBlockUniqNumService.generateUniqueId(locoBlock.getSystemType(),
+                    locoBlock.getBlockName(), locoBlock.getBlockNumber()));
             locoBlock = locoBlockRepository.save(locoBlock);
             return convertToDTO(locoBlock);
         }
         return null;
+    }
+
+    @Transactional
+    public void deleteLocoBlockByBlockNumber(String blockNumber){
+        locoBlockRepository.deleteLocoBlockByBlockNumber(blockNumber);
     }
 
     @Transactional
@@ -69,7 +104,8 @@ public class LocoBlockService {
                 locoBlock.getSystemType(),
                 locoBlock.getBlockName(),
                 locoBlock.getBlockNumber(),
-                locoBlock.getUniqueId()
+                locoBlock.getUniqueId(),
+                locoBlock.getRegion()
         );
         locoBlockDto.setId(locoBlock.getId());
         return locoBlockDto;
@@ -80,7 +116,8 @@ public class LocoBlockService {
                 locoBlockDto.getSystemType(),
                 locoBlockDto.getBlockName(),
                 locoBlockDto.getBlockNumber(),
-                locoBlockDto.getUniqueId()
+                locoBlockDto.getUniqueId(),
+                locoBlockDto.getRegion()
         );
     }
 }

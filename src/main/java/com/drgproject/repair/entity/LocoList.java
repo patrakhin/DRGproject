@@ -23,6 +23,12 @@ public class LocoList {
     @Column(name = "loco_number")
     private String locoNumber;
 
+    @Column(name = "home_region")
+    private String homeRegion;
+
+    @Column(name = "home_depot")
+    private String homeDepot;
+
     @Column(name = "comment")
     private String comment;
 
@@ -32,11 +38,14 @@ public class LocoList {
     public LocoList() {
     }
 
-    public LocoList(String contractNumber, String typeLoco, String typeSystem, String locoNumber, String comment) {
+    public LocoList(String contractNumber, String typeLoco, String typeSystem, String locoNumber,
+                    String homeRegion, String homeDepot, String comment) {
         this.contractNumber = contractNumber;
         this.typeLoco = typeLoco;
         this.typeSystem = typeSystem;
         this.locoNumber = locoNumber;
+        this.homeRegion = homeRegion;
+        this.homeDepot = homeDepot;
         this.comment = comment;
     }
 
@@ -78,6 +87,22 @@ public class LocoList {
 
     public void setLocoNumber(String locoNumber) {
         this.locoNumber = locoNumber;
+    }
+
+    public String getHomeRegion() {
+        return homeRegion;
+    }
+
+    public void setHomeRegion(String homeRegion) {
+        this.homeRegion = homeRegion;
+    }
+
+    public String getHomeDepot() {
+        return homeDepot;
+    }
+
+    public void setHomeDepot(String homeDepot) {
+        this.homeDepot = homeDepot;
     }
 
     public String getComment() {

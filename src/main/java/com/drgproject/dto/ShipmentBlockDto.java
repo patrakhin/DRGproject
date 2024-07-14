@@ -17,17 +17,19 @@ public class ShipmentBlockDto implements Serializable {
     private Long locoBlockUniqueId;
     private String transactionType; // "IN" for incoming, "OUT" for outgoing
     private int quantity;
+    private String region;
     private LocalDate dateCreate;
 
     public ShipmentBlockDto(){}
 
     public ShipmentBlockDto(String storageName, String employeeNumber, Long locoBlockUniqueId,
-                            String transactionType, int quantity) {
+                            String transactionType, int quantity, String region) {
         this.storageName = storageName;
         this.employeeNumber = employeeNumber;
         this.locoBlockUniqueId = locoBlockUniqueId;
         this.transactionType = transactionType;
         this.quantity = quantity;
+        this.region = region;
     }
 
     public Long getId() {
@@ -76,6 +78,14 @@ public class ShipmentBlockDto implements Serializable {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
+    }
+
+    public String getRegion() {
+        return region;
+    }
+
+    public void setRegion(String region) {
+        this.region = region;
     }
 
     public LocalDate getDateCreate() {

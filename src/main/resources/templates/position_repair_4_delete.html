@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Удаление позиции ремонта</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <h1 class="text-center">Удаление позиции ремонта</h1>
+    <form th:action="@{/position-repairs/deleteById}" method="post">
+        <div class="mb-3">
+            <label for="id" class="form-label">ID позиции ремонта для удаления</label>
+            <input type="text" class="form-control" id="id" name="id" required>
+        </div>
+        <button type="submit" class="btn btn-danger">Удалить</button>
+    </form>
+    <div th:if="${successMessage}" class="alert alert-success mt-4" th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}" class="alert alert-danger mt-4" th:text="${errorMessage}"></div>
+    <div class="row mt-3">
+        <div class="col-12 text-end">
+            <a href="/position-repairs" class="btn btn-link">Позиции ремонта</a>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

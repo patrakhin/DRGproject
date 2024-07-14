@@ -14,6 +14,9 @@ public class Storage {
     @Column(name = "storage_name")
     private String storageName;
 
+    @Column(name = "storage_region")
+    private String storageRegion;
+
     @Column(name = "date_create", updatable = false)
     private LocalDate dateCreate;
 
@@ -24,8 +27,9 @@ public class Storage {
 
     public Storage(){}
 
-    public Storage(String storageName /*LocalDate dateCreate*/) {
+    public Storage(String storageName, String storageRegion /*LocalDate dateCreate*/) {
         this.storageName = storageName;
+        this.storageRegion = storageRegion;
         /*this.dateCreate = dateCreate;*/
     }
 
@@ -43,6 +47,14 @@ public class Storage {
 
     public void setStorageName(String storageName) {
         this.storageName = storageName;
+    }
+
+    public String getStorageRegion() {
+        return storageRegion;
+    }
+
+    public void setStorageRegion(String storageRegion) {
+        this.storageRegion = storageRegion;
     }
 
     public LocalDate getDateCreate() {

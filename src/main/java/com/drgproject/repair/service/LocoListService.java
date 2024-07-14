@@ -7,6 +7,7 @@ import com.drgproject.repair.repository.BlockOnLocoRepository;
 import com.drgproject.repair.repository.LocoListRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -32,8 +33,11 @@ public class LocoListService {
     }
 
     public LocoListDTO getLocoListByNumberLoco(String numberLoco) {
-        Optional<LocoList> locoList = locoListRepository.findLocoListByLocoNumber(numberLoco);
-        return locoList.map(this::convertToDTO).orElse(null);
+        List<LocoList> locoLists = locoListRepository.findAll();
+        Optional<LocoList> locoListOptional = locoLists.stream()
+                .filter(loco -> loco.getLocoNumber().equals(numberLoco))
+                .findFirst();
+        return locoListOptional.map(this::convertToDTO).orElse(null);
     }
 
     public LocoListDTO getLocoListByNumberLocoAndTypeLoco(String numberLoco, String typeLoco){
@@ -47,14 +51,12 @@ public class LocoListService {
         locoList.setTypeLoco(locoListDTO.getTypeLoco());
         locoList.setTypeSystem(locoListDTO.getTypeSystem());
         locoList.setLocoNumber(locoListDTO.getLocoNumber());
+        locoList.setHomeRegion(locoListDTO.getHomeRegion());
+        locoList.setHomeDepot(locoListDTO.getHomeDepot());
         locoList.setComment(locoListDTO.getComment());
 
-        List<BlockOnLoco> blockOnLocos = locoListDTO.getBlockOnLocos().stream()
-                .map(blockId -> blockOnLocoRepository.findById(blockId)
-                        .orElseThrow(() -> new RuntimeException("BlockOnLoco not found: " + blockId)))
-                .collect(Collectors.toList());
-
-        locoList.setBlockOnLocos(blockOnLocos);
+        // Пустой список блоков при создании локомотива
+        locoList.setBlockOnLocos(new ArrayList<>());
 
         LocoList savedLocoList = locoListRepository.save(locoList);
         return convertToDTO(savedLocoList);
@@ -68,15 +70,9 @@ public class LocoListService {
             locoList.setTypeLoco(locoListDTO.getTypeLoco());
             locoList.setTypeSystem(locoListDTO.getTypeSystem());
             locoList.setLocoNumber(locoListDTO.getLocoNumber());
+            locoList.setHomeRegion(locoListDTO.getHomeRegion());
+            locoList.setHomeDepot(locoListDTO.getHomeDepot());
             locoList.setComment(locoListDTO.getComment());
-
-            List<BlockOnLoco> blockOnLocos = locoListDTO.getBlockOnLocos().stream()
-                    .map(blockId -> blockOnLocoRepository.findById(blockId)
-                            .orElseThrow(() -> new RuntimeException("BlockOnLoco not found: " + blockId)))
-                    .collect(Collectors.toList());
-
-            locoList.setBlockOnLocos(blockOnLocos);
-
             LocoList updatedLocoList = locoListRepository.save(locoList);
             return convertToDTO(updatedLocoList);
         }
@@ -97,6 +93,7 @@ public class LocoListService {
                 .toList();
 
         return new LocoListDTO(locoList.getId(), locoList.getContractNumber(), locoList.getTypeLoco(),
-                locoList.getTypeSystem(), locoList.getLocoNumber(), locoList.getComment(), blockOnLocosIds);
+                locoList.getTypeSystem(), locoList.getLocoNumber(), locoList.getHomeRegion(),
+                locoList.getHomeDepot(), locoList.getComment(), blockOnLocosIds);
     }
 }

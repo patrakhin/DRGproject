@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Поиск Записи</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-12 text-center mb-3">
+            <h1>Поиск Записи</h1>
+        </div>
+        <div class="col-12">
+            <form th:action="@{/receipt_blocks/byId}" method="get">
+                <div class="mb-3">
+                    <label for="id" class="form-label">ID Записи</label>
+                    <input type="text" class="form-control" id="id" name="id">
+                </div>
+                <button type="submit" class="btn btn-primary">Поиск</button>
+            </form>
+        </div>
+        <div class="col-12 mt-3">
+            <div th:if="${receiptBlock != null}">
+                <h3>Результаты Поиска:</h3>
+                <p><strong>ID:</strong> <span th:text="${receiptBlock.id}"></span></p>
+                <p><strong>Регион:</strong><span th:text="${receiptBlock.region}"></span></p>
+                <p><strong>Имя Склада:</strong> <span th:text="${receiptBlock.storageName}"></span></p>
+                <p><strong>Номер Работника:</strong> <span th:text="${receiptBlock.employeeNumber}"></span></p>
+                <p><strong>Уникальный Номер Блока:</strong> <span th:text="${receiptBlock.locoBlockUniqueId}"></span></p>
+                <p><strong>Тип Транзакции:</strong> <span th:text="${receiptBlock.transactionType}"></span></p>
+                <p><strong>Количество:</strong> <span th:text="${receiptBlock.quantity}"></span></p>
+                <p><strong>Дата Создания:</strong> <span th:text="${receiptBlock.dateCreate}"></span></p>
+            </div>
+            <div th:if="${errorMessage != null}">
+                <p class="text-danger" th:text="${errorMessage}"></p>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-12 text-end">
+                <a href="/receipt_blocks" class="btn btn-link">Управление записями</a>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Список Депо</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+  <h1 class="text-center">Список Депо</h1>
+  <table class="table table-bordered mt-4">
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>Название</th>
+      <th>Регион</th>
+      <th>Действия</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="depot : ${depots}">
+      <td th:text="${depot.id}">1</td>
+      <td th:text="${depot.depot}">Depot Name</td>
+      <td th:text="${depot.regionName}">Region Name</td>
+      <td>
+        <a th:href="@{/home-depots/edit(id=${depot.id})}" class="btn btn-warning">Редактировать</a>
+        <form th:action="@{/home-depots/deleteById}" method="post" class="d-inline">
+          <input type="hidden" name="id" th:value="${depot.id}">
+          <button type="submit" class="btn btn-danger">Удалить</button>
+        </form>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+  <div class="row mt-3">
+    <div class="col-12 text-end">
+      <a href="/home-depots" class="btn btn-link">Управление депо</a>
+    </div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

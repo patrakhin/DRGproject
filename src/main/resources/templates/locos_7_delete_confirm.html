@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="eng">
+<head>
+    <meta charset="UTF-8">
+    <title>Подтверждение удаления локомотива</title>
+</head>
+<body>
+<h2>Подтверждение удаления локомотива</h2>
+<p>Вы уверены, что хотите удалить локомотив с ID: <span th:text="${locoList.id}"></span>?</p>
+
+<form th:action="@{/locos/deleteById}" method="post">
+    <input type="hidden" th:name="id" th:value="${locoList.id}">
+    <button type="submit" class="btn btn-danger">Удалить</button>
+    <a th:href="@{/locos_2_list}" class="btn btn-secondary">Отмена</a>
+</form>
+
+</body>
+</html>

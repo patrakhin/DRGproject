@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Редактировать Регион</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <h1 class="text-center">Редактировать Регион</h1>
+    <form th:action="@{/regions/edit/{id}(id=${region.id})}" method="post" th:object="${region}" class="mt-4">
+        <div class="mb-3">
+            <label for="name" class="form-label">Название Региона</label>
+            <input type="text" class="form-control" id="name" th:field="*{name}" required>
+        </div>
+        <div class="text-center">
+            <button type="submit" class="btn btn-warning">Сохранить</button>
+        </div>
+        <div th:if="${errorMessage}" class="alert alert-danger mt-3" th:text="${errorMessage}"></div>
+    </form>
+    <div class="text-center mt-4">
+        <a href="/regions" class="btn btn-primary">Вернуться на главную</a>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

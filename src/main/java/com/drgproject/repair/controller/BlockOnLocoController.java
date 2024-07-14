@@ -2,55 +2,94 @@ package com.drgproject.repair.controller;
 
 import com.drgproject.repair.dto.BlockOnLocoDTO;
 import com.drgproject.repair.service.BlockOnLocoService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@CrossOrigin(origins = "*", allowedHeaders = "*")
-@RestController
+@Controller
 @RequestMapping("/block-on-locos")
 public class BlockOnLocoController {
 
     private final BlockOnLocoService blockOnLocoService;
 
+    @Autowired
     public BlockOnLocoController(BlockOnLocoService blockOnLocoService) {
         this.blockOnLocoService = blockOnLocoService;
     }
 
     @GetMapping
-    public ResponseEntity<List<BlockOnLocoDTO>> getAllBlockOnLocos() {
+    public String getHomeDepotsPage() {
+        return "block_on_locos_1_main";
+    }
+
+    @GetMapping("/all")
+    public String getAllBlockOnLocos(Model model) {
         List<BlockOnLocoDTO> blockOnLocos = blockOnLocoService.getAllBlockOnLocos();
-        return new ResponseEntity<>(blockOnLocos, HttpStatus.OK);
+        model.addAttribute("blocks", blockOnLocos);
+        return "block_on_locos_2_all";
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<BlockOnLocoDTO> getBlockOnLocoById(@PathVariable Long id) {
-        BlockOnLocoDTO blockOnLocoDTO = blockOnLocoService.getBlockOnLocoById(id);
-        return blockOnLocoDTO != null ? new ResponseEntity<>(blockOnLocoDTO, HttpStatus.OK) : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    @GetMapping("/create")
+    public String showCreateBlockForm(Model model) {
+        model.addAttribute("block", new BlockOnLocoDTO());
+        return "block_on_locos_3_create";
     }
 
-    @GetMapping("/id_loco/{loco_id}")
-    public ResponseEntity<List<BlockOnLocoDTO>> getAllBlockByListLoco(@PathVariable Long loco_id){
-        List<BlockOnLocoDTO> blockOnLocoByIdLocoList = blockOnLocoService.getAllBlockOnLocoByIdLocoList(loco_id);
-        return new ResponseEntity<>(blockOnLocoByIdLocoList, HttpStatus.OK);
+    @PostMapping("/create")
+    public String createBlockOnLoco(@ModelAttribute BlockOnLocoDTO blockOnLocoDTO, Model model) {
+        blockOnLocoService.createBlockOnLoco(blockOnLocoDTO);
+        model.addAttribute("block", blockOnLocoDTO);
+        return "block_on_locos_3_end_create";
     }
 
-    @PostMapping
-    public ResponseEntity<BlockOnLocoDTO> createBlockOnLoco(@RequestBody BlockOnLocoDTO blockOnLocoDTO) {
-        BlockOnLocoDTO newBlockOnLoco = blockOnLocoService.createBlockOnLoco(blockOnLocoDTO);
-        return newBlockOnLoco != null ? new ResponseEntity<>(newBlockOnLoco, HttpStatus.CREATED) : new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    @GetMapping("/update/{id}")
+    public String showUpdateBlockForm(@PathVariable Long id, Model model) {
+        BlockOnLocoDTO blockOnLoco = blockOnLocoService.getBlockOnLocoById(id);
+        model.addAttribute("block", blockOnLoco);
+        return "block_on_locos_4_update";
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<BlockOnLocoDTO> updateBlockOnLoco(@PathVariable Long id, @RequestBody BlockOnLocoDTO blockOnLocoDTO) {
-        BlockOnLocoDTO updatedBlockOnLoco = blockOnLocoService.updateBlockOnLoco(id, blockOnLocoDTO);
-        return updatedBlockOnLoco != null ? new ResponseEntity<>(updatedBlockOnLoco, HttpStatus.OK) : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    @PostMapping("/update/{id}")
+    public String updateBlockOnLoco(@PathVariable Long id, @ModelAttribute BlockOnLocoDTO blockOnLocoDTO) {
+        blockOnLocoService.updateBlockOnLoco(id, blockOnLocoDTO);
+        return "redirect:/block-on-locos/all";
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteBlockOnLoco(@PathVariable Long id) {
-        return blockOnLocoService.deleteBlockOnLoco(id) ? new ResponseEntity<>(HttpStatus.NO_CONTENT) : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    @GetMapping("/delete")
+    public String showDeleteBlockForm() {
+        return "block_on_locos_5_delete";
+    }
+
+    @PostMapping("/delete")
+    public String deleteBlockOnLoco(@RequestParam String blockName, @RequestParam String blockNumber) {
+        blockOnLocoService.deleteBlockOnLocoByBlockNameAneBlockNumber(blockName, blockNumber);
+        return "redirect:/block-on-locos/all";
+    }
+
+    @GetMapping("/search")
+    public String showSearchForm() {
+        return "block_on_locos_6_search";
+    }
+
+    @PostMapping("/search")
+    public String searchBlockOnLoco(@RequestParam String locoNumber, @RequestParam String typeLoco, Model model) {
+        BlockOnLocoDTO blockOnLoco = blockOnLocoService.getBlockOnLocoByLocoNumberAndTypeLoco(locoNumber, typeLoco);
+        model.addAttribute("block", blockOnLoco);
+        return "block_on_locos_7_view";
+    }
+
+    @GetMapping("/search-by-loco")
+    public String showSearchByLocoForm() {
+        return "block_on_locos_8_search_by_loco";
+    }
+
+    @PostMapping("/search-by-loco")
+    public String searchAllBlockOnLocosByLocoNumberAndTypeLoco(@RequestParam String locoNumber, @RequestParam String typeLoco, Model model) {
+        List<BlockOnLocoDTO> blockOnLocos = blockOnLocoService.getAllBlockOnLocoByLocoNumberAndTypeLoco(locoNumber, typeLoco);
+        model.addAttribute("blocks", blockOnLocos);
+        return "block_on_locos_9_list_by_loco";
     }
 }

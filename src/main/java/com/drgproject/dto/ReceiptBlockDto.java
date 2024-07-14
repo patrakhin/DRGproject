@@ -11,6 +11,7 @@ public class ReceiptBlockDto implements Serializable {
 
     private Long id;
     private String storageName;
+    private String region;
     private String employeeNumber;
     private Long locoBlockUniqueId;
     private String transactionType;
@@ -19,9 +20,10 @@ public class ReceiptBlockDto implements Serializable {
 
     public ReceiptBlockDto(){}
 
-    public ReceiptBlockDto(String storageName, String employeeNumber, Long locoBlockUniqueId,
+    public ReceiptBlockDto(String storageName, String region, String employeeNumber, Long locoBlockUniqueId,
                            String transactionType, int quantity) {
         this.storageName = storageName;
+        this.region = region;
         this.employeeNumber = employeeNumber;
         this.locoBlockUniqueId = locoBlockUniqueId;
         this.transactionType = transactionType;
@@ -42,6 +44,14 @@ public class ReceiptBlockDto implements Serializable {
 
     public void setStorageName(String storageName) {
         this.storageName = storageName;
+    }
+
+    public String getRegion() {
+        return region;
+    }
+
+    public void setRegion(String region) {
+        this.region = region;
     }
 
     public String getEmployeeNumber() {

@@ -18,6 +18,8 @@ public class LocoBlockDto implements Serializable {
     private String blockNumber;
     @NotNull
     private Long uniqueId;
+    @NotNull
+    private String region;
 
     @NotNull
     private LocalDate dateCreate;
@@ -29,11 +31,12 @@ public class LocoBlockDto implements Serializable {
     public LocoBlockDto(){}
 
     public LocoBlockDto(String systemType,
-                        String blockName, String blockNumber, Long uniqueId) {
+                        String blockName, String blockNumber, Long uniqueId, String region) {
         this.systemType = systemType;
         this.blockName = blockName;
         this.blockNumber = blockNumber;
         this.uniqueId = uniqueId;
+        this.region = region;
     }
 
     public Long getId() {
@@ -68,6 +71,14 @@ public class LocoBlockDto implements Serializable {
         this.blockNumber = blockNumber;
     }
 
+    public String getRegion() {
+        return region;
+    }
+
+    public void setRegion(String region) {
+        this.region = region;
+    }
+
     public void setDateCreate() {
         onCreate();
     }
@@ -84,4 +95,5 @@ public class LocoBlockDto implements Serializable {
     public void setUniqueId(Long uniqueId) {
         this.uniqueId = uniqueId;
     }
+
 }

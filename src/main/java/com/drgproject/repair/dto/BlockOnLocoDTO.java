@@ -5,14 +5,18 @@ public class BlockOnLocoDTO {
     private String blockName;
     private String blockNumber;
     private Long locoListId;
+    private String typeLoco;
+    private String locoNumber;
 
     public BlockOnLocoDTO() {}
 
-    public BlockOnLocoDTO(Long id, String blockName, String blockNumber, Long locoListId) {
+    public BlockOnLocoDTO(Long id, String blockName, String blockNumber, Long locoListId, String typeLoco, String locoNumber) {
         this.id = id;
         this.blockName = blockName;
         this.blockNumber = blockNumber;
         this.locoListId = locoListId;
+        this.typeLoco = typeLoco;
+        this.locoNumber = locoNumber;
     }
 
     // Getters and Setters
@@ -47,5 +51,21 @@ public class BlockOnLocoDTO {
 
     public void setLocoListId(Long locoListId) {
         this.locoListId = locoListId;
+    }
+
+    public String getTypeLoco() {
+        return typeLoco;
+    }
+
+    public void setTypeLoco(String typeLoco) {
+        this.typeLoco = typeLoco;
+    }
+
+    public String getLocoNumber() {
+        return locoNumber;
+    }
+
+    public void setLocoNumber(String locoNumber) {
+        this.locoNumber = locoNumber;
     }
 }

@@ -9,10 +9,16 @@ import java.time.LocalDate;
  * DTO for {@link com.drgproject.entity.Storage}
  */
 public class StorageDto implements Serializable {
+
     @NotNull(message = "NotNull")
     private Long id;
+
     @NotNull(message = "NotNull")
     private String storageName;
+
+    @NotNull(message = "NotNull")
+    private String storageRegion;
+
     @NotNull(message = "NotNull")
     private LocalDate dateCreate;
 
@@ -22,8 +28,9 @@ public class StorageDto implements Serializable {
 
     public StorageDto(){}
 
-    public StorageDto(String storageName /*LocalDate dateCreate*/) {
+    public StorageDto(String storageName, String storageRegion /*LocalDate dateCreate*/) {
         this.storageName = storageName;
+        this.storageRegion = storageRegion;
         /*this.dateCreate = dateCreate;*/
     }
 
@@ -35,8 +42,12 @@ public class StorageDto implements Serializable {
         return storageName;
     }
 
+    public String getStorageRegion() {
+        return storageRegion;
+    }
+
     public LocalDate getDateCreate() {
-         onCreate();
+        onCreate();
         return dateCreate;
     }
 
@@ -48,4 +59,11 @@ public class StorageDto implements Serializable {
         onCreate();
     }
 
+    public void setStorageRegion(String storageRegion) {
+        this.storageRegion = storageRegion;
+    }
+
+    public void setStorageName(String storageName) {
+        this.storageName = storageName;
+    }
 }

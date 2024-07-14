@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Поиск Запчастей</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-12 text-center mb-3">
+            <h1>Поиск Запчастей</h1>
+        </div>
+        <div class="col-12">
+            <form th:action="@{/spare_parts_receipts/byId}" method="get">
+                <div class="mb-3">
+                    <label for="id" class="form-label">ID Записи</label>
+                    <input type="text" class="form-control" id="id" name="id">
+                </div>
+                <button type="submit" class="btn btn-primary">Поиск</button>
+            </form>
+        </div>
+        <div class="col-12 mt-3">
+            <div th:if="${sparePartsReceipt != null}">
+                <h3>Результаты Поиска:</h3>
+                <p><strong>ID:</strong> <span th:text="${sparePartsReceipt.id}"></span></p>
+                <p><strong>Регион:</strong> <span th:text="${sparePartsReceipt.region}"></span></p>
+                <p><strong>Наименование Склада:</strong> <span th:text="${sparePartsReceipt.storageName}"></span></p>
+                <p><strong>Номер Работника:</strong> <span th:text="${sparePartsReceipt.employeeNumber}"></span></p>
+                <p><strong>Наименование Запчасти:</strong> <span th:text="${sparePartsReceipt.sparePartName}"></span></p>
+                <p><strong>Едю изм:</strong> <span th:text="${sparePartsReceipt.measure}"></span></p>
+                <p><strong>Номер Запчасти:</strong> <span th:text="${sparePartsReceipt.sparePartNumber}"></span></p>
+                <p><strong>Тип Транзакции:</strong> <span th:text="${sparePartsReceipt.transactionType}"></span></p>
+                <p><strong>Количество:</strong> <span th:text="${sparePartsReceipt.quantity}"></span></p>
+                <p><strong>Дата Создания:</strong> <span th:text="${sparePartsReceipt.dateCreate}"></span></p>
+            </div>
+            <div th:if="${errorMessage != null}">
+                <p class="text-danger" th:text="${errorMessage}"></p>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-12 text-end">
+                <a href="/spare_parts_receipts" class="btn btn-link">Пступление зап.частей</a>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

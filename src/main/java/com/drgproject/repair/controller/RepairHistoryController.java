@@ -69,4 +69,3 @@ public class RepairHistoryController {
         return ResponseEntity.noContent().build();
     }
 }
-

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Главная - Блоки на Локомотивах</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <h2>Блоки на Локомотивах</h2>
+    <p>
+        <a th:href="@{/block-on-locos/all}" class="btn btn-primary mr-2">Просмотр всех блоков</a>
+        <a th:href="@{/block-on-locos/create}" class="btn btn-success mr-2">Создать новый блок</a>
+        <a th:href="@{/block-on-locos/search}" class="btn btn-info mr-2">Поиск блока</a>
+        <a th:href="@{/block-on-locos/search-by-loco}" class="btn btn-warning mr-2">Поиск по локомотиву</a>
+        <a th:href="@{/block-on-locos/delete}" class="btn btn-danger">Удаление блока</a>
+    </p>
+</div>
+<div class="row mt-3">
+    <div class="col-12 text-end">
+        <a href="/navigation_bar" class="btn btn-link">Панель навигации</a>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -2,16 +2,16 @@ package com.drgproject.repair.controller;
 
 import com.drgproject.repair.dto.PositionRepairDTO;
 import com.drgproject.repair.service.PositionRepairService;
-import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @CrossOrigin(origins = "*", allowedHeaders = "*")
-@RestController
+@Controller
 @RequestMapping("/position-repairs")
 public class PositionRepairController {
-
 
     private final PositionRepairService positionRepairService;
 
@@ -20,43 +20,62 @@ public class PositionRepairController {
     }
 
     @GetMapping
-    public List<PositionRepairDTO> getAllPositionRepairs() {
-        return positionRepairService.getAllPositionRepairs();
+    public String getAllPositionRepairs(Model model) {
+        List<PositionRepairDTO> positionRepairs = positionRepairService.getAllPositionRepairs();
+        model.addAttribute("positionRepairs", positionRepairs);
+        return "position_repair_1_main";
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<PositionRepairDTO> getPositionRepairById(@PathVariable Long id) {
+    @GetMapping("/create")
+    public String showCreatePositionRepairForm(Model model) {
+        model.addAttribute("positionRepair", new PositionRepairDTO());
+        return "position_repair_2_add";
+    }
+
+    @PostMapping("/create")
+    public String createPositionRepair(@ModelAttribute PositionRepairDTO positionRepairDTO, Model model) {
+        PositionRepairDTO createdPositionRepair = positionRepairService.createPositionRepair(positionRepairDTO);
+        model.addAttribute("createdPositionRepair", createdPositionRepair);
+        return "position_repair_2_add_success";
+    }
+
+    @GetMapping("/edit")
+    public String showEditPositionRepairForm(@RequestParam long id, Model model) {
         PositionRepairDTO positionRepairDTO = positionRepairService.getPositionRepairById(id);
         if (positionRepairDTO != null) {
-            return ResponseEntity.ok(positionRepairDTO);
+            model.addAttribute("positionRepair", positionRepairDTO);
+            return "position_repair_3_update";
         } else {
-            return ResponseEntity.notFound().build();
+            model.addAttribute("errorMessage", "Позиция ремонта с таким ID не найдена");
+            return "position_repair_3_update";
         }
     }
 
-    @PostMapping
-    public ResponseEntity<PositionRepairDTO> createPositionRepair(@RequestBody PositionRepairDTO positionRepairDTO) {
-        PositionRepairDTO createdPositionRepair = positionRepairService.createPositionRepair(positionRepairDTO);
-        return ResponseEntity.ok(createdPositionRepair);
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<PositionRepairDTO> updatePositionRepair(@PathVariable Long id, @RequestBody PositionRepairDTO positionRepairDTO) {
+    @PostMapping("/edit/{id}")
+    public String updatePositionRepair(@PathVariable long id, @ModelAttribute PositionRepairDTO positionRepairDTO, Model model) {
         PositionRepairDTO updatedPositionRepair = positionRepairService.updatePositionRepair(id, positionRepairDTO);
         if (updatedPositionRepair != null) {
-            return ResponseEntity.ok(updatedPositionRepair);
+            model.addAttribute("updatedPositionRepair", updatedPositionRepair);
+            return "position_repair_3_update_success";
         } else {
-            return ResponseEntity.notFound().build();
+            model.addAttribute("errorMessage", "Не удалось обновить позицию ремонта");
+            return "position_repair_3_update";
         }
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePositionRepair(@PathVariable Long id) {
+    @GetMapping("/delete")
+    public String showDeletePositionRepairForm(Model model) {
+        return "position_repair_4_delete";
+    }
+
+    @PostMapping("/deleteById")
+    public String deletePositionRepair(@RequestParam long id, Model model) {
         boolean isDeleted = positionRepairService.deletePositionRepair(id);
         if (isDeleted) {
-            return ResponseEntity.noContent().build();
+            model.addAttribute("successMessage", "Позиция ремонта успешно удалена");
         } else {
-            return ResponseEntity.notFound().build();
+            model.addAttribute("errorMessage", "Ошибка при удалении позиции ремонта");
         }
+        return "position_repair_4_delete";
     }
 }

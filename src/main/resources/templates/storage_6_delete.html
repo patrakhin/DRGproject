@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="eng">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Удалить склад</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/all_styles.css">
+</head>
+<body>
+<div class="container mt-5">
+    <h1 class="text-center">Удалить склад</h1>
+    <form th:action="@{/storages/deleteByName}" method="post">
+        <div class="form-group">
+            <label for="name">Имя склада для удаления</label>
+            <input type="text" id="name" name="name" class="form-control" required>
+        </div>
+        <div class="form-group mt-3">
+            <button type="submit" class="btn btn-danger">Удалить склад</button>
+            <a href="/storages" class="btn btn-link">Управление складами</a>
+        </div>
+    </form>
+    <div th:if="${errorMessage != null}">
+        <div class="alert alert-danger mt-3" th:text="${errorMessage}"></div>
+    </div>
+    <div th:if="${successMessage != null}">
+        <div class="alert alert-success mt-3" th:text="${successMessage}"></div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

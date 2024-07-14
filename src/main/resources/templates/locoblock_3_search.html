@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Поиск Блока</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-12 text-center mb-3">
+            <h1>Поиск Блока</h1>
+        </div>
+        <div class="col-12">
+            <form th:action="@{/loco_blocks/byName}" method="get">
+                <div class="mb-3">
+                    <label for="name" class="form-label">Наименование блока</label>
+                    <input type="text" id="name" name="name" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Искать</button>
+            </form>
+        </div>
+        <div class="col-12 mt-3">
+            <div th:if="${locoBlock != null}">
+                <h3>Результат Поиска</h3>
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>Тип системы</th>
+                        <th>Наименование блока</th>
+                        <th>Номер блока</th>
+                        <th>Регион</th>
+                        <th>Действия</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="block : ${locoBlock}">
+                        <td th:text="${block.systemType}"></td>
+                        <td th:text="${block.blockName}"></td>
+                        <td th:text="${block.blockNumber}"></td>
+                        <td th:text="${block.region}"></td>
+                        <td>
+                            <a th:href="@{/loco_blocks/edit(id=${block.id})}" class="btn btn-warning mb-2">Редактировать</a>
+                            <form th:action="@{/loco_blocks/deleteByBlockNumber}" method="post" class="d-inline">
+                                <input type="hidden" name="blockNumber" th:value="${block.blockNumber}">
+                                <button type="submit" class="btn btn-danger mb-2">Удалить</button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div th:if="${errorMessage != null}">
+                <p class="text-danger" th:text="${errorMessage}"></p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 text-end">
+                <a href="/loco_blocks" class="btn btn-link">Управление блоками</a>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Обновить Запись</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-12 text-center mb-3">
+            <h1>Обновить Запись</h1>
+        </div>
+        <div class="col-12">
+            <form th:action="@{/receipt_blocks/edit/{id}(id=${receiptBlock.id})}" method="post" th:object="${receiptBlock}">
+                <div class="mb-3">
+                    <label for="region" class="form-label">Регион</label>
+                    <input type="text" class="form-control" id="region" th:field="*{region}">
+                </div>
+                <div class="mb-3">
+                    <label for="storageName" class="form-label">Имя Склада</label>
+                    <input type="text" class="form-control" id="storageName" th:field="*{storageName}">
+                </div>
+                <div class="mb-3">
+                    <label for="employeeNumber" class="form-label">Номер Работника</label>
+                    <input type="text" class="form-control" id="employeeNumber" th:field="*{employeeNumber}">
+                </div>
+                <div class="mb-3">
+                    <label for="transactionType" class="form-label">Тип Транзакции</label>
+                    <input type="text" class="form-control" id="transactionType" th:field="*{transactionType}">
+                </div>
+                <div class="mb-3">
+                    <label for="quantity" class="form-label">Количество</label>
+                    <input type="number" class="form-control" id="quantity" th:field="*{quantity}">
+                </div>
+                <button type="submit" class="btn btn-success">Обновить</button>
+            </form>
+        </div>
+        <div class="col-12 mt-3">
+            <div th:if="${errorMessage != null}">
+                <p class="text-danger" th:text="${errorMessage}"></p>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-12 text-end">
+                <a href="/receipt_blocks" class="btn btn-link">Управление записями</a>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

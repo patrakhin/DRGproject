@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Добавить Поступление</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <h1 class="text-center">Добавить Поступление</h1>
+    <form th:action="@{/spare_parts_receipts/create}" th:object="${sparePartsReceipt}" method="post" class="mt-4">
+        <div class="mb-3">
+            <label for="region" class="form-label">Регион</label>
+            <input type="text" class="form-control" id="region" th:field="*{region}" required>
+        </div>
+        <div class="mb-3">
+            <label for="storageName" class="form-label">Склад</label>
+            <input type="text" class="form-control" id="storageName" th:field="*{storageName}" required>
+        </div>
+        <div class="mb-3">
+            <label for="employeeNumber" class="form-label">№ Табельный</label>
+            <input type="text" class="form-control" id="employeeNumber" th:field="*{employeeNumber}" required>
+        </div>
+        <div class="mb-3">
+            <label for="sparePartName" class="form-label">Наименование запчасти</label>
+            <input type="text" class="form-control" id="sparePartName" th:field="*{sparePartName}" required>
+        </div>
+        <div class="mb-3">
+            <label for="measure" class="form-label">Ед. изм</label>
+            <input type="text" class="form-control" id="measure" th:field="*{measure}" required>
+        </div>
+        <div class="mb-3">
+            <label for="sparePartNumber" class="form-label">№ Запчасти</label>
+            <input type="text" class="form-control" id="sparePartNumber" th:field="*{sparePartNumber}" required>
+        </div>
+        <div class="mb-3">
+            <label for="quantity" class="form-label">Количество</label>
+            <input type="number" class="form-control" id="quantity" th:field="*{quantity}" step="any" required>
+        </div>
+        <div class="mb-3">
+            <label for="transactionType" class="form-label">Тип транзакции</label>
+            <input type="text" class="form-control" id="transactionType" th:field="*{transactionType}" value="на складе" readonly>
+        </div>
+        <div class="text-center">
+            <button type="submit" class="btn btn-success">Добавить</button>
+        </div>
+        <div th:if="${errorMessage}" class="alert alert-danger mt-3" th:text="${errorMessage}"></div>
+    </form>
+    <div class="row mt-3">
+        <div class="col-12 text-end">
+            <a href="/spare_parts_receipts" class="btn btn-link">Пступление зап.частей</a>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

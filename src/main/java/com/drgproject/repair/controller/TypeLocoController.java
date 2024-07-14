@@ -3,12 +3,14 @@ package com.drgproject.repair.controller;
 import com.drgproject.repair.dto.TypeLocoDTO;
 import com.drgproject.repair.service.TypeLocoService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @CrossOrigin(origins = "*", allowedHeaders = "*")
-@RestController
+@Controller
 @RequestMapping("/type-locos")
 public class TypeLocoController {
 
@@ -19,43 +21,62 @@ public class TypeLocoController {
     }
 
     @GetMapping
-    public List<TypeLocoDTO> getAllTypeLocos() {
-        return typeLocoService.getAllTypeLocos();
+    public String getAllTypeLocos(Model model) {
+        List<TypeLocoDTO> typeLocos = typeLocoService.getAllTypeLocos();
+        model.addAttribute("typeLocos", typeLocos);
+        return "type_loco_1_main";
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<TypeLocoDTO> getTypeLocoById(@PathVariable Long id) {
+    @GetMapping("/create")
+    public String showCreateTypeLocoForm(Model model) {
+        model.addAttribute("typeLoco", new TypeLocoDTO());
+        return "type_loco_2_add";
+    }
+
+    @PostMapping("/create")
+    public String createTypeLoco(@ModelAttribute TypeLocoDTO typeLocoDTO, Model model) {
+        TypeLocoDTO createdTypeLoco = typeLocoService.createTypeLoco(typeLocoDTO);
+        model.addAttribute("createdTypeLoco", createdTypeLoco);
+        return "type_loco_2_add_success";
+    }
+
+    @GetMapping("/edit")
+    public String showEditTypeLocoForm(@RequestParam long id, Model model) {
         TypeLocoDTO typeLocoDTO = typeLocoService.getTypeLocoById(id);
         if (typeLocoDTO != null) {
-            return ResponseEntity.ok(typeLocoDTO);
+            model.addAttribute("typeLoco", typeLocoDTO);
+            return "type_loco_3_update";
         } else {
-            return ResponseEntity.notFound().build();
+            model.addAttribute("errorMessage", "Тип локомотива с таким ID не найден");
+            return "type_loco_3_update";
         }
     }
 
-    @PostMapping
-    public ResponseEntity<TypeLocoDTO> createTypeLoco(@RequestBody TypeLocoDTO typeLocoDTO) {
-        TypeLocoDTO createdTypeLoco = typeLocoService.createTypeLoco(typeLocoDTO);
-        return ResponseEntity.ok(createdTypeLoco);
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<TypeLocoDTO> updateTypeLoco(@PathVariable Long id, @RequestBody TypeLocoDTO typeLocoDTO) {
+    @PostMapping("/edit/{id}")
+    public String updateTypeLoco(@PathVariable long id, @ModelAttribute TypeLocoDTO typeLocoDTO, Model model) {
         TypeLocoDTO updatedTypeLoco = typeLocoService.updateTypeLoco(id, typeLocoDTO);
         if (updatedTypeLoco != null) {
-            return ResponseEntity.ok(updatedTypeLoco);
+            model.addAttribute("updatedTypeLoco", updatedTypeLoco);
+            return "type_loco_3_update_success";
         } else {
-            return ResponseEntity.notFound().build();
+            model.addAttribute("errorMessage", "Не удалось обновить тип локомотива");
+            return "type_loco_3_update";
         }
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTypeLoco(@PathVariable Long id) {
+    @GetMapping("/delete")
+    public String showDeleteTypeLocoForm(Model model) {
+        return "type_loco_4_delete";
+    }
+
+    @PostMapping("/deleteById")
+    public String deleteTypeLoco(@RequestParam long id, Model model) {
         boolean isDeleted = typeLocoService.deleteTypeLoco(id);
         if (isDeleted) {
-            return ResponseEntity.noContent().build();
+            model.addAttribute("successMessage", "Тип локомотива успешно удален");
         } else {
-            return ResponseEntity.notFound().build();
+            model.addAttribute("errorMessage", "Ошибка при удалении типа локомотива");
         }
+        return "type_loco_4_delete";
     }
 }

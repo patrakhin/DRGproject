@@ -2,6 +2,7 @@ package com.drgproject.dto;
 
 public class ReceiptBlockRequestDto {
     private String storageName;
+    private String region;
     private String numberTable;
     private String systemType;
     private String nameBlock;
@@ -9,9 +10,10 @@ public class ReceiptBlockRequestDto {
 
     public ReceiptBlockRequestDto(){}
 
-    public ReceiptBlockRequestDto(String storageName, String numberTable, String systemType,
+    public ReceiptBlockRequestDto(String storageName, String region, String numberTable, String systemType,
                                   String nameBlock, String blockNumber) {
         this.storageName = storageName;
+        this.region = region;
         this.numberTable = numberTable;
         this.systemType = systemType;
         this.nameBlock = nameBlock;
@@ -24,6 +26,14 @@ public class ReceiptBlockRequestDto {
 
     public void setStorageName(String storageName) {
         this.storageName = storageName;
+    }
+
+    public String getRegion() {
+        return region;
+    }
+
+    public void setRegion(String region) {
+        this.region = region;
     }
 
     public String getNumberTable() {

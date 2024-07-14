@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class TypeLocoService {
@@ -20,7 +19,7 @@ public class TypeLocoService {
     }
 
     public List<TypeLocoDTO> getAllTypeLocos() {
-        return typeLocoRepository.findAll().stream().map(this::convertToDTO).collect(Collectors.toList());
+        return typeLocoRepository.findAll().stream().map(this::convertToDTO).toList();
     }
 
     public TypeLocoDTO getTypeLocoById(Long id) {

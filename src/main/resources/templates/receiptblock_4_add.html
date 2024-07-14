@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Добавить Блок</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/all_styles.css">
+</head>
+<body>
+<div class="container mt-5">
+    <h1 class="text-center">Добавить Блок</h1>
+    <div th:if="${errorMessage}" class="alert alert-danger" role="alert">
+        <span th:text="${errorMessage}"></span>
+    </div>
+    <form th:action="@{/receipt_blocks/create}" method="post" th:object="${receiptBlock}">
+        <!-- Поле Наименование Склада -->
+        <div class="form-group mb-3">
+            <label for="storageName" class="form-label">Наименование Склада</label>
+            <input type="text" id="storageName" name="storageName" th:field="*{storageName}" class="form-control" required>
+        </div>
+        <!-- Поле Регион -->
+        <div class="form-group mb-3">
+            <label for="region" class="form-label">Регион</label>
+            <input type="text" id="region" name="region" th:field="*{region}" class="form-control" required>
+        </div>
+        <!-- Поле Тип системы -->
+        <div class="form-group mb-3">
+            <label for="systemType" class="form-label">Тип системы</label>
+            <input type="text" id="systemType" name="systemType" th:field="*{systemType}" class="form-control" required>
+        </div>
+        <!-- Поле Наименование Блока -->
+        <div class="form-group mb-3">
+            <label for="nameBlock" class="form-label">Наименование Блока</label>
+            <input type="text" id="nameBlock" name="nameBlock" th:field="*{nameBlock}" class="form-control" required>
+        </div>
+        <!-- Поле Номер Блока -->
+        <div class="form-group mb-3">
+            <label for="blockNumber" class="form-label">Номер Блока</label>
+            <input type="text" id="blockNumber" name="blockNumber" th:field="*{blockNumber}" class="form-control" required>
+        </div>
+        <div class="form-group mt-3">
+            <button type="submit" class="btn btn-success">Добавить</button>
+        </div>
+    </form>
+    <div class="row mt-3">
+        <div class="col-12 text-end">
+            <a href="/receipt_blocks" class="btn btn-link">Управление записями</a>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

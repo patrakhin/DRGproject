@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="eng">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Список складов</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/all_styles.css">
+</head>
+<body>
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-12 text-center">
+            <h1>Список складов</h1>
+        </div>
+        <div class="col-12">
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>Имя</th>
+                    <th>Регион</th>
+                    <th>Действия</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="storage : ${storages}">
+                    <td th:text="${storage.getStorageName()}">Имя</td>
+                    <td th:text="${storage.getStorageRegion()}">Регион</td>
+                    <td>
+                        <a th:href="@{/storages/edit(id=${storage.getId()})}" class="btn btn-warning mb-2">Редактировать</a>
+                        <a th:href="@{/storages/delete(name=${storage.getStorageName()})}" class="btn btn-danger mb-2">Удалить</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 text-end">
+            <a href="/storages" class="btn btn-link">Управление складами</a>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

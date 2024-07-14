@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="eng">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Сотрудники</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/all_styles.css">
+</head>
+<body>
+<div class="container">
+    <div class="header d-flex justify-content-between align-items-center">
+        <h1 class="text-center">Панель управления сотрудниками</h1>
+        <a class="btn btn-link" th:href="@{/logout-success}">Выход из системы</a>
+    </div>
+
+    <div class="d-grid gap-2 col-6 mx-auto mt-5">
+        <a class="btn btn-primary" th:href="@{/users/all}">Все сотрудники</a>
+        <a class="btn btn-secondary" th:href="@{/users/search}">Поиск сотрудника по табельному №</a>
+        <a class="btn btn-success" th:href="@{/users/create}">Добавить сотрудника</a>
+
+        <!-- Форма для ввода ID сотрудника -->
+        <form th:action="@{/users/edit}" method="get" class="d-flex">
+            <input type="text" name="id" class="form-control me-2" placeholder="Введите ID" required>
+            <button type="submit" class="btn btn-warning">Изменить данные сотрудника</button>
+        </form>
+
+        <a class="btn btn-danger" th:href="@{/users/delete}">Удалить сотрудника по табельному №</a>
+    </div>
+    <div class="row mt-3">
+        <div class="col-12 text-end">
+            <a href="/navigation_bar" class="btn btn-link">Панель навигации</a>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/js/user_company.js"></script>
+</body>
+</html>

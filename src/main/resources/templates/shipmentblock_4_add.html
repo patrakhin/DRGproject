@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Добавить Отгрузку</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <h1 class="text-center">Добавить Отгрузку</h1>
+    <form th:action="@{/shipment_blocks/create}" method="post" th:object="${shipmentBlock}">
+        <div class="form-group mb-3">
+            <label for="storageName" class="form-label">Наименование Склада</label>
+            <input type="text" id="storageName" name="storageName" th:field="*{storageName}" class="form-control" required>
+        </div>
+        <div class="form-group mb-3">
+            <label for="region" class="form-label">Регион</label>
+            <input type="text" id="region" name="region" th:field="*{region}" class="form-control" required>
+        </div>
+        <div class="form-group mb-3">
+            <label for="systemType" class="form-label">Тип системы</label>
+            <input type="text" id="systemType" name="systemType" th:field="*{systemType}" class="form-control" required>
+        </div>
+        <div class="form-group mb-3">
+            <label for="nameBlock" class="form-label">Наименование Блока</label>
+            <input type="text" id="nameBlock" name="nameBlock" th:field="*{nameBlock}" class="form-control" required>
+        </div>
+        <div class="form-group mb-3">
+            <label for="blockNumber" class="form-label">Номер Блока</label>
+            <input type="text" id="blockNumber" name="blockNumber" th:field="*{blockNumber}" class="form-control" required>
+        </div>
+<!--        <div class="form-group mb-3">
+            <label for="numberTable" class="form-label">Табельный номер</label>
+            <input type="text" id="numberTable" name="numberTable" th:field="*{numberTable}" class="form-control" required>
+        </div>-->
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary">Добавить</button>
+        </div>
+    </form>
+    <div th:if="${errorMessage}" class="mt-3 alert alert-danger" th:text="${errorMessage}"></div>
+    <div class="row mt-3">
+        <div class="col-12 text-end">
+            <a href="/shipment_blocks" class="btn btn-link">Управление отгрузками</a>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

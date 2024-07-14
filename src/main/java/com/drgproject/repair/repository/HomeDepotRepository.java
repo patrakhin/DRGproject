@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface HomeDepotRepository extends JpaRepository<HomeDepot, Long> {
     List<HomeDepot> findByRegionId(Long regionId);
+
 }

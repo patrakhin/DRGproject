@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Поиск Отгрузки</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <h1 class="text-center">Поиск Отгрузки</h1>
+    <form th:action="@{/shipment_blocks/byId}" method="get" class="mt-3">
+        <div class="form-group mb-3">
+            <label for="id" class="form-label">ID Отгрузки</label>
+            <input type="text" id="id" name="id" class="form-control" required>
+        </div>
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary">Поиск</button>
+        </div>
+    </form>
+    <div th:if="${shipmentBlock}" class="mt-3">
+        <h2 class="text-center">Информация об отгрузке</h2>
+        <table class="table table-bordered">
+            <tr>
+                <th>ID</th>
+                <td th:text="${shipmentBlock.id}"></td>
+            </tr>
+            <tr>
+                <th>Наименование Склада</th>
+                <td th:text="${shipmentBlock.storageName}"></td>
+            </tr>
+            <tr>
+                <th>Регион</th>
+                <td th:text="${shipmentBlock.region}"></td>
+            </tr>
+            <tr>
+                <th>Уникальный № блока</th>
+                <td th:text="${shipmentBlock.locoBlockUniqueId}"></td>
+            </tr>
+            <tr>
+                <th>Количество</th>
+                <td th:text="${shipmentBlock.quantity}"></td>
+            </tr>
+            <tr>
+                <th>Табельный №</th>
+                <td th:text="${shipmentBlock.employeeNumber}"></td>
+            </tr>
+        </table>
+    </div>
+    <div th:if="${errorMessage}" class="mt-3 alert alert-danger" th:text="${errorMessage}"></div>
+    <div class="row mt-3">
+        <div class="col-12 text-end">
+            <a href="/shipment_blocks" class="btn btn-link">Управление отгрузками</a>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

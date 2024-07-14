@@ -8,18 +8,22 @@ public class LocoListDTO {
     private String typeLoco;
     private String typeSystem;
     private String locoNumber;
+    private String homeRegion;
+    private String homeDepot;
     private String comment;
     private List<Long> blockOnLocos;
 
     public LocoListDTO() {}
 
-    public LocoListDTO(Long id, String contractNumber, String typeLoco, String typeSystem,
-                       String locoNumber, String comment, List<Long> blockOnLocos) {
+    public LocoListDTO(Long id, String contractNumber, String typeLoco, String typeSystem, String locoNumber,
+                       String homeRegion, String homeDepot, String comment, List<Long> blockOnLocos) {
         this.id = id;
         this.contractNumber = contractNumber;
         this.typeLoco = typeLoco;
         this.typeSystem = typeSystem;
         this.locoNumber = locoNumber;
+        this.homeRegion = homeRegion;
+        this.homeDepot = homeDepot;
         this.comment = comment;
         this.blockOnLocos = blockOnLocos;
     }
@@ -64,6 +68,22 @@ public class LocoListDTO {
 
     public void setLocoNumber(String locoNumber) {
         this.locoNumber = locoNumber;
+    }
+
+    public String getHomeRegion() {
+        return homeRegion;
+    }
+
+    public void setHomeRegion(String homeRegion) {
+        this.homeRegion = homeRegion;
+    }
+
+    public String getHomeDepot() {
+        return homeDepot;
+    }
+
+    public void setHomeDepot(String homeDepot) {
+        this.homeDepot = homeDepot;
     }
 
     public String getComment() {
