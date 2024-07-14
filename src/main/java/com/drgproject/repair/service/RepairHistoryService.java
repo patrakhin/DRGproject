@@ -6,6 +6,7 @@ import com.drgproject.repair.dto.RepairHistoryDto;
 import com.drgproject.repair.entity.RepairHistory;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,6 +32,21 @@ public class RepairHistoryService {
 
     public Optional<RepairHistoryDto> findByNumberLoco(String numberLoco) {
         Optional<RepairHistory> repairHistory = repairHistoryRepository.findRepairHistoriesByLocoNumber(numberLoco);
+        return repairHistory.map(RepairHistoryMapper::toDto);
+    }
+
+    public List<RepairHistoryDto> findByTypeLocoAndLocoNumber(String typeLoco, String numberLoco) {
+       List<RepairHistory> repairHistory = repairHistoryRepository.
+               findRepairHistoriesByTypeLocoAndLocoNumber(typeLoco, numberLoco).orElseThrow(() -> new IllegalArgumentException("Исторя для этого локомотива не найдена"));
+       return RepairHistoryMapper.toDtoList(repairHistory);
+    }
+
+    public Optional<RepairHistoryDto> findByTypeLocoAndLocoNumberAndDate(String typeLoco, String locoNumber, LocalDate repairDate){
+        Optional<RepairHistory> repairHistory = repairHistoryRepository.
+                findRepairHistoriesByTypeLocoAndLocoNumberAndRepairDate(typeLoco, locoNumber, repairDate);
+        if (repairHistory.isEmpty()){
+            throw new IllegalArgumentException("Исторя для этого локомотива на эту дату не найдена");
+        }
         return repairHistory.map(RepairHistoryMapper::toDto);
     }
 
