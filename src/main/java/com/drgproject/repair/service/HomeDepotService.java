@@ -42,11 +42,16 @@ public class HomeDepotService {
     }
 
     @Transactional
-    public List<HomeDepotDTO> getDepotsByRegion(String regionName){
-        Region region  = regionRepository.findRegionByName(regionName).orElseThrow(() -> new IllegalArgumentException("Invalid region name"));
+    public List<HomeDepotDTO> getDepotsByRegion(String regionName) {
+        Region region = regionRepository.findRegionByName(regionName)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid region name"));
         Long regionId = region.getId();
-        return homeDepotRepository.findByRegionId(regionId).stream().map(this::convertToDTO).toList();
+        return homeDepotRepository.findByRegionId(regionId)
+                .stream()
+                .map(this::convertToDTO)
+                .toList();
     }
+
 
     @Transactional
     public HomeDepotDTO createHomeDepot(HomeDepotDTO homeDepotDTO) {
