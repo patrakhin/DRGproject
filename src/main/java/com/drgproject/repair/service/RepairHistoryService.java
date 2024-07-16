@@ -1,6 +1,8 @@
 package com.drgproject.repair.service;
 
 import com.drgproject.repair.RepairHistoryMapper;
+import com.drgproject.repair.dto.LocoListDTO;
+import com.drgproject.repair.repository.LocoListRepository;
 import com.drgproject.repair.repository.RepairHistoryRepository;
 import com.drgproject.repair.dto.RepairHistoryDto;
 import com.drgproject.repair.entity.RepairHistory;
@@ -15,9 +17,14 @@ public class RepairHistoryService {
 
 
     private final RepairHistoryRepository repairHistoryRepository;
+    private final LocoListRepository locoListRepository;
+    private final LocoListService locoListService;
 
-    public RepairHistoryService(RepairHistoryRepository repairHistoryRepository) {
+    public RepairHistoryService(RepairHistoryRepository repairHistoryRepository,
+                                LocoListRepository locoListRepository, LocoListService locoListService) {
         this.repairHistoryRepository = repairHistoryRepository;
+        this.locoListRepository = locoListRepository;
+        this.locoListService = locoListService;
     }
 
     public List<RepairHistoryDto> findAll() {

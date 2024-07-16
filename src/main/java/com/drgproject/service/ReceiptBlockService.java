@@ -16,19 +16,25 @@ public class ReceiptBlockService {
     private final ReceiptBlockRepository receiptBlockRepository;
     private final LocoBlockRepository locoBlockRepository;
     private final StorageRepository storageRepository;
+    private final ShipmentBlockRepository shipmentBlockRepository;
     private final UserRepository userRepository;
     private final LocoBlockUniqNumService locoBlockUniqNumService;
+    private final ShipmentBlockService shipmentBlockService;
 
     public ReceiptBlockService(ReceiptBlockRepository receiptBlockRepository,
                                LocoBlockRepository locoBlockRepository,
                                StorageRepository storageRepository,
+                               ShipmentBlockRepository shipmentBlockRepository,
                                UserRepository userRepository,
-                               LocoBlockUniqNumService locoBlockUniqNumService) {
+                               LocoBlockUniqNumService locoBlockUniqNumService,
+                               ShipmentBlockService shipmentBlockService) {
         this.receiptBlockRepository = receiptBlockRepository;
         this.locoBlockRepository = locoBlockRepository;
         this.storageRepository = storageRepository;
+        this.shipmentBlockRepository = shipmentBlockRepository;
         this.userRepository = userRepository;
         this.locoBlockUniqNumService = locoBlockUniqNumService;
+        this.shipmentBlockService = shipmentBlockService;
     }
 
     @Transactional
@@ -48,6 +54,51 @@ public class ReceiptBlockService {
     public List<ReceiptBlockDto> getReceiptBlocksByStorageName(String storageName){
         return  receiptBlockRepository.findAll().stream()
                 .filter(storages -> Objects.equals(storages.getStorageName(), storageName))
+                .map(this::convertToDTO)
+                .toList();
+    }
+
+
+    // Метод для получения всех остатков блоков на складах регионов
+    @Transactional
+    public List<ReceiptBlockDto> getRemainingReceiptBlocks() {
+        // Получаем все блоки на складе
+        List<ReceiptBlock> allReceiptBlocks = receiptBlockRepository.findAll();
+        // Получаем все отгруженные блоки
+        List<Long> shippedBlockIds = shipmentBlockRepository.findAll().stream()
+                .map(ShipmentBlock::getLocoBlockUniqueId)
+                .toList();
+        // Фильтруем блоки, которые находятся на складе и не были отгружены
+        return allReceiptBlocks.stream()
+                .filter(receiptBlock -> !shippedBlockIds.contains(receiptBlock.getLocoBlockUniqueId()))
+                .map(this::convertToDTO)
+                .toList();
+    }
+
+    // Метод для получения остатков блоков по региону
+    @Transactional
+    public List<ReceiptBlockDto> getRemainingReceiptBlocksByRegion(String region) {
+        List<ReceiptBlock> allReceiptBlocks = receiptBlockRepository.findReceiptBlockByRegion(region);
+        List<Long> shippedBlockIds = shipmentBlockRepository.findAll().stream()
+                .map(ShipmentBlock::getLocoBlockUniqueId)
+                .toList();
+
+        return allReceiptBlocks.stream()
+                .filter(receiptBlock -> !shippedBlockIds.contains(receiptBlock.getLocoBlockUniqueId()))
+                .map(this::convertToDTO)
+                .toList();
+    }
+
+    // Метод для получения остатков блоков по складу
+    @Transactional
+    public List<ReceiptBlockDto> getRemainingReceiptBlocksByStorageName(String storageName) {
+        List<ReceiptBlock> allReceiptBlocks = receiptBlockRepository.findReceiptBlockByStorageName(storageName);
+        List<Long> shippedBlockIds = shipmentBlockRepository.findAll().stream()
+                .map(ShipmentBlock::getLocoBlockUniqueId)
+                .toList();
+
+        return allReceiptBlocks.stream()
+                .filter(receiptBlock -> !shippedBlockIds.contains(receiptBlock.getLocoBlockUniqueId()))
                 .map(this::convertToDTO)
                 .toList();
     }
@@ -84,6 +135,9 @@ public class ReceiptBlockService {
             receiptBlockDto.setStorageName(storage.get().getStorageName());
             receiptBlockDto.setRegion(storage.get().getStorageRegion());
             receiptBlockDto.setEmployeeNumber(user.getNumberTable());
+            receiptBlockDto.setSystemType(systemType);
+            receiptBlockDto.setBlockName(nameBlock);
+            receiptBlockDto.setBlockNumber(blockNumber);
             receiptBlockDto.setLocoBlockUniqueId(getUniqueId);
             receiptBlockDto.setTransactionType("на складе");
             receiptBlockDto.setQuantity(1);
@@ -101,6 +155,9 @@ public class ReceiptBlockService {
         receiptBlock.setStorageName(receiptBlockDto.getStorageName());
         receiptBlock.setRegion(receiptBlockDto.getRegion());
         receiptBlock.setEmployeeNumber(receiptBlockDto.getEmployeeNumber());
+        receiptBlock.setSystemType(receiptBlockDto.getSystemType());
+        receiptBlock.setBlockName(receiptBlockDto.getBlockName());
+        receiptBlock.setBlockNumber(receiptBlockDto.getBlockNumber());
         receiptBlock.setLocoBlockUniqueId(receiptBlockDto.getLocoBlockUniqueId());
         receiptBlock.setTransactionType(receiptBlockDto.getTransactionType());
         receiptBlock.setQuantity(receiptBlockDto.getQuantity());
@@ -114,6 +171,9 @@ public class ReceiptBlockService {
                 receiptBlock.getStorageName(),
                 receiptBlock.getRegion(),
                 receiptBlock.getEmployeeNumber(),
+                receiptBlock.getSystemType(),
+                receiptBlock.getBlockName(),
+                receiptBlock.getBlockNumber(),
                 receiptBlock.getLocoBlockUniqueId(),
                 receiptBlock.getTransactionType(),
                 receiptBlock.getQuantity()
@@ -128,6 +188,9 @@ public class ReceiptBlockService {
         receiptBlock.setStorageName(receiptBlockDto.getStorageName());
         receiptBlock.setRegion(receiptBlock.getRegion());
         receiptBlock.setEmployeeNumber(receiptBlockDto.getEmployeeNumber());
+        receiptBlock.setSystemType(receiptBlockDto.getSystemType());
+        receiptBlock.setBlockName(receiptBlockDto.getBlockName());
+        receiptBlock.setBlockNumber(receiptBlockDto.getBlockNumber());
         receiptBlock.setLocoBlockUniqueId(receiptBlockDto.getLocoBlockUniqueId());
         receiptBlock.setTransactionType(receiptBlockDto.getTransactionType());
         receiptBlock.setQuantity(receiptBlockDto.getQuantity());

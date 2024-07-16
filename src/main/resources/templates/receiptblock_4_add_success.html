@@ -15,6 +15,9 @@
         <ul>
             <li>Наименование Склада: <span th:text="${createdReceiptBlock.storageName}"></span></li>
             <li>Регион: <span th:text="${createdReceiptBlock.region}"></span></li>
+            <li>Тип системы: <span th:text="${createdReceiptBlock.systemType}"></span></li>
+            <li>Наименование Блока: <span th:text="${createdReceiptBlock.blockName}"></span></li>
+            <li>Номер Блока: <span th:text="${createdReceiptBlock.blockNumber}"></span></li>
             <li>Уникальный номер блока: <span th:text="${createdReceiptBlock.locoBlockUniqueId}"></span></li>
             <li>Количество: <span th:text="${createdReceiptBlock.quantity}"></span></li>
             <li>Отмета о поступлении на склад: <span th:text="${createdReceiptBlock.transactionType}"></span></li>

@@ -20,6 +20,9 @@
                     <th>Регион</th>
                     <th>Имя Складa</th>
                     <th>Номер Работника</th>
+                    <th>Тип системы</th>
+                    <th>Наименование Блока</th>
+                    <th>Номер Блока</th>
                     <th>Уникальный Номер Блока</th>
                     <th>Тип Транзакции</th>
                     <th>Количество</th>
@@ -32,6 +35,9 @@
                     <td th:text="${block.region}"></td>
                     <td th:text="${block.storageName}"></td>
                     <td th:text="${block.employeeNumber}"></td>
+                    <td th:text="${block.systemType}"></td>
+                    <td th:text="${block.blockName}"></td>
+                    <td th:text="${block.blockNumber}"></td>
                     <td th:text="${block.locoBlockUniqueId}"></td>
                     <td th:text="${block.transactionType}"></td>
                     <td th:text="${block.quantity}"></td>

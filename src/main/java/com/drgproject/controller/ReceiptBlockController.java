@@ -120,6 +120,27 @@ public class ReceiptBlockController {
         }
     }
 
+    @GetMapping("/stock")
+    public String getStockByStoragePage(Model model, HttpSession session) {
+        String post = (String) session.getAttribute("post");
+        List<ReceiptBlockDto> stockBlocks;
+
+        if ("Администратор".equals(post)) {
+            stockBlocks = receiptBlockService.getRemainingReceiptBlocks();
+        } else if ("Регионал".equals(post)) {
+            String region = (String) session.getAttribute("region");
+            stockBlocks = receiptBlockService.getRemainingReceiptBlocksByRegion(region);
+        } else if ("Бригадир".equals(post)) {
+            String storageName = (String) session.getAttribute("unit");
+            stockBlocks = receiptBlockService.getRemainingReceiptBlocksByStorageName(storageName);
+        } else {
+            model.addAttribute("errorMessage", "У вас нет прав на просмотр остатков блоков на складе");
+            return "receiptblock_1_main";
+        }
+
+        model.addAttribute("stockBlocks", stockBlocks);
+        return "receiptblock_5_stock";
+    }
 
     @GetMapping("/delete")
     public String showDeleteReceiptBlockForm(Model model, HttpSession session) {
