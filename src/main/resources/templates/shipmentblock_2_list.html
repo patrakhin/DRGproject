@@ -15,6 +15,9 @@
             <th>ID</th>
             <th>Наименование Склада</th>
             <th>Регион</th>
+            <th>Тип системы</th>
+            <th>Наименование Блока</th>
+            <th>Номер Блока</th>
             <th>Уникльный номер блока</th>
             <th>Количество</th>
             <th>Табельный №</th>
@@ -24,6 +27,9 @@
         <tr th:each="shipmentBlock : ${shipmentBlocks}">
             <td th:text="${shipmentBlock.id}"></td>
             <td th:text="${shipmentBlock.storageName}"></td>
+            <td th:text="${shipmentBlock.systemType}"></td>
+            <td th:text="${shipmentBlock.blockName}"></td>
+            <td th:text="${shipmentBlock.blockNumber}"></td>
             <td th:text="${shipmentBlock.region}"></td>
             <td th:text="${shipmentBlock.locoBlockUniqueId}"></td>
             <td th:text="${shipmentBlock.quantity}"></td>

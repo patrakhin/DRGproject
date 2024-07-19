@@ -37,10 +37,6 @@ public class RepairHistoryService {
         return repairHistory.map(RepairHistoryMapper::toDto);
     }
 
-    public Optional<RepairHistoryDto> findByNumberLoco(String numberLoco) {
-        Optional<RepairHistory> repairHistory = repairHistoryRepository.findRepairHistoriesByLocoNumber(numberLoco);
-        return repairHistory.map(RepairHistoryMapper::toDto);
-    }
 
     public List<RepairHistoryDto> findByTypeLocoAndLocoNumber(String typeLoco, String numberLoco) {
        List<RepairHistory> repairHistory = repairHistoryRepository.

@@ -87,6 +87,9 @@ public class ShipmentBlockService {
         ShipmentBlockDto shipmentBlockDto = new ShipmentBlockDto(
                 shipmentBlock.getStorageName(),
                 shipmentBlock.getEmployeeNumber(),
+                shipmentBlock.getSystemType(),
+                shipmentBlock.getBlockName(),
+                shipmentBlock.getBlockNumber(),
                 shipmentBlock.getLocoBlockUniqueId(),
                 shipmentBlock.getTransactionType(),
                 shipmentBlock.getQuantity(),

@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface RepairHistoryRepository extends JpaRepository<RepairHistory, Long> {
-    Optional<RepairHistory> findRepairHistoriesByLocoNumber(String locoNumber);
+
     Optional<List<RepairHistory>> findRepairHistoriesByTypeLocoAndLocoNumber(String typeLoco, String locoNumber);
     Optional<RepairHistory> findRepairHistoriesByTypeLocoAndLocoNumberAndRepairDate(String typeLoco, String locoNumber, LocalDate repairDate);
 }
