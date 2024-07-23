@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Установка и Демонтаж Блоков</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
 </head>
 <body>
 <div class="container">
@@ -14,7 +15,7 @@
       <p>Локомотив <span th:text="${typeLoco}"></span> с номером <span th:text="${numberLoco}"></span> и типом системы <span th:text="${systemType}"></span></p>
     </div>
     <div class="col-12">
-      <table class="table table-bordered">
+      <table id="installedBlocksTable" class="table table-bordered">
         <thead>
         <tr>
           <th>ID</th>
@@ -22,47 +23,120 @@
           <th>Наименование Блока</th>
           <th>№ Блока</th>
           <th>Демонтаж</th>
-          <th>Отменить Демонтаж</th>
         </tr>
         </thead>
         <tbody>
         <tr th:each="block : ${blockOnLocoDTOS}">
           <td th:text="${block.id}"></td>
-          <td th:text="${systemType}"></td> <!-- Используем systemType здесь -->
+          <td th:text="${systemType}"></td>
           <td th:text="${block.blockName}"></td>
           <td th:text="${block.blockNumber}"></td>
-          <td><button th:disabled="${block.blockNumber != null}" class="btn btn-outline-danger btn-sm">Демонтаж</button></td>
-          <td><button th:disabled="${block.blockNumber == null}" class="btn btn-outline-success btn-sm">Отменить Демонтаж</button></td>
+          <td>
+            <form class="removalForm" action="/repair_history/removal_block" method="post" data-id="${block.id}">
+              <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+              <input type="hidden" name="nameBlock" th:value="${block.blockName}">
+              <input type="hidden" name="blockNumber" th:value="${block.blockNumber}">
+              <label for="positionRepair-${block.id}">Выберите позицию ремонта:</label>
+              <select id="positionRepair-${block.id}" class="form-select" name="positionRepair">
+                <option th:each="position : ${positionRepairDTOS}" th:value="${position.id}" th:text="${position.posRepair}"></option>
+              </select>
+              <button type="submit" class="btn btn-danger mt-2">Демонтировать</button>
+            </form>
+          </td>
         </tr>
         </tbody>
       </table>
-      <table class="table table-bordered">
+    </div>
+    <div class="col-12">
+      <h2>Установка Блока</h2>
+      <table id="receiptBlocksTable" class="table table-bordered">
         <thead>
         <tr>
-          <th>ID</th>
-          <th>Тип Системы</th>
           <th>Наименование Блока</th>
           <th>№ Блока</th>
           <th>Установить</th>
         </tr>
         </thead>
         <tbody>
-        <tr th:each="block : ${receiptBlockDtos}">
-          <td th:text="${block.id}"></td>
-          <td th:text="${systemType}"></td> <!-- Используем systemType здесь -->
-          <td th:text="${block.blockName}"></td>
-          <td th:text="${block.blockNumber}"></td>
-          <td><button class="btn btn-outline-primary btn-sm">Установить</button></td>
+        <tr th:each="receiptBlock : ${receiptBlockDtos}">
+          <td th:text="${receiptBlock.blockName}"></td>
+          <td th:text="${receiptBlock.blockNumber}"></td>
+          <td>
+            <form class="installForm" action="/repair_history/install_block" method="post" data-id="${receiptBlock.id}">
+              <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+              <input type="hidden" name="blockName" th:value="${receiptBlock.blockName}">
+              <input type="hidden" name="blockNumber" th:value="${receiptBlock.blockNumber}">
+              <button type="submit" class="btn btn-success">Установить</button>
+            </form>
+          </td>
         </tr>
         </tbody>
       </table>
-      <form class="mb-3">
-        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-        <button formaction="/repair_history/work_bar" formmethod="get" class="btn btn-link">Возврат на Панель Работ</button>
-      </form>
+    </div>
+    <div class="col-12">
+      <h2>Демонтированные Блоки</h2>
+      <table id="removedBlocksTable" class="table table-bordered">
+        <thead>
+        <tr>
+          <th>ID</th>
+          <th>Тип Системы</th>
+          <th>Наименование Блока</th>
+          <th>№ Блока</th>
+          <th>Отмена Демонтажа</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="block : ${removedBlocks}">
+          <td th:text="${block.id}"></td>
+          <td th:text="${systemType}"></td>
+          <td th:text="${block.blockName}"></td>
+          <td th:text="${block.blockNumber}"></td>
+          <td>
+            <form class="cancelRemovalForm" action="/repair_history/cancel_removal_block" method="post" data-id="${block.id}">
+              <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+              <input type="hidden" name="nameBlock" th:value="${block.blockName}">
+              <input type="hidden" name="blockNumber" th:value="${block.blockNumber}">
+              <button type="submit" class="btn btn-warning">Отменить Демонтаж</button>
+            </form>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+      <div class="col-12 text-center mt-3">
+        <form action="/repair_history/install_removal" method="post">
+          <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+          <input type="hidden" name="typeLoco" th:value="${typeLoco}">
+          <input type="hidden" name="numberLoco" th:value="${numberLoco}">
+          <button type="submit" class="btn btn-primary">Перейти к монтажу и демонтажу блоков</button>
+        </form>
+      </div>
     </div>
   </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  $(document).ready(function() {
+    // Обработка отправки формы отгрузки
+    $('#shipBlockForm').on('submit', function(event) {
+      event.preventDefault();
+      var form = $(this);
+      var formData = form.serialize();
+      $.ajax({
+        url: form.attr('action'),
+        type: 'POST',
+        data: formData,
+        success: function(response) {
+          // Обновляем таблицу блоков на локомотиве
+          $('#blockOnLocoTable').load(window.location + ' #blockOnLocoTable');
+          // Обновляем таблицу отгруженных блоков
+          $('#shippedBlockTable').load(window.location + ' #shippedBlockTable');
+        },
+        error: function(xhr, status, error) {
+          alert('Ошибка: ' + error);
+        }
+      });
+    });
+  });
+</script>
 </body>
 </html>

@@ -22,6 +22,10 @@ public class PositionRepairService {
         return positionRepairRepository.findAll().stream().map(this::convertToDTO).toList();
     }
 
+    public PositionRepairDTO getPositionRepairByName(String positionName) {
+        Optional<PositionRepair> positionRepair = positionRepairRepository.findByPosRepair(positionName);
+        return positionRepair.map(this::convertToDTO).orElse(null);
+    }
     public PositionRepairDTO getPositionRepairById(Long id) {
         Optional<PositionRepair> positionRepair = positionRepairRepository.findById(id);
         return positionRepair.map(this::convertToDTO).orElse(null);

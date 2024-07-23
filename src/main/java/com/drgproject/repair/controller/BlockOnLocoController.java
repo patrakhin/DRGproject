@@ -65,8 +65,14 @@ public class BlockOnLocoController {
 
     @PostMapping("/delete")
     public String deleteBlockOnLoco(@RequestParam String blockName, @RequestParam String blockNumber) {
-        blockOnLocoService.deleteBlockOnLocoByBlockNameAneBlockNumber(blockName, blockNumber);
+        blockOnLocoService.deleteBlockOnLocoByBlNameAndBlNumberWithLogging(blockName, blockNumber);
         return "redirect:/block-on-locos/all";
+    }
+
+    @PostMapping("/delete/repair")
+    public String deleteBlockOnLocoRepair(@RequestParam String blockName, @RequestParam String blockNumber) {
+        blockOnLocoService.deleteBlockOnLocoByBlNameAndBlNumberWithLogging(blockName, blockNumber);
+        return "redirect:/repair_history/remove_block/prepare";
     }
 
     @GetMapping("/search")

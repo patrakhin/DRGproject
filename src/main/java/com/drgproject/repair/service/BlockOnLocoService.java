@@ -6,6 +6,7 @@ import com.drgproject.repair.entity.LocoList;
 import com.drgproject.repair.repository.BlockOnLocoRepository;
 import com.drgproject.repair.repository.LocoListRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,22 +17,28 @@ public class BlockOnLocoService {
 
     private final BlockOnLocoRepository blockOnLocoRepository;
     private final LocoListRepository locoListRepository;
+    private BlockRemovalTransactionalService blockRemovalTransactionalService;
 
-    public BlockOnLocoService(BlockOnLocoRepository blockOnLocoRepository, LocoListRepository locoListRepository) {
+    public BlockOnLocoService(BlockOnLocoRepository blockOnLocoRepository, LocoListRepository locoListRepository,
+                              BlockRemovalTransactionalService blockRemovalTransactionalService) {
         this.blockOnLocoRepository = blockOnLocoRepository;
         this.locoListRepository = locoListRepository;
+        this.blockRemovalTransactionalService = blockRemovalTransactionalService;
     }
 
+    //@Transactional
     public List<BlockOnLocoDTO> getAllBlockOnLocos() {
         return blockOnLocoRepository.findAll().stream()
                 .map(this::convertToDTO)
                 .toList();
     }
 
+    //@Transactional
     public BlockOnLocoDTO getBlockOnLocoById(Long id){
         return blockOnLocoRepository.findById(id).map(this::convertToDTO).orElse(null);
     }
 
+    //@Transactional
     public BlockOnLocoDTO getBlockOnLocoByLocoNumberAndTypeLoco(String locoNumber, String typeLoco) {
         Optional<LocoList> locoList = locoListRepository.findLocoListByLocoNumberAndTypeLoco(locoNumber, typeLoco);
         LocoList locoList1 = locoList.orElse(null);
@@ -43,6 +50,7 @@ public class BlockOnLocoService {
         return blockOnLoco.map(this::convertToDTO).orElse(null);
     }
 
+    //@Transactional
     public List<BlockOnLocoDTO> getAllBlockOnLocoByLocoNumberAndTypeLoco(String locoNumber, String typeLoco){
         Optional<LocoList> locoList = locoListRepository.findLocoListByLocoNumberAndTypeLoco(locoNumber, typeLoco);
         LocoList locoList1 = locoList.orElse(null);
@@ -57,6 +65,7 @@ public class BlockOnLocoService {
     }
 
     //Подготовка ДТО к созданию блока на локомотиве
+    @Transactional
     public BlockOnLocoDTO prepareToCreateBlockOnLocoByLocoNumberAndTypeLoco(String locoNumber, String typeLoco){
         Optional<LocoList> locoList = locoListRepository.findLocoListByLocoNumberAndTypeLoco(locoNumber, typeLoco);
         LocoList locoList1 = locoList.orElse(null);
@@ -70,6 +79,7 @@ public class BlockOnLocoService {
     }
 
     //Создание нового блока на локомотиве
+    @Transactional
     public BlockOnLocoDTO createBlockOnLoco(BlockOnLocoDTO blockOnLocoDTO) {
         Optional<LocoList> locoList = locoListRepository.findLocoListByLocoNumberAndTypeLoco(blockOnLocoDTO.getLocoNumber(), blockOnLocoDTO.getTypeLoco());
         if (locoList.isEmpty()) {
@@ -81,6 +91,7 @@ public class BlockOnLocoService {
         return convertToDTO(blockOnLoco);
     }
 
+    @Transactional
     public BlockOnLocoDTO updateBlockOnLoco(Long id, BlockOnLocoDTO blockOnLocoDTO) {
         Optional<BlockOnLoco> optionalBlockOnLoco = blockOnLocoRepository.findById(id);
         Optional<LocoList> locoList = locoListRepository.findById(blockOnLocoDTO.getLocoListId());
@@ -95,14 +106,26 @@ public class BlockOnLocoService {
         return null;
     }
 
-    public void deleteBlockOnLocoByBlockNameAneBlockNumber(String blockName, String blockNumber) {
-        Optional<BlockOnLoco> blockOnLoco = blockOnLocoRepository.findBlockOnLocoByBlockNameAndBlockNumber(blockName, blockNumber);
-        BlockOnLoco blockOnLoco1 = blockOnLoco.orElse(null);
-        if (blockOnLoco1 == null) {
-            throw new IllegalArgumentException("Блок с  наименованием " + blockName + "и таким № " + blockNumber + " не найден");
+    public void deleteBlockOnLocoByBlNameAneBlNumber(String blockName, String blockNumber) {
+        blockRemovalTransactionalService.deleteBlockOnLocoByBlNameAneBlNumber(blockName, blockNumber);
+    }
+
+    @Transactional
+    public void deleteBlockOnLocoByBlNameAndBlNumberWithLogging(String blockName, String blockNumber) {
+        try {
+            Optional<BlockOnLoco> blockOnLoco = blockOnLocoRepository.findBlockOnLocoByBlockNameAndBlockNumber(blockName, blockNumber);
+            BlockOnLoco blockOnLoco1 = blockOnLoco.orElse(null);
+            if (blockOnLoco1 == null) {
+                throw new IllegalArgumentException("Блок с наименованием " + blockName + " и таким № " + blockNumber + " не найден");
+            }
+            blockOnLocoRepository.deleteBlockOnLocoByBlockNameAndBlockNumber(blockName, blockNumber);
+        } catch (Exception e) {
+            // Логирование ошибки в консоль
+            System.err.println("Ошибка при удалении блока: " + e.getMessage());
+            // Дополнительно можно логировать в файл или другой логгер
+            e.printStackTrace();
+            throw e;
         }
-        Long blockOnLocoId = blockOnLoco1.getId();
-        blockOnLocoRepository.deleteById(blockOnLocoId);
     }
 
     public BlockOnLocoDTO convertToDTO(BlockOnLoco blockOnLoco) {

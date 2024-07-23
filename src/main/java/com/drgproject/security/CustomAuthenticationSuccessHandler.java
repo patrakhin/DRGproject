@@ -22,7 +22,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
                 response.sendRedirect("/navigation_bar"); //Направляются на эту страницу
                 return;
             } else if (authority.getAuthority().equals("Бригадир") || authority.getAuthority().equals("Электрик")) {
-                response.sendRedirect("/users/all"); //Направляются на эту страницу
+                response.sendRedirect("/repair_history/search"); //Направляются на эту страницу
                 return;
             }
         }

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Отмена Демонтажа Блоков</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+</head>
+<body>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-12 text-center mb-3">
+            <h1>Отмена Демонтажа Блоков</h1>
+        </div>
+
+        <!-- Сообщение об ошибке -->
+        <div class="col-12">
+            <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+        </div>
+
+        <!-- Сообщение об успехе -->
+        <div class="col-12">
+            <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+        </div>
+
+        <div class="col-12">
+            <table id="removedBlocksTable" class="table table-bordered">
+                <thead>
+                <tr>
+                    <th>Имя блока</th>
+                    <th>Номер блока</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="blockRemovalDto : ${removedBlocks}" data-name-block="${blockRemovalDto.blockName}" data-block-number="${blockRemovalDto.blockNumber}">
+                    <td th:text="${blockRemovalDto.blockName}"></td>
+                    <td th:text="${blockRemovalDto.blockNumber}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="col-12 text-center mb-3">
+            <h3>Выберите блок для отмены демонтажа</h3>
+        </div>
+        <form th:action="@{/repair_history/cancel_remove_block}" method="post">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+            <div class="mb-3">
+                <label for="nameBlock" class="form-label">Имя блока</label>
+                <select id="nameBlock" name="nameBlock" class="form-control">
+                    <option th:each="blockRemovalDto : ${removedBlocks}" th:value="${blockRemovalDto.blockName}" th:text="${blockRemovalDto.blockName}"></option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="blockNumber" class="form-label">Номер блока</label>
+                <select id="blockNumber" name="blockNumber" class="form-control">
+                    <option th:each="blockRemovalDto : ${removedBlocks}" th:value="${blockRemovalDto.blockNumber}" th:text="${blockRemovalDto.blockNumber}"></option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-success">Отменить демонтаж блока</button>
+        </form>
+        <div class="text-center mt-3">
+            <a href="/repair_history/work_bar" class="btn btn-link">Возврат на панель работ</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

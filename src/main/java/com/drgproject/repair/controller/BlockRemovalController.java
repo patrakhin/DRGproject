@@ -3,6 +3,7 @@ package com.drgproject.repair.controller;
 import com.drgproject.repair.dto.BlockRemovalDto;
 import com.drgproject.repair.dto.HomeDepotDTO;
 import com.drgproject.repair.dto.RegionDTO;
+import com.drgproject.repair.service.BlockOnLocoService;
 import com.drgproject.repair.service.BlockRemovalService;
 import com.drgproject.repair.service.HomeDepotService;
 import com.drgproject.repair.service.RegionService;
@@ -22,11 +23,13 @@ public class BlockRemovalController {
     private final BlockRemovalService blockRemovalService;
     private final RegionService regionService;
     private final HomeDepotService homeDepotService;
+    private final BlockOnLocoService blockOnLocoService;
 
-    public BlockRemovalController(BlockRemovalService blockRemovalService, RegionService regionService, HomeDepotService homeDepotService) {
+    public BlockRemovalController(BlockRemovalService blockRemovalService, RegionService regionService, HomeDepotService homeDepotService, BlockOnLocoService blockOnLocoService) {
         this.blockRemovalService = blockRemovalService;
         this.regionService = regionService;
         this.homeDepotService = homeDepotService;
+        this.blockOnLocoService = blockOnLocoService;
     }
 
     @GetMapping()
@@ -85,7 +88,9 @@ public class BlockRemovalController {
 
     @PostMapping("/removeFromLoco")
     public String blockRemovalFromLoco(@ModelAttribute BlockRemovalDto blockRemovalDto) {
-        blockRemovalService.blockRemovalFromLoco(blockRemovalDto);
+        String blockName = blockRemovalDto.getBlockName();
+        String blockNumber = blockRemovalDto.getBlockNumber();
+        blockOnLocoService.deleteBlockOnLocoByBlNameAndBlNumberWithLogging(blockName, blockNumber);
         return "redirect:/block_removal/all";
     }
 

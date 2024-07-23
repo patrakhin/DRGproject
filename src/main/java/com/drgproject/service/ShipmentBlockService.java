@@ -76,10 +76,13 @@ public class ShipmentBlockService {
             shipmentBlock.setTransactionType("отгружен");
             shipmentBlock.setQuantity(1);
             shipmentBlock.setRegion(region);
+            shipmentBlock.setBlockName(nameBlock);
+            shipmentBlock.setBlockNumber(blockNumber);
+            shipmentBlock.setSystemType(systemType);
             shipmentBlock = shipmentBlockRepository.save(shipmentBlock);
             return convertToDTO(shipmentBlock);
         }
-        throw new IllegalArgumentException(" Блок с номером" + blockNumber +  " не найден");
+        throw new IllegalArgumentException("Блок с номером " + blockNumber + " не найден");
     }
 
 

@@ -89,7 +89,7 @@ public class ReceiptBlockService {
                 .toList();
     }
 
-    // Метод для получения остатков блоков по складу
+    // Метод для получения остатков всех типов блоков по складу
     @Transactional
     public List<ReceiptBlockDto> getRemainingReceiptBlocksByStorageName(String storageName) {
         List<ReceiptBlock> allReceiptBlocks = receiptBlockRepository.findReceiptBlockByStorageName(storageName);
@@ -102,6 +102,22 @@ public class ReceiptBlockService {
                 .map(this::convertToDTO)
                 .toList();
     }
+
+    // Метод для получения остатков всех типов блоков по складу для конкретного типа системы
+    @Transactional
+    public List<ReceiptBlockDto> getReceiptBlocksByStorageNameAndTypeSystem(String storageName, String typeSystem){
+        List<ReceiptBlock> allReceiptBlocks = receiptBlockRepository.findReceiptBlockByStorageName(storageName);
+        List<Long> shippedBlockIds = shipmentBlockRepository.findAll().stream()
+                .map(ShipmentBlock::getLocoBlockUniqueId)
+                .toList();
+
+        return allReceiptBlocks.stream()
+                .filter(receiptBlock -> !shippedBlockIds.contains(receiptBlock.getLocoBlockUniqueId()))
+                .filter(typeBlocks -> typeSystem.equals(typeBlocks.getSystemType()))
+                .map(this::convertToDTO)
+                .toList();
+    }
+
 
     @Transactional
     public ReceiptBlockDto getReceiptBlockById(Long id) {

@@ -11,4 +11,5 @@ import java.util.Optional;
 public interface BlockOnLocoRepository extends JpaRepository<BlockOnLoco, Long> {
     Optional<List<BlockOnLoco>> findAllByLocoList_Id(Long id);
     Optional<BlockOnLoco> findBlockOnLocoByBlockNameAndBlockNumber(String blockName, String blockNumber);
+    void deleteBlockOnLocoByBlockNameAndBlockNumber(String blockName, String blockNumber);
 }
