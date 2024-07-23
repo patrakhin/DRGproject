@@ -2,31 +2,24 @@ package com.drgproject.repair.controller;
 
 import com.drgproject.dto.ReceiptBlockDto;
 import com.drgproject.dto.SparePartsReceiptDto;
-import com.drgproject.dto.UserDTO;
 import com.drgproject.entity.User;
-import com.drgproject.repair.RepairHistoryMapper;
 import com.drgproject.repair.dto.*;
-import com.drgproject.repair.entity.RepairHistory;
 import com.drgproject.repair.service.*;
-import com.drgproject.repository.ReceiptBlockRepository;
 import com.drgproject.repository.UserRepository;
 import com.drgproject.service.ReceiptBlockService;
 import com.drgproject.service.ShipmentBlockService;
 import com.drgproject.service.SparePartsReceiptService;
 import com.drgproject.service.UserService;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.http.HttpEntity;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 
@@ -34,6 +27,8 @@ import java.util.Optional;
 @Controller
 @RequestMapping("/repair_history")
 public class RepairHistoryControllerTwo {
+
+    private static final String TYPE_LOCO = "typeLoco";
 
     private final RepairHistoryService repairHistoryService;
     private final LocoListService locoListService;
@@ -44,9 +39,7 @@ public class RepairHistoryControllerTwo {
     private final SparePartsReceiptService sparePartsReceiptService;
     private final PositionRepairService positionRepairService;
     private final UserRepository userRepository;
-    private final UserService userService;
     private final ShipmentBlockService shipmentBlockService;
-    private RestTemplate restTemplate;
 
     public RepairHistoryControllerTwo(RepairHistoryService repairHistoryService,
                                       LocoListService locoListService,
@@ -57,9 +50,7 @@ public class RepairHistoryControllerTwo {
                                       SparePartsReceiptService sparePartsReceiptService,
                                       PositionRepairService positionRepairService,
                                       UserRepository userRepository,
-                                      UserService userService,
-                                      ShipmentBlockService shipmentBlockService,
-                                      RestTemplate restTemplate) {
+                                      ShipmentBlockService shipmentBlockService) {
         this.repairHistoryService = repairHistoryService;
         this.locoListService = locoListService;
         this.blockOnLocoService = blockOnLocoService;
@@ -69,9 +60,7 @@ public class RepairHistoryControllerTwo {
         this.sparePartsReceiptService = sparePartsReceiptService;
         this.positionRepairService = positionRepairService;
         this.userRepository = userRepository;
-        this.userService = userService;
         this.shipmentBlockService = shipmentBlockService;
-        this.restTemplate = restTemplate;
     }
 
     // Главная страница
@@ -92,10 +81,10 @@ public class RepairHistoryControllerTwo {
             return showSearchForm(model);
         }
 
-        session.setAttribute("typeLoco", typeLoco);
+        session.setAttribute(TYPE_LOCO, typeLoco);
         session.setAttribute("numberLoco", numberLoco);
 
-        model.addAttribute("typeLoco", typeLoco);
+        model.addAttribute(TYPE_LOCO, typeLoco);
         model.addAttribute("numberLoco", numberLoco);
         model.addAttribute("locoListDTO", locoListDTO);
 
@@ -105,7 +94,7 @@ public class RepairHistoryControllerTwo {
     // История ремонта
     @PostMapping("/repair_history")
     public String showRepairHistory(Model model, HttpSession session) {
-        String typeLoco = (String) session.getAttribute("typeLoco");
+        String typeLoco = (String) session.getAttribute(TYPE_LOCO);
         String numberLoco = (String) session.getAttribute("numberLoco");
         String storageName = (String) session.getAttribute("unit");
         LocoListDTO locoListDTO = locoListService.getLocoListByNumberLocoAndTypeLoco(numberLoco, typeLoco);
@@ -120,7 +109,7 @@ public class RepairHistoryControllerTwo {
         List<RepairHistoryDto> lastThreeEntries = getLastThreeEntries(repairHistoryDtos);
 
         model.addAttribute("lastThreeEntries", lastThreeEntries);
-        model.addAttribute("typeLoco", typeLoco);
+        model.addAttribute(TYPE_LOCO, typeLoco);
         model.addAttribute("numberLoco", numberLoco);
         model.addAttribute("systemType", systemType); // Добавляем systemType в модель
         model.addAttribute("blockOnLocoDTOS", blockOnLocoDTOS);
@@ -141,7 +130,7 @@ public class RepairHistoryControllerTwo {
     // Подготовка к добавлению записи в историю ремонта
     @GetMapping("/add_history")
     public String showAddHistoryForm(Model model, HttpSession session) {
-        String typeLoco = (String) session.getAttribute("typeLoco");
+        String typeLoco = (String) session.getAttribute(TYPE_LOCO);
         String locoNumber = (String) session.getAttribute("numberLoco");
         String repairDepot = (String) session.getAttribute("unit");
         String numberTable = (String) session.getAttribute("number_table");
@@ -163,7 +152,7 @@ public class RepairHistoryControllerTwo {
 
         model.addAttribute("repairDate", repairDate);
         model.addAttribute("homeDepot", homeDepot);
-        model.addAttribute("typeLoco", typeLoco);
+        model.addAttribute(TYPE_LOCO, typeLoco);
         model.addAttribute("locoNumber", locoNumber);
         model.addAttribute("employee", employee);
         model.addAttribute("typeSystem", typeSystem);
@@ -179,7 +168,7 @@ public class RepairHistoryControllerTwo {
     public String addHistoryForm(@ModelAttribute RepairHistoryDto repairHistoryDto,
                                  @RequestParam("repairDate") String repairDate,
                                  @RequestParam("homeDepot") String homeDepot,
-                                 @RequestParam("typeLoco") String typeLoco,
+                                 @RequestParam(TYPE_LOCO) String typeLoco,
                                  @RequestParam("locoNumber") String locoNumber,
                                  @RequestParam("employee") String employee,
                                  @RequestParam("typeSystem") String typeSystem,
@@ -220,10 +209,10 @@ public class RepairHistoryControllerTwo {
         return "repair_history_6_detail_history";
     }
 
-    // Монтаж/демонтаж блоков
+    // Монтаж/демонтаж блоков  НЕ ДЕЙСТВУЮЩИЙ
     @PostMapping("/install_removal")
     public String showInstallBlocks(Model model, HttpSession session){
-        String typeLoco = (String) session.getAttribute("typeLoco");
+        String typeLoco = (String) session.getAttribute(TYPE_LOCO);
         String numberLoco = (String) session.getAttribute("numberLoco");
 
         LocoListDTO locoListDTO = locoListService.getLocoListByNumberLocoAndTypeLoco(numberLoco, typeLoco);
@@ -236,7 +225,7 @@ public class RepairHistoryControllerTwo {
         String depot = (String) session.getAttribute("unit");
         List<ReceiptBlockDto> receiptBlockDtos = receiptBlockService.getReceiptBlocksByStorageNameAndTypeSystem(depot, systemType);
 
-        model.addAttribute("typeLoco", typeLoco);
+        model.addAttribute(TYPE_LOCO, typeLoco);
         model.addAttribute("numberLoco", numberLoco);
         model.addAttribute("systemType", systemType);
         model.addAttribute("positionRepairDTOS", positionRepairDTOS); // Добавляем позиции ремонта в модель
@@ -251,7 +240,7 @@ public class RepairHistoryControllerTwo {
     // Методы для отгрузки блока со склада и монтажа блока на локомотив
     @GetMapping("/install_block")
     public String showInstallBlockPage(Model model, HttpSession session) {
-        String typeLoco = (String) session.getAttribute("typeLoco");
+        String typeLoco = (String) session.getAttribute(TYPE_LOCO);
         String numberLoco = (String) session.getAttribute("numberLoco");
         String depot = (String) session.getAttribute("unit");
 
@@ -263,7 +252,7 @@ public class RepairHistoryControllerTwo {
 
         model.addAttribute("blockOnLocoDTOS", blockOnLocoDTOS);
         model.addAttribute("receiptBlockDtos", receiptBlockDtos);
-        model.addAttribute("typeLoco", typeLoco);
+        model.addAttribute(TYPE_LOCO, typeLoco);
         model.addAttribute("numberLoco", numberLoco);
         model.addAttribute("systemType", systemType);
 
@@ -316,7 +305,7 @@ public class RepairHistoryControllerTwo {
     // Методы демонтажа блока с локомотива
     @GetMapping("/remove_block/prepare")
     public String showRemoveBlockPage(Model model, HttpSession session) {
-        String typeLoco = (String) session.getAttribute("typeLoco");
+        String typeLoco = (String) session.getAttribute(TYPE_LOCO);
         String numberLoco = (String) session.getAttribute("numberLoco");
 
         List<BlockOnLocoDTO> blockOnLocoDTOS = blockOnLocoService.getAllBlockOnLocoByLocoNumberAndTypeLoco(numberLoco, typeLoco);
@@ -324,7 +313,7 @@ public class RepairHistoryControllerTwo {
 
         model.addAttribute("blockOnLocoDTOS", blockOnLocoDTOS);
         model.addAttribute("positionRepairDTOS", positionRepairDTOS);
-        model.addAttribute("typeLoco", typeLoco);
+        model.addAttribute(TYPE_LOCO, typeLoco);
         model.addAttribute("numberLoco", numberLoco);
 
         return "repair_history_8_remove_block";
@@ -335,7 +324,7 @@ public class RepairHistoryControllerTwo {
                                             @RequestParam String blockNumber,
                                             @RequestParam("positionRepair") Long positionRepairId,
                                             HttpSession session) {
-        String typeLoco = (String) session.getAttribute("typeLoco");
+        String typeLoco = (String) session.getAttribute(TYPE_LOCO);
         String numberLoco = (String) session.getAttribute("numberLoco");
 
         // Получение позиции ремонта по ID
@@ -367,7 +356,7 @@ public class RepairHistoryControllerTwo {
     // Метод отмены демонтажа блока
     @GetMapping("/cancel_remove_block")
     public String showCancelRemoveBlockPage(Model model, HttpSession session) {
-        String typeLoco = (String) session.getAttribute("typeLoco");
+        String typeLoco = (String) session.getAttribute(TYPE_LOCO);
         String numberLoco = (String) session.getAttribute("numberLoco");
 
         if (typeLoco == null || numberLoco == null) {
@@ -386,7 +375,7 @@ public class RepairHistoryControllerTwo {
                                     @RequestParam("blockNumber") String blockNumber,
                                     RedirectAttributes redirectAttributes,
                                     HttpSession session) {
-        String typeLoco = (String) session.getAttribute("typeLoco");
+        String typeLoco = (String) session.getAttribute(TYPE_LOCO);
         String numberLoco = (String) session.getAttribute("numberLoco");
         String region = (String) session.getAttribute("region");
         LocoListDTO locoListDTO = locoListService.getLocoListByNumberLocoAndTypeLoco(numberLoco, typeLoco);
@@ -417,10 +406,10 @@ public class RepairHistoryControllerTwo {
     // Рабочая панель
     @GetMapping("/work_bar")
     public String showWorkBar(Model model, HttpSession session) {
-        String typeLoco = (String) session.getAttribute("typeLoco");
+        String typeLoco = (String) session.getAttribute(TYPE_LOCO);
         String numberLoco = (String) session.getAttribute("numberLoco");
 
-        model.addAttribute("typeLoco", typeLoco);
+        model.addAttribute(TYPE_LOCO, typeLoco);
         model.addAttribute("numberLoco", numberLoco);
 
         return "repair_history_2_work_bar";
@@ -452,7 +441,7 @@ public class RepairHistoryControllerTwo {
         model.addAttribute("region", region);
         model.addAttribute("storageName", storageName);
         model.addAttribute("numberTable", numberTable);
-        model.addAttribute("typeLoco", typeLoco);
+        model.addAttribute(TYPE_LOCO, typeLoco);
         model.addAttribute("numberLoco", numberLoco);
         model.addAttribute("sparePartsReceiptDtos", sparePartsReceiptDtos);
 
