@@ -1,6 +1,6 @@
 package com.drgproject.controller;
 
-import com.drgproject.dto.UserDTO;
+import com.drgproject.dto.MemberDTO;
 import com.drgproject.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.http.ResponseEntity;
@@ -14,11 +14,11 @@ import java.util.List;
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @Controller
 @RequestMapping("/users")
-public class UserController {
+public class MemberController {
 
     private final UserService userService;
 
-    public UserController(UserService userService) {
+    public MemberController(UserService userService) {
         this.userService = userService;
     }
 
@@ -32,7 +32,7 @@ public class UserController {
         String region = (String) session.getAttribute("region");
         String post = (String) session.getAttribute("post");
         //List<UserDTO> users = userService.getAllUsers();
-        List<UserDTO> users = Collections.emptyList();
+        List<MemberDTO> users = Collections.emptyList();
         if("Администратор".equals(post)){
             users = userService.getAllUsers();
         }
@@ -44,8 +44,8 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserDTO> getUserById(@PathVariable long id) {
-        UserDTO userDTO = userService.getUserById(id);
+    public ResponseEntity<MemberDTO> getUserById(@PathVariable long id) {
+        MemberDTO userDTO = userService.getUserById(id);
         if (userDTO != null) {
             return ResponseEntity.ok(userDTO);
         } else {
@@ -62,7 +62,7 @@ public class UserController {
     public String getUserByNumberTable(@RequestParam String number, Model model, HttpSession session) {
         String region = (String) session.getAttribute("region");
         String post = (String) session.getAttribute("post");
-        UserDTO userDTO = userService.getUserByNumberTable(number);
+        MemberDTO userDTO = userService.getUserByNumberTable(number);
 
         if (userDTO != null && "Администратор".equals(post)) {
             model.addAttribute("user", userDTO);
@@ -78,7 +78,7 @@ public class UserController {
     // Метод для отображения формы создания сотрудника
     @GetMapping("/create")
     public String showCreateUserForm(Model model, HttpSession session) {
-        UserDTO userDTO = new UserDTO();
+        MemberDTO userDTO = new MemberDTO();
         String post = (String) session.getAttribute("post");
         if ("Регионал".equals(post)){
             String region = (String) session.getAttribute("region");
@@ -91,13 +91,13 @@ public class UserController {
 
     // Метод для обработки данных формы создания сотрудника
     @PostMapping("/create")
-    public String createUser(@ModelAttribute UserDTO userDTO, Model model, HttpSession session) {
+    public String createUser(@ModelAttribute MemberDTO userDTO, Model model, HttpSession session) {
         String post = (String) session.getAttribute("post");
         if ("Регионал".equals(post)){
             String region = (String) session.getAttribute("region");
             userDTO.setRegion(region);
         }
-        UserDTO createdUser = userService.createUser(userDTO);
+        MemberDTO createdUser = userService.createUser(userDTO);
         model.addAttribute("createdUser", createdUser);
         return "user_company_4_add_success";
     }
@@ -105,7 +105,7 @@ public class UserController {
     // Метод для отображения формы редактирования данных сотрудника
     @GetMapping("/edit")
     public String showEditUserForm(@RequestParam long id, Model model) {
-        UserDTO userDTO = userService.getUserById(id);
+        MemberDTO userDTO = userService.getUserById(id);
         if (userDTO != null) {
             model.addAttribute("user", userDTO);
             return "user_company_5_update";
@@ -117,8 +117,8 @@ public class UserController {
 
     // Метод для обработки данных формы
     @PostMapping("/edit/{id}")
-    public String updateUser(@PathVariable long id, @ModelAttribute UserDTO userDTO, Model model) {
-        UserDTO updatedUser = userService.updateUser(id, userDTO);
+    public String updateUser(@PathVariable long id, @ModelAttribute MemberDTO userDTO, Model model) {
+        MemberDTO updatedUser = userService.updateUser(id, userDTO);
         if (updatedUser != null) {
             model.addAttribute("updatedUser", updatedUser);
             return "user_company_5_update_success";
@@ -153,7 +153,7 @@ public class UserController {
                 userService.deleteUserByNumberTable(numTable);
                 model.addAttribute("successMessage", "Сотрудник успешно удален");
             } else if ("Регионал".equals(post)) {
-                UserDTO user = userService.getUserByNumberTable(numTable);
+                MemberDTO user = userService.getUserByNumberTable(numTable);
                 if (user != null && region.equals(user.getRegion())) {
                     userService.deleteUserByNumberTable(numTable);
                     model.addAttribute("successMessage", "Сотрудник успешно удален");

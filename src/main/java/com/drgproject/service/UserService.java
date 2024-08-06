@@ -1,8 +1,8 @@
 package com.drgproject.service;
 
-import com.drgproject.dto.UserDTO;
-import com.drgproject.entity.User;
-import com.drgproject.repository.UserRepository;
+import com.drgproject.dto.MemberDTO;
+import com.drgproject.entity.Members;
+import com.drgproject.repository.MemberRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,21 +13,21 @@ import java.util.Optional;
 @Service
 public class UserService {
 
-    private final UserRepository userRepository;
+    private final MemberRepository userRepository;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(MemberRepository userRepository) {
         this.userRepository = userRepository;
     }
 
     //Для админа
     @Transactional
-    public List<UserDTO> getAllUsers() {
+    public List<MemberDTO> getAllUsers() {
         return userRepository.findAll().stream().map(this::convertToDTO).toList();
     }
 
     //Для регионала
     @Transactional
-    public List<UserDTO> getUsersByRegion(String region) {
+    public List<MemberDTO> getUsersByRegion(String region) {
         return userRepository.findAll().stream()
                 .filter(employee -> Objects.equals(employee.getRegion(), region))
                 .map(this::convertToDTO)
@@ -36,13 +36,13 @@ public class UserService {
 
     //Для регионала
     @Transactional
-    public UserDTO getUserByRegionAndNumberTable(String region, String numberTable){
+    public MemberDTO getUserByRegionAndNumberTable(String region, String numberTable){
         return userRepository.findUserByRegionAndNumberTable(region, numberTable).map(this::convertToDTO).orElse(null);
     }
 
     //Для остальных
     @Transactional
-    public List<UserDTO> getUsersByRegionAndDepot(String region, String depot) {
+    public List<MemberDTO> getUsersByRegionAndDepot(String region, String depot) {
         return userRepository.findAll().stream()
                 .filter(employee -> Objects.equals(employee.getRegion(), region))
                 .filter(employee -> Objects.equals(employee.getUnit(), depot))
@@ -51,27 +51,27 @@ public class UserService {
     }
 
     @Transactional
-    public UserDTO getUserById(long id) {
+    public MemberDTO getUserById(long id) {
         return userRepository.findById(id).map(this::convertToDTO).orElse(null);
     }
 
     @Transactional
-    public UserDTO getUserByNumberTable(String numberTable) {
+    public MemberDTO getUserByNumberTable(String numberTable) {
         return userRepository.findByNumberTable(numberTable).map(this::convertToDTO).orElse(null);
     }
 
     @Transactional
-    public UserDTO createUser(UserDTO userDTO) {
-        User user = convertToEntity(userDTO);
+    public MemberDTO createUser(MemberDTO userDTO) {
+        Members user = convertToEntity(userDTO);
         user = userRepository.save(user);
         return convertToDTO(user);
     }
 
     @Transactional
-    public UserDTO updateUser(long id, UserDTO userDTO) {
-        Optional<User> optionalUser = userRepository.findById(id);
+    public MemberDTO updateUser(long id, MemberDTO userDTO) {
+        Optional<Members> optionalUser = userRepository.findById(id);
         if (optionalUser.isPresent()) {
-            User user = optionalUser.get();
+            Members user = optionalUser.get();
             user.setFio(userDTO.getFio());
             user.setPost(userDTO.getPost());
             user.setUnit(userDTO.getUnit());
@@ -95,8 +95,8 @@ public class UserService {
         userRepository.deleteById(getUserByNumberTable(numberTable).getId());
     }
 
-    private UserDTO convertToDTO(User user) {
-        UserDTO userDTO = new UserDTO();
+    private MemberDTO convertToDTO(Members user) {
+        MemberDTO userDTO = new MemberDTO();
         userDTO.setId(user.getId());
         userDTO.setFio(user.getFio());
         userDTO.setPost(user.getPost());
@@ -109,8 +109,8 @@ public class UserService {
         return userDTO;
     }
 
-    private User convertToEntity(UserDTO userDTO) {
-        User user = new User();
+    private Members convertToEntity(MemberDTO userDTO) {
+        Members user = new Members();
         user.setFio(userDTO.getFio());
         user.setPost(userDTO.getPost());
         user.setUnit(userDTO.getUnit());

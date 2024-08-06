@@ -1,7 +1,7 @@
 package com.drgproject.service;
 
 import com.drgproject.dto.EmployeeDto;
-import com.drgproject.dto.UserDTO;
+import com.drgproject.dto.MemberDTO;
 import com.drgproject.entity.Employee;
 import com.drgproject.repository.EmployeeRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -35,7 +35,7 @@ public class EmployeeService {
 
     @Transactional
     public EmployeeDto createEmployee(String numberTable) {
-        UserDTO userDTO = userService.getUserByNumberTable(numberTable);
+        MemberDTO userDTO = userService.getUserByNumberTable(numberTable);
         if (userDTO == null) {
             throw new IllegalArgumentException("User with numberTable " + numberTable + " not found");
         }
@@ -56,7 +56,7 @@ public class EmployeeService {
         Optional<Employee> optionalEmployee = employeeRepository.findById(id);
         if (optionalEmployee.isPresent()) {
             Employee employee = optionalEmployee.get();
-            UserDTO userDTO = userService.getUserByNumberTable(numberTable);
+            MemberDTO userDTO = userService.getUserByNumberTable(numberTable);
             if (userDTO == null) {
                 throw new IllegalArgumentException("User with numberTable " + numberTable + " not found");
             }

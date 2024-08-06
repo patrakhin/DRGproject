@@ -2,20 +2,18 @@ package com.drgproject.repair.controller;
 
 import com.drgproject.dto.ReceiptBlockDto;
 import com.drgproject.dto.SparePartsReceiptDto;
-import com.drgproject.entity.User;
+import com.drgproject.entity.Members;
 import com.drgproject.repair.dto.*;
 import com.drgproject.repair.service.*;
-import com.drgproject.repository.UserRepository;
+import com.drgproject.repository.MemberRepository;
 import com.drgproject.service.ReceiptBlockService;
 import com.drgproject.service.ShipmentBlockService;
 import com.drgproject.service.SparePartsReceiptService;
-import com.drgproject.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
@@ -38,7 +36,7 @@ public class RepairHistoryControllerTwo {
     private final TypeLocoService typeLocoService;
     private final SparePartsReceiptService sparePartsReceiptService;
     private final PositionRepairService positionRepairService;
-    private final UserRepository userRepository;
+    private final MemberRepository userRepository;
     private final ShipmentBlockService shipmentBlockService;
 
     public RepairHistoryControllerTwo(RepairHistoryService repairHistoryService,
@@ -49,7 +47,7 @@ public class RepairHistoryControllerTwo {
                                       TypeLocoService typeLocoService,
                                       SparePartsReceiptService sparePartsReceiptService,
                                       PositionRepairService positionRepairService,
-                                      UserRepository userRepository,
+                                      MemberRepository userRepository,
                                       ShipmentBlockService shipmentBlockService) {
         this.repairHistoryService = repairHistoryService;
         this.locoListService = locoListService;
@@ -139,7 +137,7 @@ public class RepairHistoryControllerTwo {
         String homeDepot = locoListService.getLocoListByNumberLocoAndTypeLoco(locoNumber, typeLoco).getHomeDepot();
         String typeSystem = locoListService.getLocoListByNumberLocoAndTypeLoco(locoNumber, typeLoco).getTypeSystem();
 
-        User user = userRepository.findByNumberTable(numberTable).orElse(null);
+        Members user = userRepository.findByNumberTable(numberTable).orElse(null);
         String employee = "no name";
         if (user != null) {
             employee = user.getNumberTable();

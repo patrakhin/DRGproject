@@ -1,9 +1,6 @@
 package com.drgproject.dto;
 
-
 import com.drgproject.entity.ShipmentBlock;
-import jakarta.persistence.Column;
-
 import java.io.Serializable;
 import java.time.LocalDate;
 

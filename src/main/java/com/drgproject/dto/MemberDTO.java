@@ -1,64 +1,38 @@
-package com.drgproject.entity;
+package com.drgproject.dto;
 
-
-import jakarta.persistence.*;
 import java.time.LocalDate;
 
 
-@Entity
-@Table(name = "users")
-public class User {
+public class MemberDTO {
+    Long id;
+    String fio;
+    String post;
+    String unit;
+    String region;
+    String numberTable;
+    String login;
+    String password;
+    LocalDate dateCreate;
 
-    @Id
-    @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    public MemberDTO(){}
 
-    @Column(name = "fio")
-    private String fio;
-
-    @Column(name = "post")
-    private String post;
-
-
-    @Column(name = "unit")
-    private String unit;
-
-    @Column(name = "region")
-    private String region;
-
-    @Column(name = "number_table", unique = true)
-    private String numberTable;
-
-    @Column(name = "login")
-    private String login;
-
-    @Column(name = "password", unique = true)
-    private String password;
-
-    @Column(name = "date_create", updatable = false)
-    private LocalDate dateCreate;
-
-    @PrePersist
-    protected void onCreate() {
-        dateCreate = LocalDate.now();
-    }
-
-    public User(){}
-
-    public User(Long id, String fio, String post, String unit,
-                String region, String numberTable,LocalDate dateCreate) {
-        this.id = id;
+    public MemberDTO(String fio, String post, String unit, String region,
+                     String numberTable, String login, String password){
         this.fio = fio;
         this.post = post;
         this.unit = unit;
         this.region = region;
         this.numberTable = numberTable;
-        this.dateCreate = dateCreate;
+        this.login = login;
+        this.password = password;
     }
 
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getFio() {
@@ -121,4 +95,7 @@ public class User {
         return dateCreate;
     }
 
+    public void setDateCreate(LocalDate dateCreate) {
+        this.dateCreate = dateCreate;
+    }
 }

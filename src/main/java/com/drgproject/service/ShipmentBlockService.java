@@ -14,11 +14,11 @@ import java.util.Optional;
 public class ShipmentBlockService {
     private final ShipmentBlockRepository shipmentBlockRepository;
     private final ReceiptBlockRepository receiptBlockRepository;
-    private final UserRepository userRepository;
+    private final MemberRepository userRepository;
     private final LocoBlockUniqNumService locoBlockUniqNumService;
 
     public ShipmentBlockService(ShipmentBlockRepository shipmentBlockRepository, ReceiptBlockRepository receiptBlockRepository,
-                                UserRepository userRepository, LocoBlockUniqNumService locoBlockUniqNumService) {
+                                MemberRepository userRepository, LocoBlockUniqNumService locoBlockUniqNumService) {
         this.shipmentBlockRepository = shipmentBlockRepository;
         this.receiptBlockRepository = receiptBlockRepository;
         this.userRepository = userRepository;
@@ -59,7 +59,7 @@ public class ShipmentBlockService {
                                                          String region) {
         Long getUniqueId = locoBlockUniqNumService.generateUniqueId(systemType, nameBlock, blockNumber);
         Optional<ReceiptBlock> locoBlockByUniqueId = receiptBlockRepository.findReceiptBlockByLocoBlockUniqueId(getUniqueId);
-        User user = userRepository.findByNumberTable(numberTable).orElse(null);
+        Members user = userRepository.findByNumberTable(numberTable).orElse(null);
         Optional<ShipmentBlock> shippedBlock = shipmentBlockRepository.findShipmentBlockByLocoBlockUniqueId(getUniqueId);
         if (shippedBlock.isPresent()){
             throw new IllegalArgumentException("Блок с № " + blockNumber + " уже отгружен");

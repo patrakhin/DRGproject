@@ -1,38 +1,64 @@
-package com.drgproject.dto;
+package com.drgproject.entity;
 
+
+import jakarta.persistence.*;
 import java.time.LocalDate;
 
 
-public class UserDTO {
-    Long id;
-    String fio;
-    String post;
-    String unit;
-    String region;
-    String numberTable;
-    String login;
-    String password;
-    LocalDate dateCreate;
+@Entity
+@Table(name = "users")
+public class Members {
 
-    public UserDTO(){}
+    @Id
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    public UserDTO(String fio, String post, String unit, String region,
-                   String numberTable, String login, String password){
+    @Column(name = "fio")
+    private String fio;
+
+    @Column(name = "post")
+    private String post;
+
+
+    @Column(name = "unit")
+    private String unit;
+
+    @Column(name = "region")
+    private String region;
+
+    @Column(name = "number_table", unique = true)
+    private String numberTable;
+
+    @Column(name = "login")
+    private String login;
+
+    @Column(name = "password", unique = true)
+    private String password;
+
+    @Column(name = "date_create", updatable = false)
+    private LocalDate dateCreate;
+
+    @PrePersist
+    protected void onCreate() {
+        dateCreate = LocalDate.now();
+    }
+
+    public Members(){}
+
+    public Members(Long id, String fio, String post, String unit,
+                   String region, String numberTable, LocalDate dateCreate) {
+        this.id = id;
         this.fio = fio;
         this.post = post;
         this.unit = unit;
         this.region = region;
         this.numberTable = numberTable;
-        this.login = login;
-        this.password = password;
+        this.dateCreate = dateCreate;
     }
 
     public Long getId() {
         return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getFio() {
@@ -95,7 +121,4 @@ public class UserDTO {
         return dateCreate;
     }
 
-    public void setDateCreate(LocalDate dateCreate) {
-        this.dateCreate = dateCreate;
-    }
 }

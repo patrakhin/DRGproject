@@ -17,7 +17,7 @@ public class ReceiptBlockService {
     private final LocoBlockRepository locoBlockRepository;
     private final StorageRepository storageRepository;
     private final ShipmentBlockRepository shipmentBlockRepository;
-    private final UserRepository userRepository;
+    private final MemberRepository userRepository;
     private final LocoBlockUniqNumService locoBlockUniqNumService;
     private final ShipmentBlockService shipmentBlockService;
 
@@ -25,7 +25,7 @@ public class ReceiptBlockService {
                                LocoBlockRepository locoBlockRepository,
                                StorageRepository storageRepository,
                                ShipmentBlockRepository shipmentBlockRepository,
-                               UserRepository userRepository,
+                               MemberRepository userRepository,
                                LocoBlockUniqNumService locoBlockUniqNumService,
                                ShipmentBlockService shipmentBlockService) {
         this.receiptBlockRepository = receiptBlockRepository;
@@ -137,7 +137,7 @@ public class ReceiptBlockService {
         Optional<LocoBlock> locoBlockByUniqueId = locoBlockRepository.findLocoBlockByUniqueId(getUniqueId);
         Optional<ReceiptBlock> receiptBlock = receiptBlockRepository.findReceiptBlockByLocoBlockUniqueId(getUniqueId);
 
-        User user = userRepository.findByNumberTable(numberTable).orElse(null);
+        Members user = userRepository.findByNumberTable(numberTable).orElse(null);
 
         if(receiptBlock.isPresent()){
             throw new IllegalArgumentException("Блок с номером  " + blockNumber + " уже на складе");

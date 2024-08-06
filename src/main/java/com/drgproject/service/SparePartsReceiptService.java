@@ -2,10 +2,9 @@ package com.drgproject.service;
 
 import com.drgproject.dto.SparePartsReceiptDto;
 import com.drgproject.entity.*;
+import com.drgproject.repository.MemberRepository;
 import com.drgproject.repository.SparePartsReceiptRepository;
 import com.drgproject.repository.StorageRepository;
-import com.drgproject.repository.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,9 +17,9 @@ import java.util.Optional;
 public class SparePartsReceiptService {
     private final SparePartsReceiptRepository sparePartsReceiptRepository;
     private final StorageRepository storageRepository;
-    private final UserRepository userRepository;
+    private final MemberRepository userRepository;
 
-    public SparePartsReceiptService(SparePartsReceiptRepository sparePartsReceiptRepository, StorageRepository storageRepository, UserRepository userRepository) {
+    public SparePartsReceiptService(SparePartsReceiptRepository sparePartsReceiptRepository, StorageRepository storageRepository, MemberRepository userRepository) {
         this.sparePartsReceiptRepository = sparePartsReceiptRepository;
         this.storageRepository = storageRepository;
         this.userRepository = userRepository;
@@ -137,7 +136,7 @@ public class SparePartsReceiptService {
     public SparePartsReceiptDto prepareWriteOffSparePartDto(String region, String storageName, String numberTable,
                                                             String sparePartsName, String measure, Long sparePartsNumber, String transactionType, double quantity){
         Optional<Storage> storage = storageRepository.findStorageByStorageNameAndStorageRegion(storageName, region);
-        User user = userRepository.findByNumberTable(numberTable).orElse(null);
+        Members user = userRepository.findByNumberTable(numberTable).orElse(null);
         Optional<List<SparePartsReceipt>> sparePartsReceiptInStorage = sparePartsReceiptRepository.findSparePartsReceiptBySparePartNameAndSparePartNumber(sparePartsName, sparePartsNumber);
         // Фильтруем только те записи, которые находятся "на складе"
         List<SparePartsReceipt> filteredSparePartsReceipts = Collections.emptyList();
@@ -199,7 +198,7 @@ public class SparePartsReceiptService {
     public SparePartsReceiptDto prepareSparePartsReceiptDto(String region, String storageName, String numberTable,
                                                             String sparePartsName, String measure, Long sparePartsNumber, String transactionType, double quantity){
         Optional<Storage> storage = storageRepository.findStorageByStorageNameAndStorageRegion(storageName, region);
-        User user = userRepository.findByNumberTable(numberTable).orElse(null);
+        Members user = userRepository.findByNumberTable(numberTable).orElse(null);
         Optional<List<SparePartsReceipt>> sparePartsReceiptInStorage = sparePartsReceiptRepository.findSparePartsReceiptBySparePartNameAndSparePartNumber(sparePartsName, sparePartsNumber);
         if(storage.isEmpty()){
             throw new IllegalArgumentException("Склад с наименованием  " + storageName + " не найден");

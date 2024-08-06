@@ -2,13 +2,12 @@ package com.drgproject.service;
 
 import com.drgproject.dto.SparePartsReceiptDto;
 import com.drgproject.dto.SparePartsShipmentDto;
-import com.drgproject.entity.SparePartsReceipt;
 import com.drgproject.entity.SparePartsShipment;
 import com.drgproject.entity.Storage;
-import com.drgproject.entity.User;
+import com.drgproject.entity.Members;
 import com.drgproject.repository.SparePartsShipmentRepository;
 import com.drgproject.repository.StorageRepository;
-import com.drgproject.repository.UserRepository;
+import com.drgproject.repository.MemberRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,9 +19,9 @@ import java.util.Optional;
 public class SparePartsShipmentService {
     private final SparePartsShipmentRepository sparePartsShipmentRepository;
     private final StorageRepository storageRepository;
-    private final UserRepository userRepository;
+    private final MemberRepository userRepository;
 
-    public SparePartsShipmentService(SparePartsShipmentRepository sparePartsShipmentRepository, StorageRepository storageRepository, UserRepository userRepository) {
+    public SparePartsShipmentService(SparePartsShipmentRepository sparePartsShipmentRepository, StorageRepository storageRepository, MemberRepository userRepository) {
         this.sparePartsShipmentRepository = sparePartsShipmentRepository;
         this.storageRepository = storageRepository;
         this.userRepository = userRepository;
@@ -67,7 +66,7 @@ public class SparePartsShipmentService {
                                                               String sparePartsName, String measure, Long sparePartsNumber,
                                                               String transactionType, double quantity){
         Optional<Storage> storage = storageRepository.findStorageByStorageNameAndStorageRegion(storageName, region);
-        User user = userRepository.findByNumberTable(numberTable).orElse(null);
+        Members user = userRepository.findByNumberTable(numberTable).orElse(null);
 
         if(storage.isEmpty()){
             throw new IllegalArgumentException("Склад с наименованием  " + storageName + " не найден");
@@ -83,7 +82,7 @@ public class SparePartsShipmentService {
     public SparePartsReceiptDto prepareSparePartsReceiptDto(String region, String storageName, String numberTable,
                                                             String sparePartsName, String measure, Long sparePartsNumber, String transactionType, double quantity){
         Optional<Storage> storage = storageRepository.findStorageByStorageNameAndStorageRegion(storageName, region);
-        User user = userRepository.findByNumberTable(numberTable).orElse(null);
+        Members user = userRepository.findByNumberTable(numberTable).orElse(null);
 
         if(storage.isEmpty()){
             throw new IllegalArgumentException("Склад с наименованием  " + storageName + " не найден");

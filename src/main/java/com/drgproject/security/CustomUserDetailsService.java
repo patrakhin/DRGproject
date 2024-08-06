@@ -1,10 +1,10 @@
 package com.drgproject.security;
 
+import com.drgproject.repository.MemberRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.drgproject.entity.User;
-import com.drgproject.repository.UserRepository;
+import com.drgproject.entity.Members;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -20,11 +20,11 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     private static final Logger logger = LoggerFactory.getLogger(CustomUserDetailsService.class);
 
-    private final UserRepository userRepository;
+    private final MemberRepository userRepository;
     private final HttpSession session;
 
     @Autowired
-    public CustomUserDetailsService(UserRepository userRepository, HttpSession session) {
+    public CustomUserDetailsService(MemberRepository userRepository, HttpSession session) {
         this.userRepository = userRepository;
         this.session = session;
     }
@@ -34,7 +34,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         logger.info("Loading user by login: {}", login);
 
-        User user = userRepository.findUserByLogin(login)
+        Members user = userRepository.findUserByLogin(login)
 
                 //User user = userRepository.findUserByFio(login)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
