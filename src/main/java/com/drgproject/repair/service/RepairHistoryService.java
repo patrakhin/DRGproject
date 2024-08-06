@@ -7,6 +7,7 @@ import com.drgproject.repair.repository.RepairHistoryRepository;
 import com.drgproject.repair.dto.RepairHistoryDto;
 import com.drgproject.repair.entity.RepairHistory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -48,7 +49,7 @@ public class RepairHistoryService {
         Optional<RepairHistory> repairHistory = repairHistoryRepository.
                 findRepairHistoriesByTypeLocoAndLocoNumberAndRepairDate(typeLoco, locoNumber, repairDate);
         if (repairHistory.isEmpty()){
-            throw new IllegalArgumentException("Исторя для этого локомотива на эту дату не найдена");
+            throw new IllegalArgumentException("История для этого локомотива на эту дату не найдена сервисный слой");
         }
         return repairHistory.map(RepairHistoryMapper::toDto);
     }
@@ -59,7 +60,13 @@ public class RepairHistoryService {
         return RepairHistoryMapper.toDto(savedRepairHistory);
     }
 
+    @Transactional
     public void deleteById(Long id) {
         repairHistoryRepository.deleteById(id);
+    }
+
+    @Transactional
+    public void deleteByTypeAndNumberAndDate(String typeLoco, String locoNumber, LocalDate repairDate){
+        repairHistoryRepository.deleteRepairHistoryByTypeLocoAndLocoNumberAndRepairDate(typeLoco, locoNumber, repairDate);
     }
 }

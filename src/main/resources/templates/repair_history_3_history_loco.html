@@ -20,6 +20,7 @@
                     <th>Дата Ремонта</th>
                     <th>Депо Ремонта</th>
                     <th>Детали</th>
+                    <th>Действия</th> <!-- Добавлен столбец для действий -->
                 </tr>
                 </thead>
                 <tbody>
@@ -27,6 +28,16 @@
                     <td th:text="${history.repairDate}">[repairDate]</td>
                     <td th:text="${history.repairDepot}">[repairDepot]</td>
                     <td><a th:href="@{/repair_history/detail_history(typeLoco=${typeLoco}, numberLoco=${numberLoco}, repairDate=${history.repairDate})}" class="btn btn-outline-primary btn-sm">Детально</a></td>
+                    <td>
+                        <!-- Кнопка удаления только для записей с текущей датой -->
+                        <form th:if="${history.repairDate} == ${T(java.time.LocalDate).now()}" th:action="@{/repair_history/delete}" method="post" class="d-inline">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                            <input type="hidden" name="typeLoco" th:value="${typeLoco}" />
+                            <input type="hidden" name="numberLoco" th:value="${numberLoco}" />
+                            <input type="hidden" name="repairDate" th:value="${history.repairDate}" />
+                            <button type="submit" class="btn btn-danger btn-sm">Удалить</button>
+                        </form>
+                    </td>
                 </tr>
                 </tbody>
             </table>

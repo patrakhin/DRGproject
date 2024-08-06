@@ -48,7 +48,11 @@ public class LocoListController {
     @GetMapping("/detail/{id}")
     public String getLocoById(@PathVariable Long id, Model model) {
         LocoListDTO locoListDTO = locoListService.getLocoListById(id);
+        String locoNumber = locoListDTO.getLocoNumber();
+        String typeLoco = locoListDTO.getTypeLoco();
+        List<BlockOnLocoDTO> blockOnLoco = blockOnLocoService.getAllBlockOnLocoByLocoNumberAndTypeLoco(locoNumber, typeLoco);
         model.addAttribute("locoList", locoListDTO);
+        model.addAttribute("blocks", blockOnLoco);
         return "locos_3_detail"; // Вернуть шаблон Thymeleaf для отображения деталей локомотива
     }
 

@@ -19,10 +19,13 @@
             <p><strong>Регион локомотива:</strong> <span th:text="${locoList.homeRegion}"></span></p>
             <p><strong>Депо локомотива:</strong> <span th:text="${locoList.homeDepot}"></span></p>
             <p><strong>Комментарий:</strong> <span th:text="${locoList.comment}"></span></p>
-            <p><strong>Блоки на локомотиве:</strong></p>
-            <ul>
-                <li th:each="blockId : ${locoList.blockOnLocos}" th:text="${blockId}"></li>
-            </ul>
+            <h2 class="text-center">Установленные блоки</h2>
+            <div class="list-group">
+                <div th:each="block : ${blocks}" class="list-group-item">
+                    <h5 class="mb-1" th:text="${block.blockName}"></h5>
+                    <p class="mb-1">Номер блока: <span th:text="${block.blockNumber}"></span></p>
+                </div>
+            </div>
         </div>
     </div>
     <div class="row mt-3">

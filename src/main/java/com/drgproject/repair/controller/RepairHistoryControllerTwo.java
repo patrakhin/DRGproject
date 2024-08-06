@@ -125,6 +125,18 @@ public class RepairHistoryControllerTwo {
         return repairHistoryDtos.subList(size - 3, size);
     }
 
+    // Удаление истории ремонта на текущую дату
+    @PostMapping("/delete")
+    public String deleteRepairHistory(@RequestParam String typeLoco,
+                                      @RequestParam String numberLoco,
+                                      @RequestParam String repairDate) {
+        LocalDate date = LocalDate.parse(repairDate);
+        if (date.equals(LocalDate.now())) {
+            repairHistoryService.deleteByTypeAndNumberAndDate(typeLoco, numberLoco, date);
+        }
+        return "/repair_history_2_work_bar"; // Укажите нужный URL для перенаправления
+    }
+
     // Подготовка к добавлению записи в историю ремонта
     @GetMapping("/add_history")
     public String showAddHistoryForm(Model model, HttpSession session) {
@@ -136,6 +148,19 @@ public class RepairHistoryControllerTwo {
         List<PositionRepairDTO> positionRepairDTOS = positionRepairService.getAllPositionRepairs();
         String homeDepot = locoListService.getLocoListByNumberLocoAndTypeLoco(locoNumber, typeLoco).getHomeDepot();
         String typeSystem = locoListService.getLocoListByNumberLocoAndTypeLoco(locoNumber, typeLoco).getTypeSystem();
+
+        LocalDate repairDateOld = LocalDate.now();
+
+        try {
+            Optional<RepairHistoryDto> repairHistoryOld = repairHistoryService.findByTypeLocoAndLocoNumberAndDate(typeLoco, locoNumber, repairDateOld);
+            if (repairHistoryOld.isPresent()) {
+                model.addAttribute("errorMessage1", "История для этого локомотива на эту дату уже существует.");
+            }
+        } catch (IllegalArgumentException e) {
+            // Исключение означает, что история не найдена, продолжаем без ошибки
+            // Можно добавить логирование для информации
+            // log.info("История на текущую дату не найдена: " + e.getMessage());
+        }
 
         Members user = userRepository.findByNumberTable(numberTable).orElse(null);
         String employee = "no name";
@@ -173,6 +198,8 @@ public class RepairHistoryControllerTwo {
                                  @RequestParam("repairDepot") String repairDepot,
                                  @RequestParam("positionRepair") Long positionRepairId,
                                  Model model) {
+
+
         try {
             repairHistoryDto.setRepairDate(LocalDate.parse(repairDate));
             repairHistoryDto.setHomeDepot(homeDepot);
