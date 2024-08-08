@@ -69,4 +69,10 @@ public class RepairHistoryService {
     public void deleteByTypeAndNumberAndDate(String typeLoco, String locoNumber, LocalDate repairDate){
         repairHistoryRepository.deleteRepairHistoryByTypeLocoAndLocoNumberAndRepairDate(typeLoco, locoNumber, repairDate);
     }
+
+    public boolean isLastEntry(String typeLoco, String numberLoco) {
+        // Выполняем запрос к базе данных, чтобы проверить количество записей для данного локомотива
+        int count = repairHistoryRepository.countByTypeLocoAndLocoNumber(typeLoco, numberLoco);
+        return count == 0;
+    }
 }

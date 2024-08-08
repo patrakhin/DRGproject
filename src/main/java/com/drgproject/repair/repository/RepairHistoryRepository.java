@@ -12,4 +12,7 @@ public interface RepairHistoryRepository extends JpaRepository<RepairHistory, Lo
     Optional<List<RepairHistory>> findRepairHistoriesByTypeLocoAndLocoNumber(String typeLoco, String locoNumber);
     Optional<RepairHistory> findRepairHistoriesByTypeLocoAndLocoNumberAndRepairDate(String typeLoco, String locoNumber, LocalDate repairDate);
     void deleteRepairHistoryByTypeLocoAndLocoNumberAndRepairDate(String typeLoco, String locoNumber, LocalDate repairDate);
+    // Метод для подсчета количества записей по типу и номеру локомотива
+    int countByTypeLocoAndLocoNumber(String typeLoco, String numberLoco);
+
 }

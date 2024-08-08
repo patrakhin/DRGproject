@@ -10,6 +10,8 @@
 <div class="container mt-5">
     <h1 class="text-center">Добавление записи о ремонте</h1>
     <p class="text-center">на локомотиве <span th:text="${typeLoco}"></span> с номером <span th:text="${locoNumber}"></span> в депо <span th:text="${repairDepot}"></span></p>
+    <div th:if="${successMessage}" class="alert alert-success mt-3" th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}" class="alert alert-danger mt-3" th:text="${errorMessage}"></div>
     <form th:action="@{/repair_history/add_history}" method="post" th:object="${repairHistoryDto}">
         <input type="hidden" name="repairDate" th:value="${repairDate}" />
         <input type="hidden" name="homeDepot" th:value="${homeDepot}" />

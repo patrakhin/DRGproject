@@ -63,7 +63,13 @@ public class RepairHistoryControllerTwo {
 
     // Главная страница
     @GetMapping("/search")
-    public String showSearchForm(Model model) {
+    public String showSearchForm(Model model, HttpSession session) {
+        String post = (String) session.getAttribute("post");
+        if ("Администратор".equals(post) || "Регионал".equals(post)) {
+            model.addAttribute("showNavigationBarLink", true);
+        } else {
+            model.addAttribute("showNavigationBarLink", false);
+        }
         model.addAttribute("locoList", new LocoListDTO());
         List<TypeLocoDTO> typeLocos = typeLocoService.getAllTypeLocos();
         model.addAttribute("typeLocos", typeLocos);
@@ -76,7 +82,7 @@ public class RepairHistoryControllerTwo {
         LocoListDTO locoListDTO = locoListService.getLocoListByNumberLocoAndTypeLoco(numberLoco, typeLoco);
         if (locoListDTO == null) {
             model.addAttribute("error", "Локомотив с таким типом и номером не найден.");
-            return showSearchForm(model);
+            return showSearchForm(model, session);
         }
 
         session.setAttribute(TYPE_LOCO, typeLoco);
@@ -131,10 +137,23 @@ public class RepairHistoryControllerTwo {
                                       @RequestParam String numberLoco,
                                       @RequestParam String repairDate) {
         LocalDate date = LocalDate.parse(repairDate);
+
         if (date.equals(LocalDate.now())) {
+            // Удаляем запись
             repairHistoryService.deleteByTypeAndNumberAndDate(typeLoco, numberLoco, date);
+
+            // Проверяем, остались ли ещё записи для данного локомотива
+            boolean isLastEntry = repairHistoryService.isLastEntry(typeLoco, numberLoco);
+
+            // Если это была последняя запись, перенаправляем на нужную страницу
+            if (isLastEntry) {
+                //return "redirect:/repair_history/work_bar?typeLoco=" + typeLoco + "&numberLoco=" + numberLoco;
+                return "/repair_history_2_work_bar";
+            }
         }
-        return "/repair_history_2_work_bar"; // Укажите нужный URL для перенаправления
+
+        // Возвращаем на ту же страницу истории, если ещё есть записи
+        return "/repair_history_2_work_bar";
     }
 
     // Подготовка к добавлению записи в историю ремонта
@@ -213,7 +232,7 @@ public class RepairHistoryControllerTwo {
             repairHistoryDto.setPositionRepair(positionRepair);
 
             repairHistoryService.save(repairHistoryDto);
-            model.addAttribute("successMessage", "Запись успешно добавлена");
+            model.addAttribute("successMessage", "Запись успешно добавлена, перейдите на панель работ по ссылке внизу страницы");
             return "repair_history_7_add_history"; // Возвращаемся на ту же страницу
         } catch (Exception e) {
             model.addAttribute("errorMessage", "Ошибка добавления записи: " + e.getMessage());
