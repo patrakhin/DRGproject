@@ -75,4 +75,27 @@ public class RepairHistoryService {
         int count = repairHistoryRepository.countByTypeLocoAndLocoNumber(typeLoco, numberLoco);
         return count == 0;
     }
+
+    //Перевод полного имени в формат "Фамилия А.Р."
+    public String convertToShortName(String fullName) {
+        if (fullName == null || fullName.isEmpty()) {
+            return fullName; // Возвращаем исходное значение, если оно пустое
+        }
+
+        // Разбиваем строку на части
+        String[] nameParts = fullName.split(" ");
+
+        // Проверяем, содержит ли строка достаточное количество частей
+        if (nameParts.length < 3) {
+            throw new IllegalArgumentException("ФИО должно содержать фамилию, имя и отчество.");
+        }
+
+        // Извлекаем фамилию и первые буквы имени и отчества
+        String lastName = nameParts[0];
+        String firstNameInitial = nameParts[1].substring(0, 1);
+        String middleNameInitial = nameParts[2].substring(0, 1);
+
+        // Формируем сокращенное имя
+        return String.format("%s %s.%s.", lastName, firstNameInitial, middleNameInitial);
+    }
 }

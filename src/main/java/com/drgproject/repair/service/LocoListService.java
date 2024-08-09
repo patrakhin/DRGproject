@@ -87,6 +87,14 @@ public class LocoListService {
         return false;
     }
 
+    //поиск номера локомотива по первым двум цифрам
+    public List<String> findNumbersByPrefix(String prefix) {
+        return locoListRepository.findByLocoNumberStartingWith(prefix)
+                .stream()
+                .map(LocoList::getLocoNumber)
+                .toList();
+    }
+
     private LocoListDTO convertToDTO(LocoList locoList) {
         List<Long> blockOnLocosIds = locoList.getBlockOnLocos().stream()
                 .map(BlockOnLoco::getId)

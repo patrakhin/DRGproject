@@ -6,9 +6,7 @@ import com.drgproject.entity.Members;
 import com.drgproject.repair.dto.*;
 import com.drgproject.repair.service.*;
 import com.drgproject.repository.MemberRepository;
-import com.drgproject.service.ReceiptBlockService;
-import com.drgproject.service.ShipmentBlockService;
-import com.drgproject.service.SparePartsReceiptService;
+import com.drgproject.service.*;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -38,6 +36,7 @@ public class RepairHistoryControllerTwo {
     private final PositionRepairService positionRepairService;
     private final MemberRepository userRepository;
     private final ShipmentBlockService shipmentBlockService;
+    private final UserService userService;
 
     public RepairHistoryControllerTwo(RepairHistoryService repairHistoryService,
                                       LocoListService locoListService,
@@ -48,7 +47,8 @@ public class RepairHistoryControllerTwo {
                                       SparePartsReceiptService sparePartsReceiptService,
                                       PositionRepairService positionRepairService,
                                       MemberRepository userRepository,
-                                      ShipmentBlockService shipmentBlockService) {
+                                      ShipmentBlockService shipmentBlockService,
+                                      UserService userService) {
         this.repairHistoryService = repairHistoryService;
         this.locoListService = locoListService;
         this.blockOnLocoService = blockOnLocoService;
@@ -59,6 +59,7 @@ public class RepairHistoryControllerTwo {
         this.positionRepairService = positionRepairService;
         this.userRepository = userRepository;
         this.shipmentBlockService = shipmentBlockService;
+        this.userService = userService;
     }
 
     // Главная страница
@@ -70,10 +71,24 @@ public class RepairHistoryControllerTwo {
         } else {
             model.addAttribute("showNavigationBarLink", false);
         }
+        String repairDepot = (String) session.getAttribute("unit");
+        String numberTable = (String) session.getAttribute("number_table");
+        String fullName = userService.getUserByNumberTable(numberTable).getFio();
+        String shortName = repairHistoryService.convertToShortName(fullName);
+        model.addAttribute("repairDepot", repairDepot);
+        model.addAttribute("shortName", shortName);
+        model.addAttribute("data", LocalDate.now());
         model.addAttribute("locoList", new LocoListDTO());
         List<TypeLocoDTO> typeLocos = typeLocoService.getAllTypeLocos();
         model.addAttribute("typeLocos", typeLocos);
         return "repair_history_1_main";
+    }
+
+    //Поиск номера локомотива по первым двум цифрам
+    @GetMapping("/locomotives")
+    @ResponseBody
+    public List<String> getLocomotiveNumbers(@RequestParam("term") String term) {
+        return locoListService.findNumbersByPrefix(term);
     }
 
     // Результат поиска локомотива по типу и серии
