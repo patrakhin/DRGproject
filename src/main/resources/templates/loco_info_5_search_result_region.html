@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Результаты поиска ТПС</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .indicator {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            display: inline-block;
+            margin: 0 auto;
+        }
+
+        .equipped {
+            background-color: green;
+        }
+
+        .not-equipped {
+            background-color: yellow;
+        }
+    </style>
+</head>
+<body>
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-12 text-center mb-4">
+            <h1>Результаты поиска ТПС</h1>
+        </div>
+
+        <div class="col-12">
+            <div th:if="${errorMessage}" class="alert alert-danger" role="alert">
+                <p th:text="${errorMessage}"></p>
+            </div>
+
+            <table class="table table-striped" th:if="${locoInfoPage.content}">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Регион</th>
+                    <th>Депо приписки</th>
+                    <th>Серия Локомотива</th>
+                    <th>Номер Локомотива</th>
+                    <th>Секция 1</th>
+                    <th>Секция 2</th>
+                    <th>Секция 3</th>
+                    <th>Секция 4</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="locoInfo : ${locoInfoPage.content}">
+                    <td th:text="${locoInfo.id}"></td>
+                    <td th:text="${locoInfo.region}"></td>
+                    <td th:text="${locoInfo.homeDepot}"></td>
+                    <td th:text="${locoInfo.locoType}"></td>
+                    <td th:text="${locoInfo.locoUnit}"></td>
+
+
+                    <!-- Секция 1 -->
+                    <td>
+                        <span th:if="${locoInfo.locoSection1} != 'нет'"
+                              th:class="'indicator ' + (${locoInfo.locoFit1} == 'оборудован' ? 'equipped' : 'not-equipped')">
+                        </span>
+                    </td>
+
+                    <!-- Секция 2 -->
+                    <td>
+                        <span th:if="${locoInfo.locoSection2} != 'нет'"
+                              th:class="'indicator ' + (${locoInfo.locoFit2} == 'оборудован' ? 'equipped' : 'not-equipped')">
+                        </span>
+                    </td>
+
+                    <!-- Секция 3 -->
+                    <td>
+                        <span th:if="${locoInfo.locoSection3} != 'нет'"
+                              th:class="'indicator ' + (${locoInfo.locoFit3} == 'оборудован' ? 'equipped' : 'not-equipped')">
+                        </span>
+                    </td>
+
+                    <!-- Секция 4 -->
+                    <td>
+                        <span th:if="${locoInfo.locoSection4} != 'нет'"
+                              th:class="'indicator ' + (${locoInfo.locoFit4} == 'оборудован' ? 'equipped' : 'not-equipped')">
+                        </span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <!-- Пагинация -->
+        <div class="d-flex justify-content-between mt-3">
+            <a th:href="@{|/loco_info/search/results?region=${region}&locoType=${locoType}&page=0|}" class="btn btn-secondary"
+               th:disabled="${locoInfoPage.number == 0}">Первая</a>
+
+            <!-- Предыдущая страница -->
+            <a th:href="|/loco_info/search/results?region=${region}&locoType=${locoType}&page=${locoInfoPage.number - 1}|"
+               class="btn btn-secondary"
+               th:disabled="${locoInfoPage.number == 0}">Предыдущая</a>
+
+            <span>Страница <span th:text="${locoInfoPage.number + 1}"></span> из <span th:text="${locoInfoPage.totalPages}"></span></span>
+
+            <!-- Следующая страница -->
+            <a th:href="|/loco_info/search/results?region=${region}&locoType=${locoType}&page=${locoInfoPage.number + 1}|"
+               class="btn btn-secondary"
+               th:disabled="${locoInfoPage.number == locoInfoPage.totalPages - 1}">Следующая</a>
+
+            <!-- Последняя страница -->
+            <a th:href="|/loco_info/search/results?region=${region}&locoType=${locoType}&page=${locoInfoPage.totalPages - 1}|"
+               class="btn btn-secondary"
+               th:disabled="${locoInfoPage.number == locoInfoPage.totalPages - 1}">Последняя</a>
+        </div>
+
+        <div class="text-end mt-3">
+            <a href="/loco_info/manage" class="btn btn-secondary">Управление ТПС</a>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

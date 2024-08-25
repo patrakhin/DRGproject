@@ -3,6 +3,10 @@ package com.drgproject.repair.service;
 import com.drgproject.repair.dto.LocoInfoDTO;
 import com.drgproject.repair.entity.LocoInfo;
 import com.drgproject.repair.repository.LocoInfoRepository;
+import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,7 +22,6 @@ import java.util.regex.Pattern;
 public class LocoInfoService {
 
     private final LocoInfoRepository locoInfoRepository;
-
 
     public LocoInfoService(LocoInfoRepository locoInfoRepository) {
         this.locoInfoRepository = locoInfoRepository;
@@ -40,6 +43,25 @@ public class LocoInfoService {
     // Получение LocoInfo по ID
     public Optional<LocoInfo> getLocoInfoById(Long id) {
         return locoInfoRepository.findById(id);
+    }
+
+    // Получение LocoInfo по региону и серии локомотива с пагинацией
+    public Page<LocoInfoDTO> getLocoInfoByRegionAndType(String region, String locoType, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return locoInfoRepository.findByRegionAndLocoType(region, locoType, pageable)
+                .map(this::convertToDTO);
+    }
+
+    //Получение LocoInfo по региону, депо приписки, номеру локомотива
+    public List<LocoInfoDTO> getLocoInfoByRegionAndHomeDepotAndLocoNumber(String region, String homeDepot, String locoUnit){
+        Optional<LocoInfo> middleResult = locoInfoRepository.findByRegionAndHomeDepotAndLocoUnit(region, homeDepot, locoUnit);
+        if (middleResult.isPresent()) {
+            return middleResult.stream()
+                    .map(this::convertToDTO)
+                    .toList();
+        }else {
+            throw new IllegalArgumentException("Локомотив " + locoUnit + " региона " + region + " депо приписки " + homeDepot + " еще не сформирован сервисный слой");
+        }
     }
 
     // Обновление LocoInfo

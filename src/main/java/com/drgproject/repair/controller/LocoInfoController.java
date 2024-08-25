@@ -8,6 +8,7 @@ import com.drgproject.repair.service.HomeDepotService;
 import com.drgproject.repair.service.RegionService;
 import com.drgproject.repair.service.TypeLocoService;
 import com.drgproject.repair.service.LocoInfoService;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -57,6 +58,43 @@ public class LocoInfoController {
 
         return "loco_info_2_create";
     }
+
+    @GetMapping("/search")
+    public String locoInfoSearch(Model model){
+        //Получение серий локомотива и добавление в модель
+        List<TypeLocoDTO> typeLocos = typeLocoService.getAllTypeLocos();
+        model.addAttribute("typeLocos", typeLocos);
+        // Получение всех регионов и добавление в модель
+        List<RegionDTO> regions = regionService.getAllRegions();
+        model.addAttribute("regions",regions);
+
+        return "loco_info_4_search";
+    }
+
+    @GetMapping("/search/results")
+    public String searchLocoInfo(@RequestParam("region") String region,
+                                 @RequestParam("locoType") String locoType,
+                                 @RequestParam(defaultValue = "0") int page,
+                                 @RequestParam(defaultValue = "10") int size,
+                                 Model model) {
+
+        // Проверка валидности значения страницы
+        if (page < 0) {
+            page = 0; // Устанавливаем минимально допустимое значение
+        }
+
+        model.addAttribute("region", region);
+        model.addAttribute("locoType", locoType);
+        try {
+            Page<LocoInfoDTO> locoInfoPage = locoInfoService.getLocoInfoByRegionAndType(region, locoType, page, size);
+            model.addAttribute("locoInfoPage", locoInfoPage);
+            return "loco_info_5_search_result_region";
+        } catch (IllegalArgumentException ex) {
+            model.addAttribute("errorMessage", ex.getMessage());
+            return "loco_info_5_search_result_region";
+        }
+    }
+
 
     @PostMapping("/create/tps")
     public String createLocoInfo(
