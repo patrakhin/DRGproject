@@ -32,6 +32,9 @@ public class BlockRemoval {
     @Column(name = "block_number")
     private String blockNumber;
 
+    @Column(name = "date_of_issue")
+    private String dateOfIssue;
+
     @Column(name = "number_table")
     private String numberTable;
 
@@ -49,7 +52,7 @@ public class BlockRemoval {
     public BlockRemoval(){}
 
     public BlockRemoval(String typeLoco, String locoNumber, String region, String homeDepot,
-                        String systemType, String blockName, String blockNumber, String numberTable, String position) {
+                        String systemType, String blockName, String blockNumber, String dateOfIssue, String numberTable, String position) {
         this.typeLoco = typeLoco;
         this.locoNumber = locoNumber;
         this.region = region;
@@ -57,6 +60,7 @@ public class BlockRemoval {
         this.systemType = systemType;
         this.blockName = blockName;
         this.blockNumber = blockNumber;
+        this.dateOfIssue = dateOfIssue;
         this.numberTable = numberTable;
         this.position = position;
     }
@@ -123,6 +127,14 @@ public class BlockRemoval {
 
     public void setBlockNumber(String blockNumber) {
         this.blockNumber = blockNumber;
+    }
+
+    public String getDateOfIssue() {
+        return dateOfIssue;
+    }
+
+    public void setDateOfIssue(String dateOfIssue) {
+        this.dateOfIssue = dateOfIssue;
     }
 
     public String getNumberTable() {

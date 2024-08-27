@@ -46,7 +46,7 @@ public class SystemNameController {
             model.addAttribute("systemName", systemNameDTO);
             return "system_name_3_update";
         } else {
-            model.addAttribute("errorMessage", "Системное имя с таким ID не найдено");
+            model.addAttribute("errorMessage", "Наименование системы с таким ID не найдено");
             return "system_name_3_update";
         }
     }
@@ -58,7 +58,7 @@ public class SystemNameController {
             model.addAttribute("updatedSystemName", updatedSystemName);
             return "system_name_3_update_success";
         } else {
-            model.addAttribute("errorMessage", "Не удалось обновить системное имя");
+            model.addAttribute("errorMessage", "Не удалось обновить наименование системы");
             return "system_name_3_update";
         }
     }
@@ -72,9 +72,9 @@ public class SystemNameController {
     public String deleteSystemName(@RequestParam long id, Model model) {
         boolean isDeleted = systemNameService.deleteSystemName(id);
         if (isDeleted) {
-            model.addAttribute("successMessage", "Системное имя успешно удалено");
+            model.addAttribute("successMessage", "Система успешно удалена");
         } else {
-            model.addAttribute("errorMessage", "Ошибка при удалении системного имени");
+            model.addAttribute("errorMessage", "Ошибка при удалении наименовании системы");
         }
         return "system_name_4_delete";
     }

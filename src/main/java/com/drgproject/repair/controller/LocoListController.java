@@ -153,6 +153,11 @@ public class LocoListController {
     @GetMapping("/search")
     public String getLocoByNumberLoco(@RequestParam("number_loco") String numberLoco, Model model) {
         LocoListDTO locoListDTO = locoListService.getLocoListByNumberLoco(numberLoco);
+        String locoNumber = locoListDTO.getLocoNumber();
+        String typeLoco = locoListDTO.getTypeLoco();
+        List<BlockOnLocoDTO> blockOnLoco = blockOnLocoService.getAllBlockOnLocoByLocoNumberAndTypeLoco(locoNumber, typeLoco);
+        //model.addAttribute("locoList", locoListDTO);
+        model.addAttribute("blocks", blockOnLoco);
         if (locoListDTO != null) {
             model.addAttribute("locoList", locoListDTO);
             return "locos_7_detail_by_number"; // Вернуть шаблон Thymeleaf для отображения деталей локомотива

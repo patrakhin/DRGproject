@@ -20,6 +20,7 @@
                     <th>Тип системы</th>
                     <th>Наименование</th>
                     <th>Номер блока</th>
+                    <th>Дата выпуска</th>
                     <th>Регион</th>
                     <th>Действия</th>
                 </tr>
@@ -29,6 +30,7 @@
                     <td th:text="${locoBlock.systemType}">Тип системы</td>
                     <td th:text="${locoBlock.blockName}">Наименование</td>
                     <td th:text="${locoBlock.blockNumber}">Номер блока</td>
+                    <td th:text="${locoBlock.dateOfIssue}">Дата выпуска</td>
                     <td th:text="${locoBlock.region}">Регион</td>
                     <td>
                         <a th:href="@{/loco_blocks/edit(id=${locoBlock.id})}" class="btn btn-warning mb-2">Редактировать</a>

@@ -47,7 +47,7 @@ public class TypeLocoController {
             model.addAttribute("typeLoco", typeLocoDTO);
             return "type_loco_3_update";
         } else {
-            model.addAttribute("errorMessage", "Тип локомотива с таким ID не найден");
+            model.addAttribute("errorMessage", "Серия локомотива с таким ID не найдена");
             return "type_loco_3_update";
         }
     }
@@ -59,7 +59,7 @@ public class TypeLocoController {
             model.addAttribute("updatedTypeLoco", updatedTypeLoco);
             return "type_loco_3_update_success";
         } else {
-            model.addAttribute("errorMessage", "Не удалось обновить тип локомотива");
+            model.addAttribute("errorMessage", "Не удалось обновить серию локомотива");
             return "type_loco_3_update";
         }
     }
@@ -73,9 +73,9 @@ public class TypeLocoController {
     public String deleteTypeLoco(@RequestParam long id, Model model) {
         boolean isDeleted = typeLocoService.deleteTypeLoco(id);
         if (isDeleted) {
-            model.addAttribute("successMessage", "Тип локомотива успешно удален");
+            model.addAttribute("successMessage", "Серия локомотива успешно удалена");
         } else {
-            model.addAttribute("errorMessage", "Ошибка при удалении типа локомотива");
+            model.addAttribute("errorMessage", "Ошибка при удалении серии локомотива");
         }
         return "type_loco_4_delete";
     }

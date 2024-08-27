@@ -14,15 +14,15 @@
         <span th:text="${errorMessage}"></span>
     </div>
     <form th:action="@{/receipt_blocks/create}" method="post" th:object="${receiptBlock}">
-        <!-- Поле Наименование Склада -->
-        <div class="form-group mb-3">
-            <label for="storageName" class="form-label">Наименование Склада</label>
-            <input type="text" id="storageName" name="storageName" th:field="*{storageName}" class="form-control" required>
-        </div>
         <!-- Поле Регион -->
         <div class="form-group mb-3">
             <label for="region" class="form-label">Регион</label>
             <input type="text" id="region" name="region" th:field="*{region}" class="form-control" required>
+        </div>
+        <!-- Поле Наименование Склада -->
+        <div class="form-group mb-3">
+            <label for="storageName" class="form-label">Наименование Склада</label>
+            <input type="text" id="storageName" name="storageName" th:field="*{storageName}" class="form-control" required>
         </div>
         <!-- Поле Тип системы -->
         <div class="form-group mb-3">

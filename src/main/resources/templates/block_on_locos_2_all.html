@@ -15,6 +15,7 @@
             <th>ID</th>
             <th>Название блока</th>
             <th>Номер блока</th>
+            <th>Дата выпуска</th>
             <th>Действия</th>
         </tr>
         </thead>
@@ -23,6 +24,7 @@
             <td th:text="${block.id}">ID</td>
             <td th:text="${block.blockName}">Название блока</td>
             <td th:text="${block.blockNumber}">Номер блока</td>
+            <td th:text="${block.dateOfIssue}">Дата выпуска</td>
             <td>
                 <a th:href="@{/block-on-locos/update/{id}(id=${block.id})}" class="btn btn-primary btn-sm">Редактировать</a>
                 <form th:action="@{/block-on-locos/delete}" method="post" class="d-inline">

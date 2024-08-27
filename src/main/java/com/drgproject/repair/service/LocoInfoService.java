@@ -41,8 +41,13 @@ public class LocoInfoService {
     }
 
     // Получение LocoInfo по ID
-    public Optional<LocoInfo> getLocoInfoById(Long id) {
-        return locoInfoRepository.findById(id);
+    public LocoInfoDTO getLocoInfoById(Long id) {
+        Optional<LocoInfo> middleResult = locoInfoRepository.findById(id);
+        if (middleResult.isPresent()) {
+            return convertToDTO(middleResult.get());
+        }else {
+            throw new IllegalArgumentException("Локомотив по ID не найден сервисный слой");
+        }
     }
 
     // Получение LocoInfo по региону и серии локомотива с пагинацией
@@ -53,14 +58,30 @@ public class LocoInfoService {
     }
 
     //Получение LocoInfo по региону, депо приписки, номеру локомотива
-    public List<LocoInfoDTO> getLocoInfoByRegionAndHomeDepotAndLocoNumber(String region, String homeDepot, String locoUnit){
+    public LocoInfoDTO getLocoInfoByRegionAndHomeDepotAndLocoNumber(String region, String homeDepot, String locoUnit){
         Optional<LocoInfo> middleResult = locoInfoRepository.findByRegionAndHomeDepotAndLocoUnit(region, homeDepot, locoUnit);
         if (middleResult.isPresent()) {
-            return middleResult.stream()
-                    .map(this::convertToDTO)
-                    .toList();
+            return convertToDTO(middleResult.get());
         }else {
             throw new IllegalArgumentException("Локомотив " + locoUnit + " региона " + region + " депо приписки " + homeDepot + " еще не сформирован сервисный слой");
+        }
+    }
+
+    //Получение списка секций из локомотива
+    public List<String> getLocoSections(LocoInfoDTO locoInfoDTO) {
+        List<String> sectionsNumber = new ArrayList<>();
+
+        addSectionIfValid(sectionsNumber, locoInfoDTO.getLocoSection1());
+        addSectionIfValid(sectionsNumber, locoInfoDTO.getLocoSection2());
+        addSectionIfValid(sectionsNumber, locoInfoDTO.getLocoSection3());
+        addSectionIfValid(sectionsNumber, locoInfoDTO.getLocoSection4());
+
+        return sectionsNumber;
+    }
+
+    private void addSectionIfValid(List<String> sectionsNumber, String section) {
+        if (section != null && !section.isEmpty() && !section.toLowerCase().contains("нет")) {
+            sectionsNumber.add(section);
         }
     }
 
@@ -86,6 +107,7 @@ public class LocoInfoService {
                 .orElseThrow(() -> new RuntimeException("LocoInfo not found with id " + id));
     }
 
+    @Transactional
     // Удаление LocoInfo по ID
     public void deleteLocoInfo(Long id) {
         if (locoInfoRepository.existsById(id)) {
@@ -95,6 +117,7 @@ public class LocoInfoService {
         }
     }
 
+    @Transactional
     // Удаление LocoInfo по locoUnit
     public boolean deleteLocoInfoByLocoUnit(String locoUnit, String locoType) {
         Optional<LocoInfo> locoInfoOptional = locoInfoRepository.findByLocoUnit(locoUnit);
@@ -105,6 +128,13 @@ public class LocoInfoService {
             throw new IllegalArgumentException("Локомотив " + locoType + " номер: " + locoUnit + " не найден сервисный слой");
         }
     }
+
+    //Проверка на существование уже созданного локомотива
+    public boolean ifLociUnitIsExists(String region, String homeDepot, String locoType, String locoSection1){
+        Optional<LocoInfo> locoInfoIsExist = locoInfoRepository.findByRegionAndHomeDepotAndLocoTypeAndLocoSection1(region, homeDepot, locoType, locoSection1);
+        return locoInfoIsExist.isPresent();
+    }
+
 
     // Метод для вычисления locoUnit
     public String calculateLocoUnit(String locoSection1, String locoSection2, String locoSection3, String locoSection4) {
@@ -148,7 +178,7 @@ public class LocoInfoService {
                     .append("/").append(parsedSections.get(1)[0]).append(parsedSections.get(1)[1])
                     .append("/").append(parsedSections.get(2)[0]).append(parsedSections.get(2)[1]);
         } else if (isQuadrupleSectionSame(parsedSections)) {
-            result.append("2ВЛ ").append(parsedSections.get(0)[0])
+            result.append("2ВЛ80С ").append(parsedSections.get(0)[0])
                     .append("/").append(parsedSections.get(2)[0]);
         } else if (isQuadrupleSectionDifferent(parsedSections)) {
             result.append(parsedSections.get(0)[0]).append(parsedSections.get(0)[1])

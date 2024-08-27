@@ -82,6 +82,7 @@ public class BlockRemovalService {
         blockRemoval.setSystemType(blockRemovalDto.getSystemType());
         blockRemoval.setBlockName(blockRemovalDto.getBlockName());
         blockRemoval.setBlockNumber(blockRemovalDto.getBlockNumber());
+        blockRemoval.setDateOfIssue(blockRemovalDto.getDateOfIssue());
         blockRemoval.setPosition(blockRemovalDto.getPosition());
         blockRemoval.setNumberTable(blockRemovalDto.getNumberTable());
         blockRemoval = blockRemovalRepository.save(blockRemoval);
@@ -126,7 +127,7 @@ public class BlockRemovalService {
             throw new IllegalArgumentException("Локомотив " + blockRemovalDto.getTypeLoco() + " с № "
                     + blockRemovalDto.getLocoNumber() + " не найден");
         }
-        BlockOnLoco blockOnLoco = new BlockOnLoco(blockRemovalDto.getBlockName(), blockRemovalDto.getBlockNumber());
+        BlockOnLoco blockOnLoco = new BlockOnLoco(blockRemovalDto.getBlockName(), blockRemovalDto.getBlockNumber(), blockRemovalDto.getDateOfIssue());
         blockOnLoco.setLocoList(locoList.get());
         blockOnLocoRepository.save(blockOnLoco);
         Optional<BlockRemoval> blockRemoval = blockRemovalRepository
@@ -147,6 +148,7 @@ public class BlockRemovalService {
         blockRemovalDto.setSystemType(blockRemoval.getSystemType());
         blockRemovalDto.setBlockName(blockRemoval.getBlockName());
         blockRemovalDto.setBlockNumber(blockRemoval.getBlockNumber());
+        blockRemovalDto.setDateOfIssue(blockRemoval.getDateOfIssue());
         blockRemovalDto.setPosition(blockRemoval.getPosition());
         blockRemovalDto.setNumberTable(blockRemoval.getNumberTable());
         blockRemovalDto.setDateCreate(blockRemoval.getDateCreate());
@@ -162,6 +164,7 @@ public class BlockRemovalService {
         blockRemoval.setSystemType(blockRemovalDto.getSystemType());
         blockRemoval.setBlockName(blockRemovalDto.getBlockName());
         blockRemoval.setBlockNumber(blockRemovalDto.getBlockNumber());
+        blockRemoval.setDateOfIssue(blockRemovalDto.getDateOfIssue());
         blockRemoval.setPosition(blockRemovalDto.getPosition());
         blockRemoval.setNumberTable(blockRemovalDto.getNumberTable());
         return blockRemoval;

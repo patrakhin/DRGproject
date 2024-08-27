@@ -2,6 +2,11 @@ package com.drgproject.service;
 
 import com.drgproject.dto.LocoBlockDto;
 import com.drgproject.entity.LocoBlock;
+import com.drgproject.repair.entity.BlockName;
+import com.drgproject.repair.entity.SystemName;
+import com.drgproject.repair.repository.BlockNameRepository;
+import com.drgproject.repair.repository.SystemNameRepository;
+import com.drgproject.repair.service.SystemNameService;
 import com.drgproject.repository.LocoBlockRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,11 +18,17 @@ import java.util.Optional;
 @Service
 public class LocoBlockService {
     private final LocoBlockUniqNumService locoBlockUniqNumService;
-    LocoBlockRepository locoBlockRepository;
+    private final SystemNameService systemNameService;
+    private final SystemNameRepository systemNameRepository;
+    private final BlockNameRepository blockNameRepository;
+    private final LocoBlockRepository locoBlockRepository;
 
-    public LocoBlockService(LocoBlockRepository locoBlockRepository, LocoBlockUniqNumService locoBlockUniqNumService) {
+    public LocoBlockService(LocoBlockRepository locoBlockRepository, LocoBlockUniqNumService locoBlockUniqNumService, SystemNameService systemNameService, SystemNameRepository systemNameRepository, BlockNameRepository blockNameRepository) {
         this.locoBlockRepository = locoBlockRepository;
         this.locoBlockUniqNumService = locoBlockUniqNumService;
+        this.systemNameService = systemNameService;
+        this.systemNameRepository = systemNameRepository;
+        this.blockNameRepository = blockNameRepository;
     }
 
     @Transactional
@@ -62,6 +73,21 @@ public class LocoBlockService {
         return locoBlockRepository.findLocoBlockByUniqueId(uniqueId).map(this::convertToDTO).orElse(null);
     }
 
+    public List<String> getBlocksBySystemType(String systemType) {
+        // Получение сущности типа системы по имени
+        SystemName systemNameEntity = systemNameRepository.findBySysName(systemType);
+
+        Long systemTypeId = systemNameEntity.getId();
+
+        // Получение списка наименований блоков по ID типа системы
+        List<BlockName> blockNames = blockNameRepository.findBySystemNameId(systemTypeId);
+
+        // Преобразование списка сущностей BlockName в список строк с именами блоков
+        return blockNames.stream()
+                .map(BlockName::getBlockName)
+                .toList();
+    }
+
     @Transactional
     public LocoBlockDto createLocoBlock(LocoBlockDto locoBlockDto){
         locoBlockDto.setUniqueId(locoBlockUniqNumService.generateUniqueId(locoBlockDto.getSystemType(),
@@ -80,6 +106,7 @@ public class LocoBlockService {
             locoBlock.setBlockName(locoBlockDto.getBlockName());
             locoBlock.setBlockNumber(locoBlockDto.getBlockNumber());
             locoBlock.setRegion(locoBlockDto.getRegion());
+            locoBlock.setDateOfIssue(locoBlockDto.getDateOfIssue());
             locoBlock.setUniqueId(locoBlockUniqNumService.generateUniqueId(locoBlock.getSystemType(),
                     locoBlock.getBlockName(), locoBlock.getBlockNumber()));
             locoBlock = locoBlockRepository.save(locoBlock);
@@ -105,7 +132,8 @@ public class LocoBlockService {
                 locoBlock.getBlockName(),
                 locoBlock.getBlockNumber(),
                 locoBlock.getUniqueId(),
-                locoBlock.getRegion()
+                locoBlock.getRegion(),
+                locoBlock.getDateOfIssue()
         );
         locoBlockDto.setId(locoBlock.getId());
         return locoBlockDto;
@@ -117,7 +145,8 @@ public class LocoBlockService {
                 locoBlockDto.getBlockName(),
                 locoBlockDto.getBlockNumber(),
                 locoBlockDto.getUniqueId(),
-                locoBlockDto.getRegion()
+                locoBlockDto.getRegion(),
+                locoBlockDto.getDateOfIssue()
         );
     }
 }

@@ -18,6 +18,10 @@
             <label for="blockNumber">Номер блока:</label>
             <input type="text" class="form-control" id="blockNumber" th:field="*{blockNumber}" required>
         </div>
+        <div class="form-group">
+            <label for="dateOfIssue">Дата выпуска:</label>
+            <input type="text" class="form-control" id="dateOfIssue" th:field="*{dateOfIssue}" required>
+        </div>
         <input type="hidden" th:field="*{locoListId}">
         <button type="submit" class="btn btn-primary">Сохранить</button>
     </form>

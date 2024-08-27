@@ -15,6 +15,9 @@ public class BlockOnLoco {
     @Column(name = "block_number")
     private String blockNumber;
 
+    @Column(name = "date_of_issue")
+    private String dateOfIssue;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "loco_list_id")
     private LocoList locoList;
@@ -22,9 +25,10 @@ public class BlockOnLoco {
     public BlockOnLoco() {
     }
 
-    public BlockOnLoco(String blockName, String blockNumber) {
+    public BlockOnLoco(String blockName, String blockNumber, String dateOfIssue) {
         this.blockName = blockName;
         this.blockNumber = blockNumber;
+        this.dateOfIssue = dateOfIssue;
     }
 
     public Long getId() {
@@ -49,6 +53,14 @@ public class BlockOnLoco {
 
     public void setBlockNumber(String blockNumber) {
         this.blockNumber = blockNumber;
+    }
+
+    public String getDateOfIssue() {
+        return dateOfIssue;
+    }
+
+    public void setDateOfIssue(String dateOfIssue) {
+        this.dateOfIssue = dateOfIssue;
     }
 
     public LocoList getLocoList() {

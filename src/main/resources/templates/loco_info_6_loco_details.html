@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Детали локомотива</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <h1 class="text-center">Детали локомотива</h1>
+
+    <!-- Общая информация о локомотиве -->
+    <div class="row mt-3">
+        <div class="col-12">
+            <p><strong>Номер договора:</strong> <span th:text="${overviewLoco.contractNumber}"></span></p>
+            <p><strong>Серия локомотива:</strong> <span th:text="${overviewLoco.typeLoco}"></span></p>
+            <p><strong>Тип системы:</strong> <span th:text="${overviewLoco.typeSystem}"></span></p>
+            <p><strong>Регион:</strong> <span th:text="${overviewLoco.homeRegion}"></span></p>
+            <p><strong>Депо приписки:</strong> <span th:text="${overviewLoco.homeDepot}"></span></p>
+            <p><strong>Комментарий:</strong> <span th:text="${overviewLoco.comment}"></span></p>
+        </div>
+    </div>
+
+    <!-- Информация по каждой секции -->
+    <h2 class="text-center mt-5">Секции и установленные блоки</h2>
+    <div th:each="section : ${sections}" class="mt-4">
+        <div class="row">
+            <div class="col-12">
+                <h3>Секция: <span th:text="${section.sectionNumber}"></span></h3>
+                <div class="list-group">
+                    <div th:each="block : ${section.blocks}" class="list-group-item">
+                        <h5 class="mb-1" th:text="${block.blockName}"></h5>
+                        <p class="mb-1">Номер блока: <span th:text="${block.blockNumber}"></span></p>
+                        <p class="mb-1">Дата выпуска: <span th:text="${block.dateOfIssue}"></span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Кнопки навигации -->
+    <div class="row mt-3">
+        <div class="col-12 text-end">
+            <a href="/loco_info/manage" class="btn btn-secondary">Управление ТПС</a>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

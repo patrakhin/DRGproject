@@ -1,18 +1,16 @@
 package com.drgproject.repair.controller;
 
-import com.drgproject.repair.dto.RegionDTO;
-import com.drgproject.repair.dto.TypeLocoDTO;
-import com.drgproject.repair.dto.LocoInfoDTO;
+import com.drgproject.repair.dto.*;
 import com.drgproject.repair.entity.LocoInfo;
-import com.drgproject.repair.service.HomeDepotService;
-import com.drgproject.repair.service.RegionService;
-import com.drgproject.repair.service.TypeLocoService;
-import com.drgproject.repair.service.LocoInfoService;
+import com.drgproject.repair.service.*;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Controller
@@ -23,13 +21,17 @@ public class LocoInfoController {
     private final TypeLocoService typeLocoService;
     private final RegionService regionService;
     private final HomeDepotService homeDepotService;
+    private final BlockOnLocoService blockOnLocoService;
+    private final LocoListService locoListService;
 
     public LocoInfoController(LocoInfoService locoInfoService, TypeLocoService typeLocoService,
-                              RegionService regionService, HomeDepotService homeDepotService) {
+                              RegionService regionService, HomeDepotService homeDepotService, BlockOnLocoService blockOnLocoService, LocoListService locoListService) {
         this.locoInfoService = locoInfoService;
         this.typeLocoService = typeLocoService;
         this.regionService = regionService;
         this.homeDepotService = homeDepotService;
+        this.blockOnLocoService = blockOnLocoService;
+        this.locoListService = locoListService;
     }
 
     @GetMapping("/manage")
@@ -67,7 +69,8 @@ public class LocoInfoController {
         // Получение всех регионов и добавление в модель
         List<RegionDTO> regions = regionService.getAllRegions();
         model.addAttribute("regions",regions);
-
+        // Пустой список депо, так как они будут загружаться динамически
+        model.addAttribute("depots", new ArrayList<>());
         return "loco_info_4_search";
     }
 
@@ -95,6 +98,64 @@ public class LocoInfoController {
         }
     }
 
+    @GetMapping("/search/by-loco-number")
+    public String searchByLocoNumberPage(Model model) {
+        // Получаем список регионов для отображения на странице
+        List<RegionDTO> regions = regionService.getAllRegions();
+        model.addAttribute("regions", regions);
+
+        // Получение всех депо и добавление в модель
+        List<HomeDepotDTO> homeDepots = homeDepotService.getAllHomeDepots();
+        model.addAttribute("homeDepots",homeDepots);
+        return "loco_info_4_search_by_number";
+    }
+
+    @GetMapping("/search/by-loco-number/results")
+    public String searchByLocoNumberResults(@RequestParam("region") String region,
+                                            @RequestParam("homeDepot") String homeDepot,
+                                            @RequestParam("locoNumber") String locoNumber,
+                                            Model model) {
+        try {
+            // Выполняем поиск локомотива по номеру
+            LocoInfoDTO locoInfo = locoInfoService.getLocoInfoByRegionAndHomeDepotAndLocoNumber(region, homeDepot, locoNumber);
+
+            // Если локомотив найден, добавляем информацию в модель
+            model.addAttribute("locoInfo", locoInfo);
+        } catch (Exception e) {
+            // Если произошла ошибка или локомотив не найден
+            model.addAttribute("errorMessage", "Локомотив не найден или произошла ошибка.");
+        }
+
+        return "loco_info_5_search_results";
+    }
+
+    //Детальные сведения по каждой секции локомотива
+    @GetMapping("/locos/details/{id}")
+    public String getLocoDetails(@PathVariable Long id, Model model) {
+        // Получаем данные локомотива
+        LocoInfoDTO locoInfoDTO = locoInfoService.getLocoInfoById(id);
+        //Получаем общие данные по секции
+        LocoListDTO overviewLoco = locoListService.getLocoListByNumberLoco(locoInfoDTO.getLocoSection1());
+        // Получаем список секций и блоков
+        List<String> locoSectionNumbers = locoInfoService.getLocoSections(locoInfoDTO);
+        String typeLoco = locoInfoDTO.getLocoType();
+
+        // Создаем список секций с блоками
+        List<SectionWithBlocksDTO> sections = new ArrayList<>();
+        for (String sectionNumber : locoSectionNumbers) {
+            if (sectionNumber != null && !sectionNumber.isEmpty() && !sectionNumber.equalsIgnoreCase("нет")) {
+                List<BlockOnLocoDTO> blocksOnSection = blockOnLocoService.getAllBlockOnLocoByLocoNumberAndTypeLoco(sectionNumber, typeLoco);
+                sections.add(new SectionWithBlocksDTO(sectionNumber, blocksOnSection));
+            }
+        }
+
+        // Добавляем данные в модель
+        model.addAttribute("overviewLoco", overviewLoco);
+        model.addAttribute("locoInfoDTO", locoInfoDTO);
+        model.addAttribute("sections", sections);
+
+        return "loco_info_6_loco_details";
+    }
 
     @PostMapping("/create/tps")
     public String createLocoInfo(
@@ -109,10 +170,19 @@ public class LocoInfoController {
             @RequestParam(defaultValue = "false") boolean section3Status,
             @RequestParam(required = false) String section4,
             @RequestParam(defaultValue = "false") boolean section4Status,
+            RedirectAttributes redirectAttributes,
             Model model
     ) {
         List<TypeLocoDTO> typeLocos = typeLocoService.getAllTypeLocos();
         model.addAttribute("typeLocos", typeLocos);
+
+        // Проверка на существование локомотива
+        boolean locoExists = locoInfoService.ifLociUnitIsExists(region, homeDepot, typeLoco, section1);
+
+        if (locoExists) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Локомотив с такими данными уже существует.");
+            return "redirect:/loco_info/create"; // Редирект на ту же страницу
+        }
 
         try {
             // Заполнение недостающих полей строкой "нет" и установка статуса оборудования
@@ -122,7 +192,7 @@ public class LocoInfoController {
                     section4, section4Status
             );
 
-            // создание локомотива
+            // Создание локомотива
             locoInfoService.createLocoInfo(locoInfoDTO);
 
             model.addAttribute("locoInfo", new LocoInfoDTO()); // Очищаем форму
@@ -151,6 +221,24 @@ public class LocoInfoController {
             model.addAttribute("errorMessage", "Ошибка при расформировании локомотива");
         }
         return "loco_info_3_delete";
+    }
+
+    // Метод для отображения страницы удаления локомотива по ID
+    @GetMapping("/deleteById")
+    public String showDeleteLocoInfoPage() {
+        return "loco_info_3_delete_by_id";
+    }
+
+    // Метод для обработки удаления локомотива по ID
+    @PostMapping("/deleteById")
+    public String deleteLocoInfoById(@RequestParam Long id, Model model) {
+        try {
+            locoInfoService.deleteLocoInfo(id);
+            model.addAttribute("successMessage", "Локомотив с ID " + id + " успешно удален.");
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("errorMessage", e.getMessage());
+        }
+        return "loco_info_3_delete_by_id";
     }
 
     public LocoInfoDTO fillMissingFieldsWithDefault(
@@ -198,5 +286,12 @@ public class LocoInfoController {
         locoInfoDTO.setLocoUnit(locoInfoService.calculateLocoUnit(section1, section2, section3, section4));
 
         return locoInfoDTO;
+    }
+
+    // Новый метод для обработки AJAX-запроса
+    @GetMapping("/depots")
+    @ResponseBody
+    public List<HomeDepotDTO> getDepotsByRegion(@RequestParam String regionName) {
+        return homeDepotService.getDepotsByRegion(regionName);
     }
 }

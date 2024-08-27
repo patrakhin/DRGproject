@@ -8,16 +8,16 @@
 </head>
 <body>
 <div class="container mt-5">
-    <h1 class="text-center">Главная страница локомотивов</h1>
+    <h1 class="text-center">Главная страница секций</h1>
     <div class="row mt-3">
         <div class="col-12 text-center">
-            <a href="/locos/all" class="btn btn-primary">Список локомотивов</a>
-            <a href="/locos/create" class="btn btn-success">Добавить локомотив</a>
+            <a href="/locos/all" class="btn btn-primary">Список секций</a>
+            <a href="/locos/create" class="btn btn-success">Добавить секцию</a>
         </div>
     </div>
     <div class="row mt-3">
         <div class="col-12 text-center">
-            <h4>Поиск локомотива</h4>
+            <h4>Поиск секции</h4>
             <form th:action="@{/locos/search}" method="get">
                 <div class="input-group mb-3">
                     <label>
@@ -33,11 +33,11 @@
                     </label>
                     <label>
                         <select class="form-control" name="type_loco">
-                            <option value="" selected>Выберите тип локомотива</option>
+                            <option value="" selected>Выберите серию локомотива</option>
                             <option th:each="type : ${typeLocos}" th:value="${type.locoType}" th:text="${type.locoType}"></option>
                         </select>
                     </label>
-                    <button class="btn btn-outline-secondary" type="submit">Найти по номеру и типу</button>
+                    <button class="btn btn-outline-secondary" type="submit">Найти по номеру и серии</button>
                 </div>
             </form>
         </div>

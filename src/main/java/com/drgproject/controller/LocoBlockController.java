@@ -1,6 +1,11 @@
 package com.drgproject.controller;
 
 import com.drgproject.dto.LocoBlockDto;
+import com.drgproject.repair.dto.RegionDTO;
+import com.drgproject.repair.dto.SystemNameDTO;
+import com.drgproject.repair.service.BlockOnLocoService;
+import com.drgproject.repair.service.RegionService;
+import com.drgproject.repair.service.SystemNameService;
 import com.drgproject.service.LocoBlockService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.ui.Model;
@@ -16,14 +21,18 @@ import java.util.List;
 public class LocoBlockController {
 
     private final LocoBlockService locoBlockService;
+    private final SystemNameService systemNameService;
+    private final RegionService regionService;
 
-    public LocoBlockController(LocoBlockService locoBlockService) {
+    public LocoBlockController(LocoBlockService locoBlockService, SystemNameService systemNameService, RegionService regionService) {
         this.locoBlockService = locoBlockService;
+        this.systemNameService = systemNameService;
+        this.regionService = regionService;
     }
 
     @GetMapping()
     public String getLocoBlocksPage() {
-        return "locoblock_1_main"; // Имя шаблона Thymeleaf без .html
+        return "locoblock_1_main";
     }
 
     @GetMapping("/all")
@@ -71,6 +80,14 @@ public class LocoBlockController {
             String region = (String) session.getAttribute("region");
             locoBlockDto.setRegion(region);
         }
+        // Получение всех типов систем и добавление в модель
+        List<SystemNameDTO> systemNames = systemNameService.getAllSystemNames();
+        model.addAttribute("systemNames", systemNames);
+
+        // Получение всех регионов и добавление в модель
+        List<RegionDTO> regions = regionService.getAllRegions();
+        model.addAttribute("regions",regions);
+
         model.addAttribute("locoBlock", locoBlockDto);
         model.addAttribute("post", post); // Добавляем переменную post в модель
         return "locoblock_4_add";
@@ -145,5 +162,12 @@ public class LocoBlockController {
         }
 
         return "locoblock_6_delete";
+    }
+
+    //AJAX
+    @GetMapping("/blocks")
+    @ResponseBody
+    public List<String> getBlocksBySystemType(@RequestParam String systemType) {
+        return locoBlockService.getBlocksBySystemType(systemType);
     }
 }

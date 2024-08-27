@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Главная Страница</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .btn-container {
+            margin-bottom: 10px; /* Отступ снизу для кнопок */
+        }
+    </style>
 </head>
 <body>
 <div class="container mt-5">
@@ -12,23 +17,62 @@
         <div class="col-12 text-center mb-3">
             <h1>Панель навигации</h1>
         </div>
-        <div class="col-12 text-center">
-            <a href="/regions" class="btn btn-primary">Регионы</a>
-            <a href="/home-depots" class="btn btn-primary">Депо</a>
-            <a href="/type-locos" class="btn btn-primary">Типы локомотивов</a>
-            <a href="/system-names" class="btn btn-primary">Типы систем</a>
-            <a href="/locos" class="btn btn-primary">Список локомотивов</a>
-            <a href="/loco_info/manage" class="btn btn-primary">Управление ТПС</a>
-            <a href="/position-repairs" class="btn btn-primary">Ремонтные позиции</a>
-            <a href="/users" class="btn btn-primary">Сотрудники</a>
-            <a href="/storages" class="btn btn-primary">Склады</a>
-            <a href="/loco_blocks" class="btn btn-primary">Блоки систем</a>
-            <a href="/block-on-locos" class="btn btn-primary">Блоки на локомотиве</a>
-            <a href="/receipt_blocks" class="btn btn-primary">Поставки блоков на склад</a>
-            <a href="/shipment_blocks" class="btn btn-primary">Отгрузка блоков со склада</a>
-            <a href="/spare_parts_receipts" class="btn btn-primary">Поступление зап.частей и материалов</a>
-            <a href="/block_removal" class="btn btn-primary">Демонтаж блоков из локомотивов</a>
-            <a href="/repair_history/search" class="btn btn-primary">Производство работ</a>
+        <div class="col-12">
+            <!-- Создаем контейнер для кнопок и используем классы Bootstrap для их выравнивания -->
+            <div class="row">
+                <!-- Кнопки на мобильных устройствах занимают половину ширины строки и центрируются -->
+                <div class="col-6 col-md-4 btn-container d-flex justify-content-center">
+                    <a href="/users" class="btn btn-primary w-100">Сотрудники</a>
+                </div>
+                <div class="col-6 col-md-4 btn-container d-flex justify-content-center">
+                    <a href="/regions" class="btn btn-primary w-100">Регионы</a>
+                </div>
+                <div class="col-6 col-md-4 btn-container d-flex justify-content-center">
+                    <a href="/home-depots" class="btn btn-primary w-100">Депо</a>
+                </div>
+                <div class="col-6 col-md-4 btn-container d-flex justify-content-center">
+                    <a href="/storages" class="btn btn-primary w-100">Склады</a>
+                </div>
+                <div class="col-6 col-md-4 btn-container d-flex justify-content-center">
+                    <a href="/position-repairs" class="btn btn-primary w-100">Ремонтные позиции</a>
+                </div>
+                <div class="col-6 col-md-4 btn-container d-flex justify-content-center">
+                    <a href="/type-locos" class="btn btn-primary w-100">Серии локомотивов</a>
+                </div>
+                <div class="col-6 col-md-4 btn-container d-flex justify-content-center">
+                    <a href="/system-names" class="btn btn-primary w-100">Типы систем</a>
+                </div>
+                <div class="col-6 col-md-4 btn-container d-flex justify-content-center">
+                    <a href="/block-names" class="btn btn-primary w-100">Наименование блоков систем</a>
+                </div>
+                <div class="col-6 col-md-4 btn-container d-flex justify-content-center">
+                    <a href="/locos" class="btn btn-primary w-100">Управление секциями</a>
+                </div>
+                <div class="col-6 col-md-4 btn-container d-flex justify-content-center">
+                    <a href="/loco_info/manage" class="btn btn-primary w-100">Управление ТПС</a>
+                </div>
+                <div class="col-6 col-md-4 btn-container d-flex justify-content-center">
+                    <a href="/loco_blocks" class="btn btn-primary w-100">Поставки блоков на регион</a>
+                </div>
+                <div class="col-6 col-md-4 btn-container d-flex justify-content-center">
+                    <a href="/receipt_blocks" class="btn btn-primary w-100">Поставки блоков на склад депо</a>
+                </div>
+                <div class="col-6 col-md-4 btn-container d-flex justify-content-center">
+                    <a href="/shipment_blocks" class="btn btn-primary w-100">Отгрузка блоков со склада</a>
+                </div>
+                <div class="col-6 col-md-4 btn-container d-flex justify-content-center">
+                    <a href="/spare_parts_receipts" class="btn btn-primary w-100">Поступление зап.частей и материалов</a>
+                </div>
+                <div class="col-6 col-md-4 btn-container d-flex justify-content-center">
+                    <a href="/block-on-locos" class="btn btn-primary w-100">Блоки на локомотиве</a>
+                </div>
+                <div class="col-6 col-md-4 btn-container d-flex justify-content-center">
+                    <a href="/block_removal" class="btn btn-primary w-100">Демонтаж блоков из локомотивов</a>
+                </div>
+                <div class="col-6 col-md-4 btn-container d-flex justify-content-center">
+                    <a href="/repair_history/search" class="btn btn-primary w-100">Производство работ</a>
+                </div>
+            </div>
         </div>
         <div class="row mt-3">
             <div class="col-12 text-end">

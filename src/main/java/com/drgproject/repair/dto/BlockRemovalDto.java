@@ -17,6 +17,8 @@ public class BlockRemovalDto {
     private String systemType;
     private String blockName;
     private String blockNumber;
+    private String dateOfIssue;
+
     private String numberTable;
     private String position;
     private LocalDate dateCreate;
@@ -24,7 +26,7 @@ public class BlockRemovalDto {
     public BlockRemovalDto(){}
 
     public BlockRemovalDto(String typeLoco, String locoNumber, String region, String homeDepot,
-                           String systemType, String blockName, String blockNumber, String numberTable, String position) {
+                           String systemType, String blockName, String blockNumber, String dateOfIssue, String numberTable, String position) {
         this.typeLoco = typeLoco;
         this.locoNumber = locoNumber;
         this.region = region;
@@ -32,6 +34,7 @@ public class BlockRemovalDto {
         this.systemType = systemType;
         this.blockName = blockName;
         this.blockNumber = blockNumber;
+        this.dateOfIssue = dateOfIssue;
         this.numberTable = numberTable;
         this.position = position;
     }
@@ -122,5 +125,13 @@ public class BlockRemovalDto {
 
     public void setDateCreate(LocalDate dateCreate) {
         this.dateCreate = dateCreate;
+    }
+
+    public String getDateOfIssue() {
+        return dateOfIssue;
+    }
+
+    public void setDateOfIssue(String dateOfIssue) {
+        this.dateOfIssue = dateOfIssue;
     }
 }

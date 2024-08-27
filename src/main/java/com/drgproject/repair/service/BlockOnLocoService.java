@@ -85,7 +85,7 @@ public class BlockOnLocoService {
         if (locoList.isEmpty()) {
             throw new IllegalArgumentException("Локомотив " + blockOnLocoDTO.getTypeLoco() + " с № " + blockOnLocoDTO.getLocoNumber() + " не найден");
         }
-        BlockOnLoco blockOnLoco = new BlockOnLoco(blockOnLocoDTO.getBlockName(), blockOnLocoDTO.getBlockNumber());
+        BlockOnLoco blockOnLoco = new BlockOnLoco(blockOnLocoDTO.getBlockName(), blockOnLocoDTO.getBlockNumber(), blockOnLocoDTO.getDateOfIssue());
         blockOnLoco.setLocoList(locoList.get());
         blockOnLoco = blockOnLocoRepository.save(blockOnLoco);
         return convertToDTO(blockOnLoco);
@@ -99,6 +99,7 @@ public class BlockOnLocoService {
             BlockOnLoco blockOnLoco = optionalBlockOnLoco.get();
             blockOnLoco.setBlockName(blockOnLocoDTO.getBlockName());
             blockOnLoco.setBlockNumber(blockOnLocoDTO.getBlockNumber());
+            blockOnLoco.setDateOfIssue(blockOnLocoDTO.getDateOfIssue());
             blockOnLoco.setLocoList(locoList.get());
             blockOnLoco = blockOnLocoRepository.save(blockOnLoco);
             return convertToDTO(blockOnLoco);
@@ -137,11 +138,11 @@ public class BlockOnLocoService {
         String typeLoco = locoList.getTypeLoco();
         String locoNumber = locoList.getLocoNumber();
         return new BlockOnLocoDTO(blockOnLoco.getId(), blockOnLoco.getBlockName(), blockOnLoco.getBlockNumber(),
-                blockOnLoco.getLocoList().getId(), typeLoco, locoNumber);
+                blockOnLoco.getDateOfIssue(), blockOnLoco.getLocoList().getId(), typeLoco, locoNumber);
     }
 
     public BlockOnLoco convertToEntity(BlockOnLocoDTO blockOnLocoDTO) {
-        BlockOnLoco blockOnLoco = new BlockOnLoco(blockOnLocoDTO.getBlockName(), blockOnLocoDTO.getBlockNumber());
+        BlockOnLoco blockOnLoco = new BlockOnLoco(blockOnLocoDTO.getBlockName(), blockOnLocoDTO.getBlockNumber(), blockOnLocoDTO.getDateOfIssue());
         Optional<LocoList> locoList = locoListRepository.findById(blockOnLocoDTO.getLocoListId());
         locoList.ifPresent(blockOnLoco::setLocoList);
         return blockOnLoco;

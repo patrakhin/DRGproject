@@ -4,16 +4,19 @@ public class BlockOnLocoDTO {
     private Long id;
     private String blockName;
     private String blockNumber;
+    private String dateOfIssue;
+
     private Long locoListId;
     private String typeLoco;
     private String locoNumber;
 
     public BlockOnLocoDTO() {}
 
-    public BlockOnLocoDTO(Long id, String blockName, String blockNumber, Long locoListId, String typeLoco, String locoNumber) {
+    public BlockOnLocoDTO(Long id, String blockName, String blockNumber, String dateOfIssue, Long locoListId, String typeLoco, String locoNumber) {
         this.id = id;
         this.blockName = blockName;
         this.blockNumber = blockNumber;
+        this.dateOfIssue = dateOfIssue;
         this.locoListId = locoListId;
         this.typeLoco = typeLoco;
         this.locoNumber = locoNumber;
@@ -67,5 +70,13 @@ public class BlockOnLocoDTO {
 
     public void setLocoNumber(String locoNumber) {
         this.locoNumber = locoNumber;
+    }
+
+    public String getDateOfIssue() {
+        return dateOfIssue;
+    }
+
+    public void setDateOfIssue(String dateOfIssue) {
+        this.dateOfIssue = dateOfIssue;
     }
 }

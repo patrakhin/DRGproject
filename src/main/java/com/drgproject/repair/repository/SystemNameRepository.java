@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SystemNameRepository extends JpaRepository<SystemName, Long> {
+    SystemName findBySysName(String systemName);
 }
