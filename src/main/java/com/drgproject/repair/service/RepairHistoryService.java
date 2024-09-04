@@ -2,6 +2,7 @@ package com.drgproject.repair.service;
 
 import com.drgproject.repair.RepairHistoryMapper;
 import com.drgproject.repair.dto.LocoListDTO;
+import com.drgproject.repair.dto.RepairedLocoDTO;
 import com.drgproject.repair.repository.LocoListRepository;
 import com.drgproject.repair.repository.RepairHistoryRepository;
 import com.drgproject.repair.dto.RepairHistoryDto;
@@ -97,5 +98,32 @@ public class RepairHistoryService {
 
         // Формируем сокращенное имя
         return String.format("%s %s.%s.", lastName, firstNameInitial, middleNameInitial);
+    }
+
+    // Общий отчет по всем Регионам и депо
+    public List<RepairedLocoDTO> getRepairedLocos() {
+        return repairHistoryRepository.findAllRepairedLocos();
+    }
+
+    // Метод для отчета с учетом типа системы "СПСТ"
+    public List<RepairedLocoDTO> getRepairedLocosWithTypeSPS(String depot) {
+        return repairHistoryRepository.findRepairedLocosWithTypeSPS(depot);
+    }
+
+    // Метод для отчета без учета типа системы "СПСТ"
+    public List<RepairedLocoDTO> getRepairedLocosWithoutTypeSPS(String depot) {
+        return repairHistoryRepository.findRepairedLocosWithoutTypeSPS(depot);
+    }
+
+    // Метод для отчета с учетом типа системы "СПСТ" с фильтрацией по дате и депо
+    public List<RepairedLocoDTO> getRepairedLocosWithTypeSPS(String repairDepot, LocalDate startDate, LocalDate endDate) {
+        // Вызов метода репозитория с фильтрацией по дате и депо
+        return repairHistoryRepository.findRepairedLocosWithTypeSPS(repairDepot, startDate, endDate);
+    }
+
+    // Метод для отчета с учетом без системы "СПСТ" и фильтрацией по дате
+    public List<RepairedLocoDTO> getRepairedLocosWithoutSPS(String repairDepot, LocalDate startDate, LocalDate endDate) {
+        // Вызов метода репозитория с фильтрацией по дате и депо
+        return repairHistoryRepository.findRepairedLocosWithoutTypeSPS(repairDepot, startDate, endDate);
     }
 }

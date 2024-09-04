@@ -3,40 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Создание блока на локомотиве</title>
+    <title>Монтаж блока на секцию</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
 <div class="container mt-5">
-    <h2>Введите данные блока и локомотива</h2>
-    <form th:action="@{/block-on-locos/create}" method="post" th:object="${block}">
+    <h2>Введите данные блока и секции</h2>
+    <form id="createBlockForm" th:action="@{/block-on-locos/create}" method="post" th:object="${block}">
         <div class="form-group">
-            <label for="locoNumber">Номер локомотива:</label>
-            <input type="text" class="form-control" id="locoNumber" th:field="*{locoNumber}" required>
+            <label for="typeLoco">Серия локомотива:</label>
+            <select class="form-control" id="typeLoco" th:field="*{typeLoco}">
+                <option value="">Выберите серию</option>
+                <option th:each="type : ${typeLocos}" th:value="${type.locoType}" th:text="${type.locoType}"></option>
+            </select>
         </div>
-        <div class="form-group">
-            <label for="typeLoco">Тип локомотива:</label>
-            <input type="text" class="form-control" id="typeLoco" th:field="*{typeLoco}" required>
+        <div class="mb-3">
+            <label for="locoNumber" class="form-label">Номер и индекс секции, например: 1111А</label>
+            <input type="text" class="form-control" id="locoNumber" th:field="*{locoNumber}" required>
+            <div class="invalid-feedback">Корректно заполните поле</div>
         </div>
         <div class="form-group">
             <label for="blockName">Название блока:</label>
-            <input type="text" class="form-control" id="blockName" th:field="*{blockName}" required>
+            <select class="form-control" id="blockName" th:field="*{blockName}">
+                <option value="">Выберите блок</option>
+                <option th:each="block : ${blocksList}" th:value="${block}" th:text="${block}"></option>
+            </select>
         </div>
         <div class="form-group">
             <label for="blockNumber">Номер блока:</label>
             <input type="text" class="form-control" id="blockNumber" th:field="*{blockNumber}" required>
         </div>
         <div class="form-group">
-            <label for="dateOfIssue">Дата выпуска:</label>
-            <input type="text" class="form-control" id="dateOfIssue" th:field="*{dateOfIssue}" required>
+            <label for="dateOfIssue">Дата выпуска в формате дд.мм.гггг например: 30.03.1976</label>
+            <input type="text" class="form-control" id="dateOfIssue" th:field="*{dateOfIssue}" placeholder="дд.мм.гггг" required>
+            <div class="invalid-feedback">Введите дату в формате дд.мм.гггг</div>
         </div>
-        <button type="submit" class="btn btn-primary">Создать</button>
+        <button type="submit" class="btn btn-primary">Установить на секцию</button>
+        <div class="row mt-3">
+            <div class="col-12 text-end">
+                <a href="/block-on-locos" class="btn btn-link">Отмена</a>
+            </div>
+        </div>
     </form>
-    <div class="row mt-3">
-        <div class="col-12 text-end">
-            <a href="/block-on-locos" class="btn btn-link">Назад</a>
-        </div>
-    </div>
 </div>
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Bootstrap Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // Проверяем, есть ли сообщение об ошибке
+        if ($('#errorMessage').length) {
+            // Делаем задержку на 2 секунды, затем редирект
+            setTimeout(function() {
+                window.location.href = "/block-on-locos/select-system";
+            }, 2000);
+        }
+    });
+    // Функция для проверки существования даты
+    function isValidDate(dateString) {
+        var parts = dateString.split('.');
+        var day = parseInt(parts[0], 10);
+        var month = parseInt(parts[1], 10) - 1; // Месяцы в JavaScript от 0 до 11
+        var year = parseInt(parts[2], 10);
+
+        var date = new Date(year, month, day);
+        return date.getFullYear() === year && date.getMonth() === month && date.getDate() === day;
+    }
+
+    $('#createBlockForm').on('submit', function(event) {
+        var locoNumber = $('#locoNumber').val();
+        var locoNumberPattern = /^[0-9]{2,4}[A-ZА-Я]$/;
+        var isValid = true;
+
+        // Валидация номера секции
+        if (!locoNumberPattern.test(locoNumber)) {
+            isValid = false;
+            $('#locoNumber').addClass('is-invalid');
+        } else {
+            $('#locoNumber').removeClass('is-invalid');
+        }
+
+        // Валидация поля "Дата выпуска"
+        var dateOfIssue = $('#dateOfIssue').val();
+        var datePattern = /^(0[1-9]|[12][0-9]|3[01])\.(0[1-9]|1[0-2])\.(19|20)\d{2}$/;
+
+        if (!datePattern.test(dateOfIssue) || !isValidDate(dateOfIssue)) {
+            isValid = false;
+            $('#dateOfIssue').addClass('is-invalid');
+        } else {
+            $('#dateOfIssue').removeClass('is-invalid');
+        }
+
+        if (!isValid) {
+            event.preventDefault(); // Предотвращаем отправку формы, если есть ошибки
+        }
+    });
+</script>
 </body>
 </html>

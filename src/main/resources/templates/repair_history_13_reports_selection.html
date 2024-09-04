@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Отчеты выполненных работ</title>
+  <!-- Подключение Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <!-- Дополнительные стили -->
+  <style>
+    body {
+      padding: 20px;
+      font-family: Arial, sans-serif;
+    }
+    h1 {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .btn-container {
+      margin: 10px 0;
+    }
+    .btn-container a {
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1 class="text-center">Отчеты выполненных работ</h1>
+  <div class="row">
+    <div class="col-6 col-md-4 btn-container d-flex justify-content-center">
+      <a href="/repair_history/repaired-locos" class="btn btn-primary w-100">Общий отчет по сети дорог</a>
+    </div>
+    <div class="col-6 col-md-4 btn-container d-flex justify-content-center">
+      <a href="/repair_history/select-parameters" class="btn btn-primary w-100">Отчет по депо ремонта СПСТ/без СПСТ</a>
+    </div>
+    <div class="col-6 col-md-4 btn-container d-flex justify-content-center">
+      <a href="/repair_history/filt-report-sps" class="btn btn-primary w-100">Отчет по депо ремонта СПСТ на дату</a>
+    </div>
+    <div class="col-6 col-md-4 btn-container d-flex justify-content-center">
+      <a href="/repair_history/filt-rep-sps" class="btn btn-primary w-100">Отчет по депо ремонта для других систем на дату</a>
+    </div>
+  </div>
+</div>
+<div class="row mt-3">
+  <div class="col-12 text-end">
+    <a href="/navigation_bar" class="btn btn-link">Панель навигации</a>
+  </div>
+</div>
+
+<!-- Подключение Bootstrap JS и Popper.js для корректной работы Bootstrap компонентов -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

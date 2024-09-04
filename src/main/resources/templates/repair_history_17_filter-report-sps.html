@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Выбор параметров отчета</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    <div class="row justify-content-center mt-4">
+        <div class="col-12 text-center mb-4">
+            <h1>Выберете депо выполнения ремонта и даты для формирования отчета</h1>
+        </div>
+        <div class="col-12">
+            <form action="/repair_history/gen-rep-sps" method="get">
+                <div class="mb-3 row">
+                    <label for="region" class="col-sm-2 col-form-label">Регион:</label>
+                    <div class="col-sm-4">
+                        <select id="region" name="region" class="form-select" required>
+                            <option value="">Выберите регион</option>
+                            <option th:each="region : ${regions}" th:value="${region.name}" th:text="${region.name}"></option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label for="homeDepot" class="col-sm-2 col-form-label">Депо:</label>
+                    <div class="col-sm-4">
+                        <select id="homeDepot" name="depot" class="form-select" required>
+                            <option value="">Выберите депо</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label for="startDate" class="col-sm-2 col-form-label">Начальная дата:</label>
+                    <div class="col-sm-4">
+                        <input type="date" id="startDate" name="startDate" class="form-control" required>
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label for="endDate" class="col-sm-2 col-form-label">Конечная дата:</label>
+                    <div class="col-sm-4">
+                        <input type="date" id="endDate" name="endDate" class="form-control" required>
+                    </div>
+                </div>
+                <div class="text-center mb-3">
+                    <button type="submit" class="btn btn-primary">Сформировать отчет</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="row mt-3">
+    <div class="col-12 text-end">
+        <a href="/repair_history/reports" class="btn btn-link">Отчеты</a>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#region').change(function() {
+            const selectedRegion = $(this).val();
+            loadDepots(selectedRegion);
+        });
+
+        function loadDepots(regionName) {
+            const $homeDepotSelect = $('#homeDepot');
+            $homeDepotSelect.empty();
+            $homeDepotSelect.append($('<option></option>').text('Выберите депо'));
+            if (regionName) {
+                $.ajax({
+                    url: '/repair_history/depots',
+                    type: 'GET',
+                    data: { regionName: regionName },
+                    success: function(data) {
+                        $.each(data, function(index, depot) {
+                            const option = $('<option></option>').attr('value', depot.depot).text(depot.depot);
+                            $homeDepotSelect.append(option);
+                        });
+                    },
+                    error: function() {
+                        alert('Ошибка при загрузке депо');
+                    }
+                });
+            }
+        }
+    });
+</script>
+</body>
+</html>

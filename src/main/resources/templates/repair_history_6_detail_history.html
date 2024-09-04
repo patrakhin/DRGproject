@@ -13,6 +13,19 @@
       max-width: 600px;
       margin-top: 50px;
     }
+    .block-info {
+      border: 2px solid #007bff; /* Синяя рамка */
+      border-radius: 5px; /* Скругление углов */
+      padding: 15px; /* Отступы внутри блока */
+      margin-bottom: 15px; /* Отступ снизу */
+      background-color: #e9f5ff; /* Светло-синий фон */
+    }
+    .block-info p {
+      margin: 0; /* Убираем отступы у параграфов */
+    }
+    .block-info label {
+      font-weight: bold; /* Жирное начертание для меток */
+    }
   </style>
 </head>
 <body>
@@ -27,20 +40,110 @@
       <p><strong>Депо приписки:</strong> <span th:text="${repairHistoryDto.homeDepot}"></span></p>
       <p><strong>Тип локомотива:</strong> <span th:text="${repairHistoryDto.typeLoco}"></span></p>
       <p><strong>Номер локомотива:</strong> <span th:text="${repairHistoryDto.locoNumber}"></span></p>
+      <p><strong>Депо ремонта:</strong> <span th:text="${repairHistoryDto.repairDepot}"></span></p>
       <p><strong>Позиция ремонта:</strong> <span th:text="${repairHistoryDto.positionRepair}"></span></p>
       <p><strong>Тип системы:</strong> <span th:text="${repairHistoryDto.typeSystem}"></span></p>
       <p><strong>Сотрудник:</strong> <span th:text="${repairHistoryDto.employee}"></span></p>
       <p><strong>Результат осмотра:</strong> <span th:text="${repairHistoryDto.inspectionResult}"></span></p>
       <p><strong>Результат работы:</strong> <span th:text="${repairHistoryDto.workResult}"></span></p>
-      <p><strong>Пломбы контрольного блока:</strong> <span th:text="${repairHistoryDto.controlBlockSeal}"></span></p>
-      <p><strong>Пломбы блока питания:</strong> <span th:text="${repairHistoryDto.powerBlockSeal}"></span></p>
-      <p><strong>Пломбы блока связи:</strong> <span th:text="${repairHistoryDto.comBlockSeal}"></span></p>
-      <p><strong>Пломбы блока ДУ:</strong> <span th:text="${repairHistoryDto.remoteContrSeal}"></span></p>
-      <p><strong>Ремонтное депо:</strong> <span th:text="${repairHistoryDto.repairDepot}"></span></p>
+
+      <div class="block-info" th:if="${countBlocks.intValue() >= 1}">
+        <label for="block1Seal">Блок: <span th:text="${blocksOnLoco[0] != null ? blocksOnLoco[0] : 'block1Seal'}"></span></label>
+        <p>Номер блока: <span th:text="${blocksOnLocoList.get(0).blockNumber}"></span></p>
+        <p>Дата изготовления (срок годности 2 года): <span th:text="${blocksOnLocoList.get(0).dateOfIssue}"></span></p>
+        <!-- Проверка просроченности блока -->
+        <p th:if="${isBlockExpiredList[0]}" style="color: red;"><strong>Блок просрочен</strong></p>
+        <p>Номер пломбы: <span id="block1Seal" th:text="${repairHistoryDto.getBlock1Seal()}"></span></p>
+      </div>
+
+      <div class="block-info" th:if="${countBlocks.intValue() >= 2}">
+        <label for="block2Seal">Блок: <span th:text="${blocksOnLoco[1] != null ? blocksOnLoco[1] : 'block2Seal'}"></span></label>
+        <p>Номер блока: <span th:text="${blocksOnLocoList.get(1).blockNumber}"></span></p>
+        <p>Дата изготовления (срок годности 2 года): <span th:text="${blocksOnLocoList.get(1).dateOfIssue}"></span></p>
+        <!-- Проверка просроченности блока -->
+        <p th:if="${isBlockExpiredList[1]}" style="color: red;"><strong>Блок просрочен</strong></p>
+        <p>Номер пломбы: <span id="block2Seal" th:text="${repairHistoryDto.getBlock2Seal()}"></span></p>
+      </div>
+
+      <div class="block-info" th:if="${countBlocks.intValue() >= 3}">
+        <label for="block3Seal">Блок: <span th:text="${blocksOnLoco[2] != null ? blocksOnLoco[2] : 'block3Seal'}"></span></label>
+        <p>Номер блока: <span th:text="${blocksOnLocoList.get(2).blockNumber}"></span></p>
+        <p>Дата изготовления (срок годности 2 года): <span th:text="${blocksOnLocoList.get(2).dateOfIssue}"></span></p>
+        <!-- Проверка просроченности блока -->
+        <p th:if="${isBlockExpiredList[2]}" style="color: red;"><strong>Блок просрочен</strong></p>
+        <p>Номер пломбы: <span id="block3Seal" th:text="${repairHistoryDto.getBlock3Seal()}"></span></p>
+      </div>
+
+      <div class="block-info" th:if="${countBlocks.intValue() >= 4}">
+        <label for="block4Seal">Блок: <span th:text="${blocksOnLoco[3] != null ? blocksOnLoco[3] : 'block4Seal'}"></span></label>
+        <p>Номер блока: <span th:text="${blocksOnLocoList.get(3).blockNumber}"></span></p>
+        <p>Дата изготовления (срок годности 2 года): <span th:text="${blocksOnLocoList.get(3).dateOfIssue}"></span></p>
+        <!-- Проверка просроченности блока -->
+        <p th:if="${isBlockExpiredList[3]}" style="color: red;"><strong>Блок просрочен</strong></p>
+        <p>Номер пломбы: <span id="block4Seal" th:text="${repairHistoryDto.getBlock4Seal()}"></span></p>
+      </div>
+
+      <div class="block-info" th:if="${countBlocks.intValue() >= 5}">
+        <label for="block5Seal">Блок: <span th:text="${blocksOnLoco[4] != null ? blocksOnLoco[4] : 'block5Seal'}"></span></label>
+        <p>Номер блока: <span th:text="${blocksOnLocoList.get(4).blockNumber}"></span></p>
+        <p>Дата изготовления (срок годности 2 года): <span th:text="${blocksOnLocoList.get(4).dateOfIssue}"></span></p>
+        <!-- Проверка просроченности блока -->
+        <p th:if="${isBlockExpiredList[4]}" style="color: red;"><strong>Блок просрочен</strong></p>
+        <p>Номер пломбы: <span id="block5Seal" th:text="${repairHistoryDto.getBlock5Seal()}"></span></p>
+      </div>
+
+      <div class="block-info" th:if="${countBlocks.intValue() >= 6}">
+        <label for="block6Seal">Блок: <span th:text="${blocksOnLoco[5] != null ? blocksOnLoco[5] : 'block6Seal'}"></span></label>
+        <p>Номер блока: <span th:text="${blocksOnLocoList.get(5).blockNumber}"></span></p>
+        <p>Дата изготовления (срок годности 2 года): <span th:text="${blocksOnLocoList.get(6).dateOfIssue}"></span></p>
+        <!-- Проверка просроченности блока -->
+        <p th:if="${isBlockExpiredList[5]}" style="color: red;"><strong>Блок просрочен</strong></p>
+        <p>Номер пломбы: <span id="block6Seal" th:text="${repairHistoryDto.getBlock6Seal()}"></span></p>
+      </div>
+
+      <div class="block-info" th:if="${countBlocks.intValue() >= 7}">
+        <label for="block7Seal">Блок: <span th:text="${blocksOnLoco[6] != null ? blocksOnLoco[6] : 'block7Seal'}"></span></label>
+        <p>Номер блока: <span th:text="${blocksOnLocoList.get(6).blockNumber}"></span></p>
+        <p>Дата изготовления (срок годности 2 года): <span th:text="${blocksOnLocoList.get(6).dateOfIssue}"></span></p>
+        <!-- Проверка просроченности блока -->
+        <p th:if="${isBlockExpiredList[6]}" style="color: red;"><strong>Блок просрочен</strong></p>
+        <p>Номер пломбы: <span id="block7Seal" th:text="${repairHistoryDto.getBlock7Seal()}"></span></p>
+      </div>
+
+      <div class="block-info" th:if="${countBlocks.intValue() >= 8}">
+        <label for="block8Seal">Блок: <span th:text="${blocksOnLoco[7] != null ? blocksOnLoco[7] : 'block8Seal'}"></span></label>
+        <p>Номер блока: <span th:text="${blocksOnLocoList.get(7).blockNumber}"></span></p>
+        <p>Дата изготовления (срок годности 2 года): <span th:text="${blocksOnLocoList.get(7).dateOfIssue}"></span></p>
+        <!-- Проверка просроченности блока -->
+        <p th:if="${isBlockExpiredList[7]}" style="color: red;"><strong>Блок просрочен</strong></p>
+        <p>Номер пломбы: <span id="block8Seal" th:text="${repairHistoryDto.getBlock8Seal()}"></span></p>
+      </div>
+
+      <div class="block-info" th:if="${countBlocks.intValue() >= 9}">
+        <label for="block9Seal">Блок: <span th:text="${blocksOnLoco[8] != null ? blocksOnLoco[8] : 'block9Seal'}"></span></label>
+        <p>Номер блока: <span th:text="${blocksOnLocoList.get(8).blockNumber}"></span></p>
+        <p>Дата изготовления (срок годности 2 года): <span th:text="${blocksOnLocoList.get(8).dateOfIssue}"></span></p>
+        <!-- Проверка просроченности блока -->
+        <p th:if="${isBlockExpiredList[8]}" style="color: red;"><strong>Блок просрочен</strong></p>
+        <p>Номер пломбы: <span id="block9Seal" th:text="${repairHistoryDto.getBlock9Seal()}"></span></p>
+      </div>
+
+      <div class="block-info" th:if="${countBlocks.intValue() >= 10}">
+        <label for="block10Seal">Блок: <span th:text="${blocksOnLoco[9] != null ? blocksOnLoco[9] : 'block10Seal'}"></span></label>
+        <p>Номер блока: <span th:text="${blocksOnLocoList.get(9).blockNumber}"></span></p>
+        <p>Дата изготовления (срок годности 2 года): <span th:text="${blocksOnLocoList.get(9).dateOfIssue}"></span></p>
+        <!-- Проверка просроченности блока -->
+        <p th:if="${isBlockExpiredList[9]}" style="color: red;"><strong>Блок просрочен</strong></p>
+        <p>Номер пломбы: <span id="block10Seal" th:text="${repairHistoryDto.getBlock10Seal()}"></span></p>
+      </div>
+
     </div>
-    <form class="mb-3">
+    <form class="mb-3" th:action="@{/repair_history/repair_history}" method="post">
       <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-      <button formaction="/repair_history/work_bar?typeLoco=${typeLoco}&numberLoco=${numberLoco}" formmethod="get" class="btn btn-link">Возврат на Панель Работ</button>
+      <input type="hidden" name="typeLoco" th:value="${typeLoco}" />
+      <input type="hidden" name="firstNumber" th:value="${firstNumber}" />
+      <input type="hidden" name="sectionNumber" th:value="${numberLoco}" />
+      <button type="submit" class="btn btn-link">Возврат к Истории ремонта</button>
     </form>
   </div>
 </div>

@@ -16,10 +16,16 @@ public class RepairHistoryDto {
     private String employee;
     private String inspectionResult;
     private String workResult;
-    private String controlBlockSeal;
-    private String powerBlockSeal;
-    private String comBlockSeal;
-    private String remoteContrSeal;
+    private String block1Seal;
+    private String block2Seal;
+    private String block3Seal;
+    private String block4Seal;
+    private String block5Seal;
+    private String block6Seal;
+    private String block7Seal;
+    private String block8Seal;
+    private String block9Seal;
+    private String block10Seal;
     private String repairDepot;
 
     // Default constructor
@@ -30,8 +36,10 @@ public class RepairHistoryDto {
     public RepairHistoryDto(String homeDepot, String typeLoco, String locoNumber,
                             String positionRepair, String typeSystem,
                             String employee, String inspectionResult,
-                            String workResult, String controlBlockSeal, String powerBlockSeal,
-                            String comBlockSeal, String remoteContrSeal, String repairDepot) {
+                            String workResult, String block1Seal, String block2Seal,
+                            String block3Seal, String block4Seal, String block5Seal,
+                            String block6Seal, String block7Seal, String block8Seal,
+                            String block9Seal, String block10Seal, String repairDepot) {
         this.repairDate = LocalDate.now();
         this.homeDepot = homeDepot;
         this.typeLoco = typeLoco;
@@ -41,10 +49,16 @@ public class RepairHistoryDto {
         this.employee = employee;
         this.inspectionResult = inspectionResult;
         this.workResult = workResult;
-        this.controlBlockSeal = controlBlockSeal;
-        this.powerBlockSeal = powerBlockSeal;
-        this.comBlockSeal = comBlockSeal;
-        this.remoteContrSeal = remoteContrSeal;
+        this.block1Seal = block1Seal;
+        this.block2Seal = block2Seal;
+        this.block3Seal = block3Seal;
+        this.block4Seal = block4Seal;
+        this.block5Seal = block5Seal;
+        this.block6Seal = block6Seal;
+        this.block7Seal = block7Seal;
+        this.block8Seal = block8Seal;
+        this.block9Seal = block9Seal;
+        this.block10Seal = block10Seal;
         this.repairDepot = repairDepot;
     }
 
@@ -129,36 +143,84 @@ public class RepairHistoryDto {
         this.workResult = workResult;
     }
 
-    public String getControlBlockSeal() {
-        return controlBlockSeal;
+    public String getBlock1Seal() {
+        return block1Seal;
     }
 
-    public void setControlBlockSeal(String controlBlockSeal) {
-        this.controlBlockSeal = controlBlockSeal;
+    public void setBlock1Seal(String block1Seal) {
+        this.block1Seal = block1Seal;
     }
 
-    public String getPowerBlockSeal() {
-        return powerBlockSeal;
+    public String getBlock2Seal() {
+        return block2Seal;
     }
 
-    public void setPowerBlockSeal(String powerBlockSeal) {
-        this.powerBlockSeal = powerBlockSeal;
+    public void setBlock2Seal(String block2Seal) {
+        this.block2Seal = block2Seal;
     }
 
-    public String getComBlockSeal() {
-        return comBlockSeal;
+    public String getBlock3Seal() {
+        return block3Seal;
     }
 
-    public void setComBlockSeal(String comBlockSeal) {
-        this.comBlockSeal = comBlockSeal;
+    public void setBlock3Seal(String block3Seal) {
+        this.block3Seal = block3Seal;
     }
 
-    public String getRemoteContrSeal() {
-        return remoteContrSeal;
+    public String getBlock4Seal() {
+        return block4Seal;
     }
 
-    public void setRemoteContrSeal(String remoteContrSeal) {
-        this.remoteContrSeal = remoteContrSeal;
+    public void setBlock4Seal(String block4Seal) {
+        this.block4Seal = block4Seal;
+    }
+
+    public String getBlock5Seal() {
+        return block5Seal;
+    }
+
+    public void setBlock5Seal(String block5Seal) {
+        this.block5Seal = block5Seal;
+    }
+
+    public String getBlock6Seal() {
+        return block6Seal;
+    }
+
+    public void setBlock6Seal(String block6Seal) {
+        this.block6Seal = block6Seal;
+    }
+
+    public String getBlock7Seal() {
+        return block7Seal;
+    }
+
+    public void setBlock7Seal(String block7Seal) {
+        this.block7Seal = block7Seal;
+    }
+
+    public String getBlock8Seal() {
+        return block8Seal;
+    }
+
+    public void setBlock8Seal(String block8Seal) {
+        this.block8Seal = block8Seal;
+    }
+
+    public String getBlock9Seal() {
+        return block9Seal;
+    }
+
+    public void setBlock9Seal(String block9Seal) {
+        this.block9Seal = block9Seal;
+    }
+
+    public String getBlock10Seal() {
+        return block10Seal;
+    }
+
+    public void setBlock10Seal(String block10Seal) {
+        this.block10Seal = block10Seal;
     }
 
     public String getRepairDepot() {

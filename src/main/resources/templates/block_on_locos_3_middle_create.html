@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Выбор типа системы</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <h2>Выберите тип системы</h2>
+    <form th:action="@{/block-on-locos/create}" method="get" th:object="${blockForm}">
+        <div class="form-group">
+            <label for="typeSystem">Тип системы:</label>
+            <select class="form-control" id="typeSystem" th:field="*{typeSystem}">
+                <option value="">Выберите тип системы</option>
+                <option th:each="system : ${systemNames}" th:value="${system.sysName}" th:text="${system.sysName}"></option>
+            </select>
+        </div>
+        <!-- CSRF Token -->
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+        <button type="submit" class="btn btn-primary mt-3">Выбрать</button>
+    </form>
+</div>
+</body>
+</html>

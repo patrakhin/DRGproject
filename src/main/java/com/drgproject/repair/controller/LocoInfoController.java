@@ -23,15 +23,19 @@ public class LocoInfoController {
     private final HomeDepotService homeDepotService;
     private final BlockOnLocoService blockOnLocoService;
     private final LocoListService locoListService;
+    private final LocoFilterService locoFilterService;
+
 
     public LocoInfoController(LocoInfoService locoInfoService, TypeLocoService typeLocoService,
-                              RegionService regionService, HomeDepotService homeDepotService, BlockOnLocoService blockOnLocoService, LocoListService locoListService) {
+                              RegionService regionService, HomeDepotService homeDepotService,
+                              BlockOnLocoService blockOnLocoService, LocoListService locoListService, LocoFilterService locoFilterService) {
         this.locoInfoService = locoInfoService;
         this.typeLocoService = typeLocoService;
         this.regionService = regionService;
         this.homeDepotService = homeDepotService;
         this.blockOnLocoService = blockOnLocoService;
         this.locoListService = locoListService;
+        this.locoFilterService = locoFilterService;
     }
 
     @GetMapping("/manage")
@@ -184,6 +188,34 @@ public class LocoInfoController {
             return "redirect:/loco_info/create"; // Редирект на ту же страницу
         }
 
+        // Подготовка к проверке на занятость секций
+        String sectionLoco1 = section1;
+        String sectionLoco2 = section2;
+        String sectionLoco3 = section3;
+        String sectionLoco4 = section4;
+        List<String> sectionsNumber = new ArrayList<>();
+        sectionsNumber.add(sectionLoco1);
+        sectionsNumber.add(sectionLoco2);
+        sectionsNumber.add(sectionLoco3);
+        sectionsNumber.add(sectionLoco4);
+        //Получаем только те секции которые имеют номер
+        List<String> clearNumbers = locoInfoService.getClearLocoSections(sectionsNumber);
+        // Проверка на существование секций
+        for (String section : clearNumbers) {
+            boolean sectionExists = locoFilterService.ifSectionIsExist(region, homeDepot, typeLoco, section);
+            if (!sectionExists) {
+                redirectAttributes.addFlashAttribute("errorMessage", "Секция номер " + section + " не существует в свободных.");
+                return "redirect:/loco_info/create"; // Редирект на ту же страницу
+            }
+        }
+        // Проверка на свободность секций
+        for(String section : clearNumbers){
+            boolean sectionFree = locoFilterService.ifSectionIsFree(region, homeDepot, typeLoco, section);
+            if (!sectionFree) {
+                redirectAttributes.addFlashAttribute("errorMessage", "Секция номер " + section + " не свободна.");
+                return "redirect:/loco_info/create"; // Редирект на ту же страницу
+            }
+        }
         try {
             // Заполнение недостающих полей строкой "нет" и установка статуса оборудования
             LocoInfoDTO locoInfoDTO = fillMissingFieldsWithDefault(
@@ -192,6 +224,10 @@ public class LocoInfoController {
                     section4, section4Status
             );
 
+            // Делаем секции занятыми
+            for(String section : clearNumbers){
+                locoFilterService.updateSectionNonFree(region, homeDepot, typeLoco, section);
+            }
             // Создание локомотива
             locoInfoService.createLocoInfo(locoInfoDTO);
 
@@ -213,10 +249,17 @@ public class LocoInfoController {
 
     @PostMapping("/deleteByName")
     public String deleteHomeDepot(@RequestParam String locoUnit, @RequestParam String locoType, Model model) {
-
+        LocoInfoDTO locoForCreateSection = locoInfoService.getLocoInfoByNumber(locoUnit, locoType);
+        String homeRegion = locoForCreateSection.getRegion();
+        String homeDepot = locoForCreateSection.getHomeDepot();
+        List<String> sectionsNumber = locoInfoService.getLocoSections(locoForCreateSection);
         boolean isDeleted = locoInfoService.deleteLocoInfoByLocoUnit(locoUnit, locoType);
         if (isDeleted) {
-            model.addAttribute("successMessage", "Локомотив успешно расформирован");
+            // Для каждой секции в списке sectionsNumber вызываем createFreeSection
+            for (String sectionNumber : sectionsNumber) {
+                locoFilterService.createFreeSection(homeRegion, homeDepot, locoType, sectionNumber);
+            }
+            model.addAttribute("successMessage", "Локомотив успешно расформирован, секции освободились");
         } else {
             model.addAttribute("errorMessage", "Ошибка при расформировании локомотива");
         }

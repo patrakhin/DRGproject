@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Отчет выполненных работ</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+  <div class="row justify-content-center mt-4">
+    <div class="col-12 text-center mb-4">
+      <h1>Отчет выполненных работ</h1>
+      <h3>Депо: <span th:text="${depotName}"></span></h3>
+    </div>
+    <div class="col-12 text-end mb-3">
+      <!-- Кнопка для формирования отчета в Excel -->
+      <form th:action="@{/repair_history/gen-rep}" method="get" target="_blank">
+        <input type="hidden" name="depot" th:value="${depotName}">
+        <input type="hidden" name="startDate" th:value="${startDate}">
+        <input type="hidden" name="endDate" th:value="${endDate}">
+        <button type="submit" class="btn btn-primary">Сформировать отчет в Excel</button>
+      </form>
+    </div>
+    <div class="col-12">
+      <table class="table table-bordered table-striped">
+        <thead>
+        <tr>
+          <th>№ п/п</th>
+          <th>Дата ремонта</th>
+          <th>Депо приписки</th>
+          <th>Тип системы</th>
+          <th>Серия локомотива</th>
+          <th>Номер локомотива</th>
+          <th>Наименование работ</th>
+          <th>Количество выполненных работ</th>
+          <th>Фамилия исполнителя</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="loco, iter : ${repairedLocos}">
+          <td th:text="${iter.index + 1}"></td>
+          <td th:text="${loco.repairDateString}"></td>
+          <td th:text="${loco.homeDepot}"></td>
+          <td th:text="${loco.typeSystem}"></td>
+          <td th:text="${loco.typeLoco}"></td>
+          <td th:text="${loco.locoUnit}"></td>
+          <td th:text="${loco.positionRepair}"></td>
+          <td th:text="${loco.workCount}"></td>
+          <td th:text="${loco.employeeString}"></td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<div class="row mt-3">
+  <div class="col-12 text-end">
+    <a href="/repair_history/reports" class="btn btn-link">Отчеты</a>
+  </div>
+</div>
+</body>
+</html>

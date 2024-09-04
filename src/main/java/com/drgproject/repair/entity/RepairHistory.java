@@ -37,17 +37,35 @@ public class RepairHistory {
     @Column(name = "work_result")
     private String workResult;
 
-    @Column(name = "contr_dlock_seal")
-    private String controlBlockSeal;
+    @Column(name = "block1_seal")
+    private String block1Seal = "нет";
 
-    @Column(name = "power_block_seal")
-    private String powerBlockSeal;
+    @Column(name = "block2_seal")
+    private String block2Seal = "нет";
 
-    @Column(name = "com_block_seal")
-    private String comBlockSeal;
+    @Column(name = "block3_seal")
+    private String block3Seal = "нет";
 
-    @Column(name = "rem_contr_seal")
-    private String remoteContrSeal;
+    @Column(name = "block4_seal")
+    private String block4Seal = "нет";
+
+    @Column(name = "block5_seal")
+    private String block5Seal = "нет";
+
+    @Column(name = "block6_seal")
+    private String block6Seal = "нет";
+
+    @Column(name = "block7_seal")
+    private String block7Seal = "нет";
+
+    @Column(name = "block8_seal")
+    private String block8Seal = "нет";
+
+    @Column(name = "block9_seal")
+    private String block9Seal = "нет";
+
+    @Column(name = "block10_seal")
+    private String block10Seal = "нет";
 
     @Column(name = "repair_depot")
     private String repairDepot;
@@ -57,8 +75,10 @@ public class RepairHistory {
     public RepairHistory(String homeDepot, String typeLoco, String locoNumber,
                          String positionRepair, String typeSystem,
                          String employee, String inspectionResult,
-                         String workResult, String controlBlockSeal, String powerBlockSeal,
-                         String comBlockSeal, String remoteContrSeal, String repairDepot) {
+                         String workResult, String block1Seal, String block2Seal,
+                         String block3Seal, String block4Seal, String block5Seal,
+                         String block6Seal, String block7Seal, String block8Seal,
+                         String block9Seal, String block10Seal, String repairDepot) {
         this.repairDate = LocalDate.now();
         this.homeDepot = homeDepot;
         this.typeLoco = typeLoco;
@@ -68,10 +88,16 @@ public class RepairHistory {
         this.employee = employee;
         this.inspectionResult = inspectionResult;
         this.workResult = workResult;
-        this.controlBlockSeal = controlBlockSeal;
-        this.powerBlockSeal = powerBlockSeal;
-        this.comBlockSeal = comBlockSeal;
-        this.remoteContrSeal = remoteContrSeal;
+        this.block1Seal = block1Seal != null ? block1Seal : "нет";
+        this.block2Seal = block2Seal != null ? block2Seal : "нет";
+        this.block3Seal = block3Seal != null ? block3Seal : "нет";
+        this.block4Seal = block4Seal != null ? block4Seal : "нет";
+        this.block5Seal = block5Seal != null ? block5Seal : "нет";
+        this.block6Seal = block6Seal != null ? block6Seal : "нет";
+        this.block7Seal = block7Seal != null ? block7Seal : "нет";
+        this.block8Seal = block8Seal != null ? block8Seal : "нет";
+        this.block9Seal = block9Seal != null ? block9Seal : "нет";
+        this.block10Seal = block10Seal != null ? block10Seal : "нет";
         this.repairDepot = repairDepot;
     }
 
@@ -155,36 +181,84 @@ public class RepairHistory {
         this.workResult = workResult;
     }
 
-    public String getControlBlockSeal() {
-        return controlBlockSeal;
+    public String getBlock1Seal() {
+        return block1Seal;
     }
 
-    public void setControlBlockSeal(String controlBlockSeal) {
-        this.controlBlockSeal = controlBlockSeal;
+    public void setBlock1Seal(String block1Seal) {
+        this.block1Seal = block1Seal;
     }
 
-    public String getPowerBlockSeal() {
-        return powerBlockSeal;
+    public String getBlock2Seal() {
+        return block2Seal;
     }
 
-    public void setPowerBlockSeal(String powerBlockSeal) {
-        this.powerBlockSeal = powerBlockSeal;
+    public void setBlock2Seal(String block2Seal) {
+        this.block2Seal = block2Seal;
     }
 
-    public String getComBlockSeal() {
-        return comBlockSeal;
+    public String getBlock3Seal() {
+        return block3Seal;
     }
 
-    public void setComBlockSeal(String comBlockSeal) {
-        this.comBlockSeal = comBlockSeal;
+    public void setBlock3Seal(String block3Seal) {
+        this.block3Seal = block3Seal;
     }
 
-    public String getRemoteContrSeal() {
-        return remoteContrSeal;
+    public String getBlock4Seal() {
+        return block4Seal;
     }
 
-    public void setRemoteContrSeal(String remoteContrSeal) {
-        this.remoteContrSeal = remoteContrSeal;
+    public void setBlock4Seal(String block4Seal) {
+        this.block4Seal = block4Seal;
+    }
+
+    public String getBlock5Seal() {
+        return block5Seal;
+    }
+
+    public void setBlock5Seal(String block5Seal) {
+        this.block5Seal = block5Seal;
+    }
+
+    public String getBlock6Seal() {
+        return block6Seal;
+    }
+
+    public void setBlock6Seal(String block6Seal) {
+        this.block6Seal = block6Seal;
+    }
+
+    public String getBlock7Seal() {
+        return block7Seal;
+    }
+
+    public void setBlock7Seal(String block7Seal) {
+        this.block7Seal = block7Seal;
+    }
+
+    public String getBlock8Seal() {
+        return block8Seal;
+    }
+
+    public void setBlock8Seal(String block8Seal) {
+        this.block8Seal = block8Seal;
+    }
+
+    public String getBlock9Seal() {
+        return block9Seal;
+    }
+
+    public void setBlock9Seal(String block9Seal) {
+        this.block9Seal = block9Seal;
+    }
+
+    public String getBlock10Seal() {
+        return block10Seal;
+    }
+
+    public void setBlock10Seal(String block10Seal) {
+        this.block10Seal = block10Seal;
     }
 
     public String getRepairDepot() {

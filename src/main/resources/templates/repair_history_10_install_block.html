@@ -30,9 +30,10 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="blockOnLocoDTO : ${blockOnLocoDTOS}" data-name-block="${blockOnLocoDTO.blockName}" data-block-number="${blockOnLocoDTO.blockNumber}">
+                <tr th:each="blockOnLocoDTO : ${blockOnLocoDTOS}" data-name-block="${blockOnLocoDTO.blockName}" data-block-number="${blockOnLocoDTO.blockNumber}" data-data-of-issue="${blockOnLocoDTO.dateOfIssue}">
                     <td th:text="${blockOnLocoDTO.blockName}"></td>
                     <td th:text="${blockOnLocoDTO.blockNumber}"></td>
+                    <td th:text="${blockOnLocoDTO.dateOfIssue}"></td>
                 </tr>
                 </tbody>
             </table>
@@ -55,14 +56,14 @@
             </div>
             <button type="submit" class="btn btn-primary">Установить блок</button>
         </form>
-        <div class="col-12 text-center mt-3">
-            <form th:action="@{/repair_history/search}" method="post">
-                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                <input type="hidden" name="typeLoco" th:value="${typeLoco}">
-                <input type="hidden" name="numberLoco" th:value="${numberLoco}">
-                <button type="submit" class="btn btn-primary">Перейти к панели работ</button>
-            </form>
-        </div>
+        <!-- Форма для возврата на панель работ -->
+        <form class="mb-3" th:action="@{/repair_history/search}" method="post">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+            <input type="hidden" name="typeLoco" th:value="${typeLoco}" />
+
+            <input type="hidden" name="numberLoco" th:value="${firstNumber}" />
+            <button type="submit" class="btn btn-link">Возврат на Панель Работ</button>
+        </form>
     </div>
 </div>
 </body>

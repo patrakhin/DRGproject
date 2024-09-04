@@ -2,6 +2,7 @@ package com.drgproject.repair.service;
 
 import com.drgproject.repair.dto.LocoInfoDTO;
 import com.drgproject.repair.entity.LocoInfo;
+import com.drgproject.repair.entity.LocoList;
 import com.drgproject.repair.repository.LocoInfoRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -67,6 +68,39 @@ public class LocoInfoService {
         }
     }
 
+    //Получение локомотива по номеру и серии
+    public LocoInfoDTO getLocoInfoByNumber(String locoUnit, String locoType){
+        Optional<LocoInfo> locoForSection = locoInfoRepository.findByLocoUnitAndLocoType(locoUnit, locoType);
+        if(locoForSection.isPresent()){
+            return convertToDTO(locoForSection.get());
+        }else {
+            throw new IllegalArgumentException("Локомотив " + locoUnit  + " для создания свободных секций не найден сервисный слой");
+        }
+    }
+
+    //Получение локомотива по номеру и серии для истории ремонта
+    public LocoInfoDTO getLocoByNumber(String locoUnit, String locoType){
+        Optional<LocoInfo> locoNumber = locoInfoRepository.findByLocoUnitAndLocoType(locoUnit, locoType);
+        return locoNumber.map(this::convertToDTO).orElse(null);
+    }
+
+    // Получение локомотива по номеру первой секции
+    public String getLocoByFirstNumberSection(String firstSectionNumber){
+        Optional <LocoInfo> numberLoco = locoInfoRepository.findLocoInfoByLocoSection1(firstSectionNumber);
+        if (numberLoco.isEmpty()){
+            return null;
+        }
+        return locoInfoRepository.findLocoInfoByLocoSection1(firstSectionNumber).get().getLocoUnit();
+    }
+
+    //поиск номера локомотива по первым двум цифрам
+    public List<String> getFindNumbersByPrefix(String prefix) {
+        return locoInfoRepository.findByLocoUnitStartingWith(prefix)
+                .stream()
+                .map(LocoInfo::getLocoUnit)
+                .toList();
+    }
+
     //Получение списка секций из локомотива
     public List<String> getLocoSections(LocoInfoDTO locoInfoDTO) {
         List<String> sectionsNumber = new ArrayList<>();
@@ -85,6 +119,23 @@ public class LocoInfoService {
         }
     }
 
+    //Получение "чистого" списка с номерами секций
+    public List<String> getClearLocoSections(List<String> locoSections) {
+        List<String> clearSectionsNumber = new ArrayList<>();
+
+        addClearSectionIfValid(clearSectionsNumber, locoSections.get(0));
+        addClearSectionIfValid(clearSectionsNumber, locoSections.get(1));
+        addClearSectionIfValid(clearSectionsNumber, locoSections.get(2));
+        addClearSectionIfValid(clearSectionsNumber, locoSections.get(3));
+
+        return clearSectionsNumber;
+    }
+
+    private void addClearSectionIfValid(List<String> sectionsNumber, String section) {
+        if (section != null && !section.isEmpty() && !section.contains("нет")) {
+            sectionsNumber.add(section);
+        }
+    }
     // Обновление LocoInfo
     public LocoInfo updateLocoInfo(Long id, LocoInfo updatedLocoInfo) {
         return locoInfoRepository.findById(id)

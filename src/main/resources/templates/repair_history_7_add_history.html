@@ -5,13 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Добавление записи о ремонте</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Скрыть все поля, которые не нужны */
+        .block-seal-field {
+            display: none;
+        }
+    </style>
 </head>
 <body>
 <div class="container mt-5">
     <h1 class="text-center">Добавление записи о ремонте</h1>
     <p class="text-center">на локомотиве <span th:text="${typeLoco}"></span> с номером <span th:text="${locoNumber}"></span> в депо <span th:text="${repairDepot}"></span></p>
-    <div th:if="${successMessage}" class="alert alert-success mt-3" th:text="${successMessage}"></div>
+    <div th:if="${successMessage2}" class="alert alert-success mt-3" th:text="${successMessage2}"></div>
     <div th:if="${errorMessage}" class="alert alert-danger mt-3" th:text="${errorMessage}"></div>
+    <div th:if="${errorMessage1}" class="alert alert-danger mt-3" th:text="${errorMessage1}"></div>
     <form th:action="@{/repair_history/add_history}" method="post" th:object="${repairHistoryDto}">
         <input type="hidden" name="repairDate" th:value="${repairDate}" />
         <input type="hidden" name="homeDepot" th:value="${homeDepot}" />
@@ -39,42 +46,93 @@
             <textarea id="workResult" name="workResult" th:field="*{workResult}" class="form-control" rows="1" cols="20" required></textarea>
         </div>
         <h2 class="text-center">Пломбируемые блоки</h2>
+        <!-- Показываем только те поля, которые нужны -->
         <div class="form-group mb-3">
-            <label for="controlBlockSeal" class="form-label">Номера пломб блока контроля</label>
-            <textarea id="controlBlockSeal" name="controlBlockSeal" th:field="*{controlBlockSeal}" class="form-control" rows="2" cols="20"></textarea>
+            <label for="block1Seal" class="form-label" th:if="${countBlocks.intValue() >= 1}">
+                Номер пломбы блока: <span th:text="${blocksOnLoco[0] != null ? blocksOnLoco[0] : 'block1Seal'}"></span>
+            </label>
+            <textarea id="block1Seal" name="block1Seal" th:field="*{block1Seal}" class="form-control" rows="2" cols="20"></textarea>
         </div>
-        <div class="form-group mb-3">
-            <label for="powerBlockSeal" class="form-label">Номера пломб блока питания</label>
-            <textarea id="powerBlockSeal" name="powerBlockSeal" th:field="*{powerBlockSeal}" class="form-control" rows="2" cols="20"></textarea>
+
+        <div class="form-group mb-3" th:if="${countBlocks.intValue() >= 2}">
+            <label for="block2Seal" class="form-label">
+                Номер пломбы блока: <span th:text="${blocksOnLoco[1] != null ? blocksOnLoco[1] : 'block2Seal'}"></span>
+            </label>
+            <textarea id="block2Seal" name="block2Seal" th:field="*{block2Seal}" class="form-control" rows="2" cols="20"></textarea>
         </div>
-        <div class="form-group mb-3">
-            <label for="comBlockSeal" class="form-label">Номера пломб блока коммутации</label>
-            <textarea id="comBlockSeal" name="comBlockSeal" th:field="*{comBlockSeal}" class="form-control" rows="2" cols="20"></textarea>
+
+        <div class="form-group mb-3"  th:if="${countBlocks.intValue() >= 3}">
+            <label for="block3Seal" class="form-label">
+                Номер пломбы блока: <span th:text="${blocksOnLoco[2] != null ? blocksOnLoco[2] : 'block3Seal'}"></span>
+            </label>
+            <textarea id="block3Seal" name="block3Seal" th:field="*{block3Seal}" class="form-control" rows="2" cols="20"></textarea>
         </div>
-        <div class="form-group mb-3">
-            <label for="remoteContrSeal" class="form-label">Номера пломб блока ДУ</label>
-            <textarea id="remoteContrSeal" name="remoteContrSeal" th:field="*{remoteContrSeal}" class="form-control" rows="2" cols="20"></textarea>
+
+        <div class="form-group mb-3"  th:if="${countBlocks.intValue() >= 4}">
+            <label for="block4Seal" class="form-label">
+                Номер пломбы блока: <span th:text="${blocksOnLoco[3] != null ? blocksOnLoco[3] : 'block4Seal'}"></span>
+            </label>
+            <textarea id="block4Seal" name="block4Seal" th:field="*{block4Seal}" class="form-control" rows="2" cols="20"></textarea>
         </div>
-        <div class="text-center">
+
+        <div class="form-group mb-3"  th:if="${countBlocks.intValue() >= 5}">
+            <label for="block5Seal" class="form-label">
+                Номер пломбы блока: <span th:text="${blocksOnLoco[4] != null ? blocksOnLoco[4] : 'block5Seal'}"></span>
+            </label>
+            <textarea id="block5Seal" name="block5Seal" th:field="*{block5Seal}" class="form-control" rows="2" cols="20"></textarea>
+        </div>
+
+        <div class="form-group mb-3" th:if="${countBlocks.intValue() >= 6}">
+            <label for="block6Seal" class="form-label">
+                Номер пломбы блока: <span th:text="${blocksOnLoco[5] != null ? blocksOnLoco[5] : 'block6Seal'}"></span>
+            </label>
+            <textarea id="block6Seal" name="block6Seal" th:field="*{block6Seal}" class="form-control" rows="2" cols="20"></textarea>
+        </div>
+
+        <div class="form-group mb-3"  th:if="${countBlocks.intValue() >= 7}">
+            <label for="block7Seal" class="form-label">
+                Номер пломбы блока: <span th:text="${blocksOnLoco[6] != null ? blocksOnLoco[6] : 'block7Seal'}"></span>
+            </label>
+            <textarea id="block7Seal" name="block7Seal" th:field="*{block7Seal}" class="form-control" rows="2" cols="20"></textarea>
+        </div>
+
+        <div class="form-group mb-3"  th:if="${countBlocks.intValue() >= 8}">
+            <label for="block8Seal" class="form-label">
+                Номер пломбы блока: <span th:text="${blocksOnLoco[7] != null ? blocksOnLoco[7] : 'block8Seal'}"></span>
+            </label>
+            <textarea id="block8Seal" name="block8Seal" th:field="*{block8Seal}" class="form-control" rows="2" cols="20"></textarea>
+        </div>
+
+        <div class="form-group mb-3"  th:if="${countBlocks.intValue() >= 9}">
+            <label for="block9Seal" class="form-label">
+                Номер пломбы блока: <span th:text="${blocksOnLoco[8] != null ? blocksOnLoco[8] : 'block9Seal'}"></span>
+            </label>
+            <textarea id="block9Seal" name="block9Seal" th:field="*{block9Seal}" class="form-control" rows="2" cols="20"></textarea>
+        </div>
+
+        <div class="form-group mb-3"  th:if="${countBlocks.intValue() >= 10}">
+            <label for="block10Seal" class="form-label">
+                Номер пломбы блока: <span th:text="${blocksOnLoco[9] != null ? blocksOnLoco[9] : 'block10Seal'}"></span>
+            </label>
+            <textarea id="block10Seal" name="block10Seal" th:field="*{block10Seal}" class="form-control" rows="2" cols="20"></textarea>
+        </div>
+
+        <div th:if="${errorMessage1 == null and successMessage2 == null}" class="text-center">
             <button type="submit" class="btn btn-primary">Добавить запись</button>
         </div>
     </form>
-    <div class="text-center mt-3">
-        <a href="/repair_history/work_bar" class="btn btn-link">Возврат на панель работ</a>
-    </div>
-    <div th:if="${successMessage}" class="alert alert-success mt-3" th:text="${successMessage}"></div>
+    <!-- Форма для возврата на панель работ -->
+    <form class="mb-3" th:action="@{/repair_history/repair_history}" method="post">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+        <input type="hidden" name="typeLoco" th:value="${typeLoco}" />
+        <input type="hidden" name="numberLoco" th:value="${firstNumber}" />
+        <input type="hidden" name="sectionNumber" th:value="${locoNumber}" />
+        <button type="submit" class="btn btn-link">Возврат на Панель Работ</button>
+    </form>
+    <div th:if="${successMessage2}" class="alert alert-success mt-3" th:text="${successMessage2}"></div>
     <div th:if="${errorMessage}" class="alert alert-danger mt-3" th:text="${errorMessage}"></div>
+    <div th:if="${errorMessage1}" class="alert alert-danger mt-3" th:text="${errorMessage1}"></div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    // Функция перенаправления после 3 секунд
-    document.addEventListener("DOMContentLoaded", function() {
-        if (document.querySelector('.alert-danger')) {
-            setTimeout(function() {
-                window.location.href = "/repair_history/work_bar"; // На панель работ
-            }, 3000);
-        }
-    });
-</script>
 </body>
 </html>

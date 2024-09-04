@@ -11,7 +11,14 @@
     <div class="row justify-content-center">
         <div class="col-12 text-center mb-3">
             <h1>Панель Работ</h1>
-            <p>Локомотив <span th:text="${typeLoco}"></span> с номером <span th:text="${numberLoco}"></span></p>
+            <p>Локомотив <span th:text="${typeLoco}"></span> номер <span th:text="${numberLoco}"></span></p>
+        </div>
+    </div>
+
+    <!-- Итерируем по списку sections, создавая набор кнопок для каждой секции -->
+    <div th:each="section : ${sections}" class="row justify-content-center mb-4">
+        <div class="col-12 text-center">
+            <h3>Секция: <span th:text="${section.locoNumber}"></span></h3>
         </div>
         <div class="col-12">
             <form class="mb-3">
@@ -19,19 +26,44 @@
                 <!-- Передача параметров в скрытых полях -->
                 <input type="hidden" name="typeLoco" th:value="${typeLoco}">
                 <input type="hidden" name="numberLoco" th:value="${numberLoco}">
+                <input type="hidden" name="sectionNumber" th:value="${section.locoNumber}">
 
-                <button formaction="/repair_history/repair_history" formmethod="post" class="btn btn-primary me-2">История Ремонта</button>
-                <button formaction="/repair_history/remove_block/prepare" formmethod="get" class="btn btn-primary me-2">Демонтаж Блоков</button>
-                <button formaction="/repair_history/cancel_remove_block" formmethod="get" class="btn btn-primary me-2">Отмена демонтажа Блоков</button>
-                <button formaction="/repair_history/install_block" formmethod="get" class="btn btn-primary me-2">Установка Блоков</button>
-                <button formaction="/repair_history/spare_parts" formmethod="get" class="btn btn-primary me-2">Зап.части и Материалы</button>
+                <!-- Используем классы Bootstrap для организации кнопок в два ряда на мобильных устройствах -->
+                <div class="row">
+                    <div class="col-6 mb-2">
+                        <button formaction="/repair_history/repair_history" formmethod="post" class="btn btn-primary w-100">История Ремонта</button>
+                    </div>
+                    <div class="col-6 mb-2">
+                        <!-- (чтобы кнопка стала активной - удаляем disabled )-->
+                        <button formaction="/repair_history/install_block" formmethod="get" class="btn btn-primary w-100" disabled>Установка Блоков</button>
+                    </div>
+                    <div class="col-6 mb-2">
+                        <button formaction="/repair_history/cancel_remove_block" formmethod="get" class="btn btn-primary w-100" disabled>Отмена демонтажа Блоков</button>
+                    </div>
+                    <div class="col-6 mb-2">
+                        <button formaction="/repair_history/remove_block/prepare" formmethod="get" class="btn btn-primary w-100" disabled>Демонтаж Блоков</button>
+                    </div>
+                    <div class="col-6">
+                        <button formaction="/repair_history/spare_parts" formmethod="get" class="btn btn-primary w-100" disabled>Зап.части и Материалы</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Вынесенная кнопка "Поиск локомотива" -->
+    <div class="row justify-content-center mt-4">
+        <div class="col-12 text-center">
+            <form>
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                 <button formaction="/repair_history/search" formmethod="get" class="btn btn-link">Поиск локомотива</button>
             </form>
         </div>
-        <div class="row mt-3">
-            <div class="col-12 text-end">
-                <a href="/logout" class="btn btn-link">Выход</a>
-            </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-12 text-end">
+            <a href="/logout" class="btn btn-link">Выход</a>
         </div>
     </div>
 </div>

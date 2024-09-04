@@ -10,10 +10,17 @@
 <body>
 <div class="container mt-5">
     <h1 class="text-center">Создание новой секции</h1>
-    <form th:action="@{/locos/create}" method="post" th:object="${locoList}">
+    <!-- Сообщения об ошибке и успехе -->
+    <div th:if="${errorMessage}" class="alert alert-danger mt-3" role="alert">
+        <p th:text="${errorMessage}"></p>
+    </div>
+    <div th:if="${successMessage}" class="alert alert-success mt-3" role="alert">
+        <p th:text="${successMessage}"></p>
+    </div>
+    <form id="createLocoForm" th:action="@{/locos/create}" method="post" th:object="${locoList}">
         <div class="mb-3">
             <label for="contractNumber" class="form-label">Номер договора</label>
-            <input type="text" class="form-control" id="contractNumber" th:field="*{contractNumber}">
+            <input type="text" class="form-control" id="contractNumber" th:field="*{contractNumber}" required>
         </div>
         <div class="mb-3">
             <label for="typeLoco" class="form-label">Серия локомотива</label>
@@ -42,7 +49,8 @@
         </div>
         <div class="mb-3">
             <label for="locoNumber" class="form-label">Номер и индекс секции, например: 1111А</label>
-            <input type="text" class="form-control" id="locoNumber" th:field="*{locoNumber}">
+            <input type="text" class="form-control" id="locoNumber" th:field="*{locoNumber}" required>
+            <div class="invalid-feedback">Корректно заполните поле</div>
         </div>
         <div class="mb-3">
             <label for="comment" class="form-label">Комментарий</label>
@@ -90,6 +98,19 @@
                         alert('Ошибка при загрузке депо');
                     }
                 });
+            }
+        });
+
+        // Валидация поля "Номер и индекс секции"
+        $('#createLocoForm').on('submit', function(event) {
+            var locoNumber = $('#locoNumber').val();
+            var locoNumberPattern = /^[0-9]{2,4}[A-ZА-Я]$/;
+
+            if (!locoNumberPattern.test(locoNumber)) {
+                event.preventDefault(); // Предотвращаем отправку формы
+                $('#locoNumber').addClass('is-invalid');
+            } else {
+                $('#locoNumber').removeClass('is-invalid');
             }
         });
     });

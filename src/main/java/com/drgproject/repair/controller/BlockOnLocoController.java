@@ -1,11 +1,13 @@
 package com.drgproject.repair.controller;
 
-import com.drgproject.repair.dto.BlockOnLocoDTO;
-import com.drgproject.repair.service.BlockOnLocoService;
+import com.drgproject.repair.dto.*;
+import com.drgproject.repair.service.*;
+import com.drgproject.service.LocoBlockService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -14,10 +16,23 @@ import java.util.List;
 public class BlockOnLocoController {
 
     private final BlockOnLocoService blockOnLocoService;
+    private final TypeLocoService typeLocoService;
+    private final RegionService regionService;
+    private final HomeDepotService homeDepotService;
+    private final SystemNameService systemNameService;
+    private final LocoBlockService locoBlockService;
+    private final LocoListService locoListService;
 
     @Autowired
-    public BlockOnLocoController(BlockOnLocoService blockOnLocoService) {
+    public BlockOnLocoController(BlockOnLocoService blockOnLocoService, TypeLocoService typeLocoService,
+                                 RegionService regionService, HomeDepotService homeDepotService, SystemNameService systemNameService, LocoBlockService locoBlockService, LocoListService locoListService) {
         this.blockOnLocoService = blockOnLocoService;
+        this.typeLocoService = typeLocoService;
+        this.regionService = regionService;
+        this.homeDepotService = homeDepotService;
+        this.systemNameService = systemNameService;
+        this.locoBlockService = locoBlockService;
+        this.locoListService = locoListService;
     }
 
     @GetMapping
@@ -32,15 +47,47 @@ public class BlockOnLocoController {
         return "block_on_locos_2_all";
     }
 
+    @GetMapping("/select-system")
+    public String showSelectSystemForm(Model model) {
+        // Получение всех типов систем и добавление их в модель
+        List<SystemNameDTO> systemNames = systemNameService.getAllSystemNames();
+        model.addAttribute("systemNames", systemNames);
+        model.addAttribute("blockForm", new BlockOnLocoFormDTO());
+        return "block_on_locos_3_middle_create"; // Шаблон для выбора системы
+    }
+
     @GetMapping("/create")
-    public String showCreateBlockForm(Model model) {
-        model.addAttribute("block", new BlockOnLocoDTO());
-        return "block_on_locos_3_create";
+    public String showCreateBlockForm(@RequestParam("typeSystem") String typeSystem, Model model) {
+        // Создаем новый объект DTO для блока
+        BlockOnLocoDTO blockOnLocoDTO = new BlockOnLocoDTO();
+
+        // Фильтруем блоки по выбранному типу системы и добавляем в модель
+        List<String> blocks = locoBlockService.getBlocksBySystemType(typeSystem);
+        model.addAttribute("blocksList", blocks);
+
+        // Список серий локомотива
+        List<TypeLocoDTO> typeLocos = typeLocoService.getAllTypeLocos();
+        model.addAttribute("typeLocos", typeLocos);
+
+        // Добавляем объект для заполнения формы
+        model.addAttribute("block", blockOnLocoDTO);
+
+        return "block_on_locos_3_create"; // Шаблон для создания блока
     }
 
     @PostMapping("/create")
-    public String createBlockOnLoco(@ModelAttribute BlockOnLocoDTO blockOnLocoDTO, Model model) {
+    public String createBlockOnLoco(@ModelAttribute BlockOnLocoDTO blockOnLocoDTO, @ModelAttribute("errorMessage") String errorMessage,Model model) {
+        String sectionNumber = blockOnLocoDTO.getLocoNumber();
+        String typeLoco = blockOnLocoDTO.getTypeLoco();
+        boolean locoSectionExists = locoListService.ifSectionExist(typeLoco, sectionNumber);
+
+        if (!locoSectionExists) {
+            model.addAttribute("errorMessage", "Секции не существует");
+            return "redirect:/block-on-locos/select-system";
+        }
+
         blockOnLocoService.createBlockOnLoco(blockOnLocoDTO);
+        // Добавляем объект для заполнения формы
         model.addAttribute("block", blockOnLocoDTO);
         return "block_on_locos_3_end_create";
     }

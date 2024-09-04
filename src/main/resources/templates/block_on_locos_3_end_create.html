@@ -11,11 +11,11 @@
     <h2>Блок успешно создан</h2>
     <div class="card">
         <div class="card-body">
+            <p><strong>Серия локомотива:</strong> <span th:text="${block.typeLoco}"></span></p>
+            <p><strong>Номер секции:</strong> <span th:text="${block.locoNumber}"></span></p>
             <p><strong>Название блока:</strong> <span th:text="${block.blockName}"></span></p>
             <p><strong>Номер блока:</strong> <span th:text="${block.blockNumber}"></span></p>
             <p><strong>Дата выпуска:</strong> <span th:text="${block.dateOfIssue}"></span></p>
-            <p><strong>Тип локомотива:</strong> <span th:text="${block.typeLoco}"></span></p>
-            <p><strong>Номер локомотива:</strong> <span th:text="${block.locoNumber}"></span></p>
         </div>
     </div>
     <a th:href="@{/block-on-locos}" class="btn btn-primary mt-3">На главную страницу</a>

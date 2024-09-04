@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Отчет выполненных работ</title>
+  <!-- Подключение Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <!-- Дополнительные стили -->
+  <style>
+    body {
+      padding: 20px;
+      font-family: Arial, sans-serif;
+    }
+    h1 {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    table {
+      width: 100%;
+      margin-bottom: 20px;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 10px;
+      text-align: center;
+      border: 1px solid #dee2e6;
+    }
+    th {
+      background-color: #f8f9fa;
+      font-weight: bold;
+    }
+    .btn-report {
+      display: block;
+      margin: 0 auto;
+      width: 25%; /* Ширина кнопки */
+    }
+    .container {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Отчет выполненных работ</h1>
+  <h1>по депо ремонта: <span th:text="${depotName}"></span></h1>
+  <table class="table table-bordered table-striped">
+    <thead>
+    <tr>
+      <th>№ п/п</th>
+      <th>Дата ремонта</th>
+      <th>Депо приписки</th>
+      <th>Тип системы</th>
+      <th>Серия локомотива</th>
+      <th>Номер локомотива</th>
+      <th>Наименование работ</th>
+      <th>Количество выполненных работ</th>
+      <th>Фамилия исполнителя</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="loco, iter : ${repairedLocos}">
+      <td th:text="${iter.index + 1}"></td>
+      <td th:text="${loco.repairDateString}"></td>
+      <td th:text="${loco.homeDepot}"></td>
+      <td th:text="${loco.typeSystem}"></td>
+      <td th:text="${loco.typeLoco}"></td>
+      <td th:text="${loco.locoUnit}"></td>
+      <td th:text="${loco.positionRepair}"></td>
+      <td th:text="${loco.workCount}"></td>
+      <td th:text="${loco.employeeString}"></td>
+    </tr>
+    </tbody>
+  </table>
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-6">
+      <a href="/repair_history/generate-report" class="btn btn-primary btn-report">Сформировать отчет</a>
+    </div>
+  </div>
+</div>
+<div class="row mt-3">
+  <div class="col-12 text-end">
+    <a href="/repair_history/reports" class="btn btn-link">Отчеты</a>
+  </div>
+</div>
+
+<!-- Подключение Bootstrap JS и Popper.js для корректной работы Bootstrap компонентов -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

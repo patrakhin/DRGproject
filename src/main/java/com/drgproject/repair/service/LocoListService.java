@@ -2,6 +2,7 @@ package com.drgproject.repair.service;
 
 import com.drgproject.repair.dto.LocoListDTO;
 import com.drgproject.repair.entity.BlockOnLoco;
+import com.drgproject.repair.entity.LocoInfo;
 import com.drgproject.repair.entity.LocoList;
 import com.drgproject.repair.repository.BlockOnLocoRepository;
 import com.drgproject.repair.repository.LocoListRepository;
@@ -43,6 +44,18 @@ public class LocoListService {
     public LocoListDTO getLocoListByNumberLocoAndTypeLoco(String numberLoco, String typeLoco){
         Optional<LocoList> locoListByType = locoListRepository.findLocoListByLocoNumberAndTypeLoco(numberLoco, typeLoco);
         return locoListByType.map(this::convertToDTO).orElse(null);
+    }
+
+    //Проверка на дублирование перед созданием секции
+    public boolean ifLociListIsExists(String homeRegion, String homeDepot, String locoNumber){
+        Optional<LocoList> locoListIsExist = locoListRepository.findLocoListByHomeRegionAndHomeDepotAndLocoNumber(homeRegion, homeDepot, locoNumber);
+        return locoListIsExist.isPresent();
+    }
+
+    // Приверка ну сущестование секции (для создания блока на секцию)
+    public boolean ifSectionExist (String typeLoco, String sectionNumber){
+        Optional<LocoList> sectionIsExist = locoListRepository.findLocoListByTypeLocoAndLocoNumber(typeLoco, sectionNumber);
+        return sectionIsExist.isPresent();
     }
 
     public LocoListDTO createLocoList(LocoListDTO locoListDTO) {

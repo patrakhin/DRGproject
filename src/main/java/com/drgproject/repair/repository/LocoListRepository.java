@@ -13,4 +13,9 @@ public interface LocoListRepository extends JpaRepository<LocoList, Long> {
     Optional<LocoList> findLocoListByLocoNumberAndTypeLoco(String locoNumber, String typeLoco);
     // Метод для поиска номеров локомотивов, начинающихся с указанного префикса
     List<LocoList> findByLocoNumberStartingWith(String prefix);
+    //Проверка на дублирование
+    Optional<LocoList> findLocoListByHomeRegionAndHomeDepotAndLocoNumber(String homeRegion, String homeDepot, String locoNumber);
+
+    //ПРоверка на существование (для создания блока на секции)
+    Optional<LocoList> findLocoListByTypeLocoAndLocoNumber(String typeLoco, String locoNumber);
 }
