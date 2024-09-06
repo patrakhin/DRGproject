@@ -93,6 +93,11 @@ public class LocoInfoService {
         return locoInfoRepository.findLocoInfoByLocoSection1(firstSectionNumber).get().getLocoUnit();
     }
 
+    // Получение локомотива по любому номеру секции
+    public Optional<LocoInfo> getLocoInfoByDepotAndSection(String homeDepot, String locoSection) {
+        return locoInfoRepository.findByHomeDepotAndAnySection(homeDepot, locoSection);
+    }
+
     //поиск номера локомотива по первым двум цифрам
     public List<String> getFindNumbersByPrefix(String prefix) {
         return locoInfoRepository.findByLocoUnitStartingWith(prefix)

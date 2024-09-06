@@ -55,6 +55,7 @@ public class RepairHistoryService {
         return repairHistory.map(RepairHistoryMapper::toDto);
     }
 
+    @Transactional
     public RepairHistoryDto save(RepairHistoryDto repairHistoryDTO) {
         RepairHistory repairHistory = RepairHistoryMapper.toEntity(repairHistoryDTO);
         RepairHistory savedRepairHistory = repairHistoryRepository.save(repairHistory);

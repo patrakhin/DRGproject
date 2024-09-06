@@ -20,6 +20,7 @@
     <div th:if="${errorMessage}" class="alert alert-danger mt-3" th:text="${errorMessage}"></div>
     <div th:if="${errorMessage1}" class="alert alert-danger mt-3" th:text="${errorMessage1}"></div>
     <form th:action="@{/repair_history/add_history}" method="post" th:object="${repairHistoryDto}">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
         <input type="hidden" name="repairDate" th:value="${repairDate}" />
         <input type="hidden" name="homeDepot" th:value="${homeDepot}" />
         <input type="hidden" name="typeLoco" th:value="${typeLoco}" />

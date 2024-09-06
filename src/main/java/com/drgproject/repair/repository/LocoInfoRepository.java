@@ -5,6 +5,8 @@ import com.drgproject.repair.entity.LocoList;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -37,5 +39,12 @@ public interface LocoInfoRepository extends JpaRepository<LocoInfo, Long> {
 
     //Получение локомотива по номеру первой секции
     Optional<LocoInfo> findLocoInfoByLocoSection1(String firstLocoSection);
+
+    @Query("SELECT l FROM LocoInfo l WHERE l.homeDepot = :homeDepot AND " +
+            "(l.locoSection1 = :locoSection OR l.locoSection2 = :locoSection OR " +
+            "l.locoSection3 = :locoSection OR l.locoSection4 = :locoSection)")
+    Optional<LocoInfo> findByHomeDepotAndAnySection(@Param("homeDepot") String homeDepot,
+                                                    @Param("locoSection") String locoSection);
+
 }
 

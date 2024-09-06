@@ -5,6 +5,7 @@ import com.drgproject.dto.SparePartsReceiptDto;
 import com.drgproject.entity.Members;
 import com.drgproject.repair.dto.*;
 import com.drgproject.repair.entity.BlockOnLoco;
+import com.drgproject.repair.entity.LocoInfo;
 import com.drgproject.repair.service.*;
 import com.drgproject.repository.MemberRepository;
 import com.drgproject.service.*;
@@ -382,7 +383,17 @@ public class RepairHistoryControllerTwo {
                                  @RequestParam("repairDepot") String repairDepot,
                                  @RequestParam("positionRepair") Long positionRepairId,
                                  Model model, HttpSession session) {
-        String firstNumber = locoInfoService.getLocoByFirstNumberSection(locoNumber);
+
+        String firstNumber;
+
+        Optional<LocoInfo> locoInfoByDepotAndSection = locoInfoService.getLocoInfoByDepotAndSection(homeDepot, locoNumber);
+
+        if (locoInfoByDepotAndSection.isPresent()) {
+            firstNumber = locoInfoByDepotAndSection.get().getLocoUnit();
+        } else {
+            throw new IllegalArgumentException("Локомотив в составе с такой секцией: " + locoNumber + " не найден");
+        }
+
         try {
             repairHistoryDto.setRepairDate(LocalDate.parse(repairDate));
             repairHistoryDto.setHomeDepot(homeDepot);
@@ -439,7 +450,7 @@ public class RepairHistoryControllerTwo {
         model.addAttribute("blocksOnLoco", blocksOnLoco);
         model.addAttribute("countBlocks", blocksOnLoco.size());
 
-        return "repair_history_7_add_history";
+        return redirectToWorkBar(typeLoco, firstNumber, model, session);
     }
 
     // История ремонта детально
