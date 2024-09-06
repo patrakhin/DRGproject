@@ -26,6 +26,7 @@
                 <!-- Передача параметров в скрытых полях -->
                 <input type="hidden" name="typeLoco" th:value="${typeLoco}">
                 <input type="hidden" name="numberLoco" th:value="${numberLoco}">
+                <input type="hidden" name="typeSystem" th:value="${section.typeSystem}">
                 <input type="hidden" name="sectionNumber" th:value="${section.locoNumber}">
 
                 <!-- Используем классы Bootstrap для организации кнопок в два ряда на мобильных устройствах -->
@@ -35,7 +36,7 @@
                     </div>
                     <div class="col-6 mb-2">
                         <!-- (чтобы кнопка стала активной - удаляем disabled )-->
-                        <button formaction="/repair_history/install_block" formmethod="get" class="btn btn-primary w-100" disabled>Установка Блоков</button>
+                        <button formaction="/install-temp/install-block" formmethod="get" class="btn btn-primary w-100">Установка Блоков</button>
                     </div>
                     <div class="col-6 mb-2">
                         <button formaction="/repair_history/cancel_remove_block" formmethod="get" class="btn btn-primary w-100" disabled>Отмена демонтажа Блоков</button>

@@ -255,9 +255,9 @@ public class LocoInfoController {
         List<String> sectionsNumber = locoInfoService.getLocoSections(locoForCreateSection);
         boolean isDeleted = locoInfoService.deleteLocoInfoByLocoUnit(locoUnit, locoType);
         if (isDeleted) {
-            // Для каждой секции в списке sectionsNumber вызываем createFreeSection
+            // Для каждой секции в списке sectionsNumber делаем ее свободной
             for (String sectionNumber : sectionsNumber) {
-                locoFilterService.createFreeSection(homeRegion, homeDepot, locoType, sectionNumber);
+                locoFilterService.freeSectionAfterDistMist(homeRegion, homeDepot, locoType, sectionNumber);
             }
             model.addAttribute("successMessage", "Локомотив успешно расформирован, секции освободились");
         } else {
@@ -275,6 +275,18 @@ public class LocoInfoController {
     // Метод для обработки удаления локомотива по ID
     @PostMapping("/deleteById")
     public String deleteLocoInfoById(@RequestParam Long id, Model model) {
+
+        LocoInfoDTO locoForCreateSection = locoInfoService.getLocoInfoById(id);
+        String homeRegion = locoForCreateSection.getRegion();
+        String homeDepot = locoForCreateSection.getHomeDepot();
+        String locoType = locoForCreateSection.getLocoType();
+        List<String> sectionsNumber = locoInfoService.getLocoSections(locoForCreateSection);
+
+        // Для каждой секции в списке sectionsNumber делаем ее свободной
+        for (String sectionNumber : sectionsNumber) {
+            locoFilterService.freeSectionAfterDistMist(homeRegion, homeDepot, locoType, sectionNumber);
+        }
+
         try {
             locoInfoService.deleteLocoInfo(id);
             model.addAttribute("successMessage", "Локомотив с ID " + id + " успешно удален.");

@@ -50,6 +50,7 @@
         <div class="form-group mb-3">
             <label for="block1Seal" class="form-label" th:if="${countBlocks.intValue() >= 1}">
                 Номер пломбы блока: <span th:text="${blocksOnLoco[0] != null ? blocksOnLoco[0] : 'block1Seal'}"></span>
+                .  Номер блока: <span th:text="${blockNumbers.size() > 0 ? blockNumbers[0] : 'blockNumber1'}"></span>
             </label>
             <textarea id="block1Seal" name="block1Seal" th:field="*{block1Seal}" class="form-control" rows="2" cols="20"></textarea>
         </div>
@@ -57,6 +58,7 @@
         <div class="form-group mb-3" th:if="${countBlocks.intValue() >= 2}">
             <label for="block2Seal" class="form-label">
                 Номер пломбы блока: <span th:text="${blocksOnLoco[1] != null ? blocksOnLoco[1] : 'block2Seal'}"></span>
+                .  Номер блока: <span th:text="${blockNumbers.size() > 0 ? blockNumbers[1] : 'blockNumber2'}"></span>
             </label>
             <textarea id="block2Seal" name="block2Seal" th:field="*{block2Seal}" class="form-control" rows="2" cols="20"></textarea>
         </div>
@@ -64,6 +66,7 @@
         <div class="form-group mb-3"  th:if="${countBlocks.intValue() >= 3}">
             <label for="block3Seal" class="form-label">
                 Номер пломбы блока: <span th:text="${blocksOnLoco[2] != null ? blocksOnLoco[2] : 'block3Seal'}"></span>
+                .  Номер блока: <span th:text="${blockNumbers.size() > 0 ? blockNumbers[2] : 'blockNumber3'}"></span>
             </label>
             <textarea id="block3Seal" name="block3Seal" th:field="*{block3Seal}" class="form-control" rows="2" cols="20"></textarea>
         </div>
@@ -71,6 +74,7 @@
         <div class="form-group mb-3"  th:if="${countBlocks.intValue() >= 4}">
             <label for="block4Seal" class="form-label">
                 Номер пломбы блока: <span th:text="${blocksOnLoco[3] != null ? blocksOnLoco[3] : 'block4Seal'}"></span>
+                .  Номер блока: <span th:text="${blockNumbers.size() > 0 ? blockNumbers[3] : 'blockNumber4'}"></span>
             </label>
             <textarea id="block4Seal" name="block4Seal" th:field="*{block4Seal}" class="form-control" rows="2" cols="20"></textarea>
         </div>
@@ -78,6 +82,7 @@
         <div class="form-group mb-3"  th:if="${countBlocks.intValue() >= 5}">
             <label for="block5Seal" class="form-label">
                 Номер пломбы блока: <span th:text="${blocksOnLoco[4] != null ? blocksOnLoco[4] : 'block5Seal'}"></span>
+                .  Номер блока: <span th:text="${blockNumbers.size() > 0 ? blockNumbers[4] : 'blockNumber5'}"></span>
             </label>
             <textarea id="block5Seal" name="block5Seal" th:field="*{block5Seal}" class="form-control" rows="2" cols="20"></textarea>
         </div>
@@ -85,6 +90,7 @@
         <div class="form-group mb-3" th:if="${countBlocks.intValue() >= 6}">
             <label for="block6Seal" class="form-label">
                 Номер пломбы блока: <span th:text="${blocksOnLoco[5] != null ? blocksOnLoco[5] : 'block6Seal'}"></span>
+                .  Номер блока: <span th:text="${blockNumbers.size() > 0 ? blockNumbers[5] : 'blockNumber6'}"></span>
             </label>
             <textarea id="block6Seal" name="block6Seal" th:field="*{block6Seal}" class="form-control" rows="2" cols="20"></textarea>
         </div>
@@ -92,6 +98,7 @@
         <div class="form-group mb-3"  th:if="${countBlocks.intValue() >= 7}">
             <label for="block7Seal" class="form-label">
                 Номер пломбы блока: <span th:text="${blocksOnLoco[6] != null ? blocksOnLoco[6] : 'block7Seal'}"></span>
+                .  Номер блока: <span th:text="${blockNumbers.size() > 0 ? blockNumbers[6] : 'blockNumber7'}"></span>
             </label>
             <textarea id="block7Seal" name="block7Seal" th:field="*{block7Seal}" class="form-control" rows="2" cols="20"></textarea>
         </div>
@@ -99,6 +106,7 @@
         <div class="form-group mb-3"  th:if="${countBlocks.intValue() >= 8}">
             <label for="block8Seal" class="form-label">
                 Номер пломбы блока: <span th:text="${blocksOnLoco[7] != null ? blocksOnLoco[7] : 'block8Seal'}"></span>
+                .  Номер блока: <span th:text="${blockNumbers.size() > 0 ? blockNumbers[7] : 'blockNumber8'}"></span>
             </label>
             <textarea id="block8Seal" name="block8Seal" th:field="*{block8Seal}" class="form-control" rows="2" cols="20"></textarea>
         </div>
@@ -106,6 +114,7 @@
         <div class="form-group mb-3"  th:if="${countBlocks.intValue() >= 9}">
             <label for="block9Seal" class="form-label">
                 Номер пломбы блока: <span th:text="${blocksOnLoco[8] != null ? blocksOnLoco[8] : 'block9Seal'}"></span>
+                .  Номер блока: <span th:text="${blockNumbers.size() > 0 ? blockNumbers[8] : 'blockNumber9'}"></span>
             </label>
             <textarea id="block9Seal" name="block9Seal" th:field="*{block9Seal}" class="form-control" rows="2" cols="20"></textarea>
         </div>
@@ -113,6 +122,7 @@
         <div class="form-group mb-3"  th:if="${countBlocks.intValue() >= 10}">
             <label for="block10Seal" class="form-label">
                 Номер пломбы блока: <span th:text="${blocksOnLoco[9] != null ? blocksOnLoco[9] : 'block10Seal'}"></span>
+                .  Номер блока: <span th:text="${blockNumbers.size() > 0 ? blockNumbers[9] : 'blockNumber10'}"></span>
             </label>
             <textarea id="block10Seal" name="block10Seal" th:field="*{block10Seal}" class="form-control" rows="2" cols="20"></textarea>
         </div>

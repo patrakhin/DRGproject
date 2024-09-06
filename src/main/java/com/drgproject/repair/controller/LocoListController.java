@@ -2,12 +2,14 @@ package com.drgproject.repair.controller;
 
 import com.drgproject.repair.dto.*;
 import com.drgproject.repair.service.*;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -42,8 +44,17 @@ public class LocoListController {
     }
 
     @GetMapping("/all")
-    public String getAllLocos(Model model) {
+    public String getAllLocos(Model model, HttpSession session) {
+        String post = (String) session.getAttribute("post");
+        List<LocoListDTO> locoListsByRegion = new ArrayList<>();
+        if ("Регионал".equals(post)) {
+            String region = (String) session.getAttribute("region");
+            locoListsByRegion = locoListService.getAllLocoListsByRegion(region);
+            model.addAttribute("locoLists", locoListsByRegion);
+            return "locos_2_list"; // Вернуть шаблон Thymeleaf для отображения списка локомотивов
+        }
         List<LocoListDTO> locoLists = locoListService.getAllLocoLists();
+
         model.addAttribute("locoLists", locoLists);
         return "locos_2_list"; // Вернуть шаблон Thymeleaf для отображения списка локомотивов
     }
@@ -188,9 +199,9 @@ public class LocoListController {
         //Удалеям свободную секцию
         locoFilterService.deleteLocoFilterByHomeRegion(homeRegion, homeDepot, locoType, sectionNumber);
         if (isDeleted) {
-            redirectAttributes.addFlashAttribute("successMessage", "Локомотив успешно удален");
+            redirectAttributes.addFlashAttribute("successMessage", "Секция успешно удалена");
         } else {
-            redirectAttributes.addFlashAttribute("errorMessage", "Ошибка при удалении локомотива");
+            redirectAttributes.addFlashAttribute("errorMessage", "Ошибка при удалении секции");
         }
         List<LocoListDTO> locoLists = locoListService.getAllLocoLists();
         model.addAttribute("locoLists", locoLists);

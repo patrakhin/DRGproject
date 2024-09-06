@@ -1,84 +1,86 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Выбор параметров отчета</title>
+    <title>Монтаж блоков на секцию</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-<div class="container">
-    <div class="row justify-content-center mt-4">
-        <div class="col-12 text-center mb-4">
-            <h1>Выберете депо выполнения ремонта и даты для формирования отчета</h1>
+<div class="container mt-5">
+    <h2>Введите данные для 10 блоков</h2>
+    <form id="createBlockForm" th:action="@{/block-on-locos/create-multiple}" method="post" th:object="${block}">
+        <!-- Поля для создания 10 блоков -->
+        <div th:each="block, iterStat : ${blocksOnLocoDTO}">
+            <div class="block-form mb-4">
+                <h5>Блок №<span th:text="${iterStat.count}"></span></h5>
+
+                <div class="form-group">
+                    <label for="blockName">Название блока:</label>
+                    <select class="form-control" th:field="*{blockName}" required>
+                        <option value="">Выберите блок</option>
+                        <option th:each="blockOption : ${blocksList}" th:value="${blockOption}" th:text="${blockOption}"></option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="blockNumber">Номер блока:</label>
+                    <input type="text" class="form-control" th:field="*{blockNumber}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="dateOfIssue">Дата выпуска (дд.мм.гггг):</label>
+                    <input type="text" class="form-control" th:field="*{dateOfIssue}" placeholder="дд.мм.гггг" required>
+                    <div class="invalid-feedback">Введите дату в формате дд.мм.гггг</div>
+                </div>
+            </div>
         </div>
-        <div class="col-12">
-            <form action="/repair_history/generate-report-sps" method="get">
-                <div class="mb-3 row">
-                    <label for="region" class="col-sm-2 col-form-label">Регион:</label>
-                    <div class="col-sm-4">
-                        <select id="region" name="region" class="form-select" required>
-                            <option value="">Выберите регион</option>
-                            <option th:each="region : ${regions}" th:value="${region.name}" th:text="${region.name}"></option>
-                        </select>
-                    </div>
-                </div>
-                <div class="mb-3 row">
-                    <label for="homeDepot" class="col-sm-2 col-form-label">Депо:</label>
-                    <div class="col-sm-4">
-                        <select id="homeDepot" name="depot" class="form-select" required>
-                            <option value="">Выберите депо</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="mb-3 row">
-                    <label for="startDate" class="col-sm-2 col-form-label">Начальная дата:</label>
-                    <div class="col-sm-4">
-                        <input type="date" id="startDate" name="startDate" class="form-control" required>
-                    </div>
-                </div>
-                <div class="mb-3 row">
-                    <label for="endDate" class="col-sm-2 col-form-label">Конечная дата:</label>
-                    <div class="col-sm-4">
-                        <input type="date" id="endDate" name="endDate" class="form-control" required>
-                    </div>
-                </div>
-                <div class="text-center mb-3">
-                    <button type="submit" class="btn btn-primary">Сформировать отчет</button>
-                </div>
-            </form>
+
+        <button type="submit" class="btn btn-primary">Установить блоки на секцию</button>
+
+        <div class="row mt-3">
+            <div class="col-12 text-end">
+                <a href="/block-on-locos" class="btn btn-link">Отмена</a>
+            </div>
         </div>
-    </div>
+    </form>
 </div>
+
+<!-- jQuery -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Bootstrap Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     $(document).ready(function() {
-        $('#region').change(function() {
-            const selectedRegion = $(this).val();
-            loadDepots(selectedRegion);
-        });
+        $('#createBlockForm').on('submit', function(event) {
+            var isValid = true;
 
-        function loadDepots(regionName) {
-            const $homeDepotSelect = $('#homeDepot');
-            $homeDepotSelect.empty();
-            $homeDepotSelect.append($('<option></option>').text('Выберите депо'));
-            if (regionName) {
-                $.ajax({
-                    url: '/repair_history/depots',
-                    type: 'GET',
-                    data: { regionName: regionName },
-                    success: function(data) {
-                        $.each(data, function(index, depot) {
-                            const option = $('<option></option>').attr('value', depot.depot).text(depot.depot);
-                            $homeDepotSelect.append(option);
-                        });
-                    },
-                    error: function() {
-                        alert('Ошибка при загрузке депо');
-                    }
-                });
+            // Проверка поля "Номер блока"
+            $('input[name$="blockNumber"]').each(function() {
+                if ($(this).val() === "") {
+                    $(this).addClass('is-invalid');
+                    isValid = false;
+                } else {
+                    $(this).removeClass('is-invalid');
+                }
+            });
+
+            // Валидация поля "Дата выпуска"
+            var datePattern = /^(0[1-9]|[12][0-9]|3[01])\.(0[1-9]|1[0-2])\.(19|20)\d{2}$/;
+            $('input[name$="dateOfIssue"]').each(function() {
+                var dateOfIssue = $(this).val();
+                if (!datePattern.test(dateOfIssue)) {
+                    $(this).addClass('is-invalid');
+                    isValid = false;
+                } else {
+                    $(this).removeClass('is-invalid');
+                }
+            });
+
+            if (!isValid) {
+                event.preventDefault(); // Предотвращаем отправку формы, если есть ошибки
             }
-        }
+        });
     });
 </script>
 </body>

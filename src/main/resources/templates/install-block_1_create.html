@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Монтаж блоков на секцию</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .block-container {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<div class="container mt-5">
+    <h2>Введите данные для блоков</h2>
+
+    <!-- Форма для создания блоков -->
+    <form id="createBlockForm" th:action="@{/install-temp/block-on-locos/create-multiple}" method="post">
+        <!-- Передаем скрытые поля для системы и номера секции -->
+        <input type="hidden" name="typeLoco" th:value="${typeLoco}">
+        <input type="hidden" name="typeSystem" th:value="${typeSystem}">
+        <input type="hidden" name="numberLoco" th:value="${numberLoco}">
+        <input type="hidden" name="sectionNumber" th:value="${sectionNumber}">
+
+        <!-- Поля для ввода данных по каждому блоку -->
+        <div id="blocksContainer">
+            <!-- Поле 1 -->
+            <div class="block-container" id="blockContainer1">
+                <div class="row mb-2">
+                    <div class="col-md-4">
+                        <label for="blockName1">Наименование блока:</label>
+                        <select class="form-control" id="blockName1" name="blocks[0].blockName">
+                            <option value="">Выберите блок</option>
+                            <option th:each="blockOption : ${blocksList}" th:value="${blockOption}" th:text="${blockOption}"></option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="blockNumber1">Номер блока:</label>
+                        <input type="text" class="form-control" id="blockNumber1" name="blocks[0].blockNumber">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="dateOfIssue1">Дата выпуска (дд.мм.гггг):</label>
+                        <input type="text" class="form-control" id="dateOfIssue1" name="blocks[0].dateOfIssue" placeholder="дд.мм.гггг">
+                        <div class="invalid-feedback">Введите дату в формате дд.мм.гггг</div>
+                    </div>
+                </div>
+            </div>
+            <!-- Поле 2 -->
+            <div class="block-container" id="blockContainer2">
+                <div class="row mb-2">
+                    <div class="col-md-4">
+                        <label for="blockName2">Наименование блока:</label>
+                        <select class="form-control" id="blockName2" name="blocks[1].blockName">
+                            <option value="">Выберите блок</option>
+                            <option th:each="blockOption : ${blocksList}" th:value="${blockOption}" th:text="${blockOption}"></option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="blockNumber2">Номер блока:</label>
+                        <input type="text" class="form-control" id="blockNumber2" name="blocks[1].blockNumber">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="dateOfIssue2">Дата выпуска (дд.мм.гггг):</label>
+                        <input type="text" class="form-control" id="dateOfIssue2" name="blocks[1].dateOfIssue" placeholder="дд.мм.гггг">
+                        <div class="invalid-feedback">Введите дату в формате дд.мм.гггг</div>
+                    </div>
+                </div>
+            </div>
+            <!-- Поле 3 -->
+            <div class="block-container" id="blockContainer3">
+                <div class="row mb-2">
+                    <div class="col-md-4">
+                        <label for="blockName3">Наименование блока:</label>
+                        <select class="form-control" id="blockName3" name="blocks[2].blockName">
+                            <option value="">Выберите блок</option>
+                            <option th:each="blockOption : ${blocksList}" th:value="${blockOption}" th:text="${blockOption}"></option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="blockNumber3">Номер блока:</label>
+                        <input type="text" class="form-control" id="blockNumber3" name="blocks[2].blockNumber">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="dateOfIssue3">Дата выпуска (дд.мм.гггг):</label>
+                        <input type="text" class="form-control" id="dateOfIssue3" name="blocks[2].dateOfIssue" placeholder="дд.мм.гггг">
+                        <div class="invalid-feedback">Введите дату в формате дд.мм.гггг</div>
+                    </div>
+                </div>
+            </div>
+            <!-- Поле 4 -->
+            <div class="block-container" id="blockContainer4">
+                <div class="row mb-2">
+                    <div class="col-md-4">
+                        <label for="blockName4">Наименование блока:</label>
+                        <select class="form-control" id="blockName4" name="blocks[3].blockName">
+                            <option value="">Выберите блок</option>
+                            <option th:each="blockOption : ${blocksList}" th:value="${blockOption}" th:text="${blockOption}"></option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="blockNumber4">Номер блока:</label>
+                        <input type="text" class="form-control" id="blockNumber4" name="blocks[3].blockNumber">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="dateOfIssue4">Дата выпуска (дд.мм.гггг):</label>
+                        <input type="text" class="form-control" id="dateOfIssue4" name="blocks[3].dateOfIssue" placeholder="дд.мм.гггг">
+                        <div class="invalid-feedback">Введите дату в формате дд.мм.гггг</div>
+                    </div>
+                </div>
+            </div>
+            <!-- Поле 5 -->
+            <div class="block-container" id="blockContainer5">
+                <div class="row mb-2">
+                    <div class="col-md-4">
+                        <label for="blockName5">Наименование блока:</label>
+                        <select class="form-control" id="blockName5" name="blocks[4].blockName">
+                            <option value="">Выберите блок</option>
+                            <option th:each="blockOption : ${blocksList}" th:value="${blockOption}" th:text="${blockOption}"></option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="blockNumber5">Номер блока:</label>
+                        <input type="text" class="form-control" id="blockNumber5" name="blocks[4].blockNumber">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="dateOfIssue5">Дата выпуска (дд.мм.гггг):</label>
+                        <input type="text" class="form-control" id="dateOfIssue5" name="blocks[4].dateOfIssue" placeholder="дд.мм.гггг">
+                        <div class="invalid-feedback">Введите дату в формате дд.мм.гггг</div>
+                    </div>
+                </div>
+            </div>
+            <!-- Поле 6 -->
+            <div class="block-container" id="blockContainer6">
+                <div class="row mb-2">
+                    <div class="col-md-4">
+                        <label for="blockName6">Наименование блока:</label>
+                        <select class="form-control" id="blockName6" name="blocks[5].blockName">
+                            <option value="">Выберите блок</option>
+                            <option th:each="blockOption : ${blocksList}" th:value="${blockOption}" th:text="${blockOption}"></option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="blockNumber6">Номер блока:</label>
+                        <input type="text" class="form-control" id="blockNumber6" name="blocks[5].blockNumber">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="dateOfIssue6">Дата выпуска (дд.мм.гггг):</label>
+                        <input type="text" class="form-control" id="dateOfIssue6" name="blocks[5].dateOfIssue" placeholder="дд.мм.гггг">
+                        <div class="invalid-feedback">Введите дату в формате дд.мм.гггг</div>
+                    </div>
+                </div>
+            </div>
+            <!-- Поле 7 -->
+            <div class="block-container" id="blockContainer7">
+                <div class="row mb-2">
+                    <div class="col-md-4">
+                        <label for="blockName7">Наименование блока:</label>
+                        <select class="form-control" id="blockName7" name="blocks[6].blockName">
+                            <option value="">Выберите блок</option>
+                            <option th:each="blockOption : ${blocksList}" th:value="${blockOption}" th:text="${blockOption}"></option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="blockNumber7">Номер блока:</label>
+                        <input type="text" class="form-control" id="blockNumber7" name="blocks[6].blockNumber">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="dateOfIssue7">Дата выпуска (дд.мм.гггг):</label>
+                        <input type="text" class="form-control" id="dateOfIssue7" name="blocks[6].dateOfIssue" placeholder="дд.мм.гггг">
+                        <div class="invalid-feedback">Введите дату в формате дд.мм.гггг</div>
+                    </div>
+                </div>
+            </div>
+            <!-- Поле 8 -->
+            <div class="block-container" id="blockContainer8">
+                <div class="row mb-2">
+                    <div class="col-md-4">
+                        <label for="blockName8">Наименование блока:</label>
+                        <select class="form-control" id="blockName8" name="blocks[7].blockName">
+                            <option value="">Выберите блок</option>
+                            <option th:each="blockOption : ${blocksList}" th:value="${blockOption}" th:text="${blockOption}"></option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="blockNumber8">Номер блока:</label>
+                        <input type="text" class="form-control" id="blockNumber8" name="blocks[7].blockNumber">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="dateOfIssue8">Дата выпуска (дд.мм.гггг):</label>
+                        <input type="text" class="form-control" id="dateOfIssue8" name="blocks[7].dateOfIssue" placeholder="дд.мм.гггг">
+                        <div class="invalid-feedback">Введите дату в формате дд.мм.гггг</div>
+                    </div>
+                </div>
+            </div>
+            <!-- Поле 9 -->
+            <div class="block-container" id="blockContainer9">
+                <div class="row mb-2">
+                    <div class="col-md-4">
+                        <label for="blockName9">Наименование блока:</label>
+                        <select class="form-control" id="blockName9" name="blocks[8].blockName">
+                            <option value="">Выберите блок</option>
+                            <option th:each="blockOption : ${blocksList}" th:value="${blockOption}" th:text="${blockOption}"></option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="blockNumber9">Номер блока:</label>
+                        <input type="text" class="form-control" id="blockNumber9" name="blocks[8].blockNumber">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="dateOfIssue9">Дата выпуска (дд.мм.гггг):</label>
+                        <input type="text" class="form-control" id="dateOfIssue9" name="blocks[8].dateOfIssue" placeholder="дд.мм.гггг">
+                        <div class="invalid-feedback">Введите дату в формате дд.мм.гггг</div>
+                    </div>
+                </div>
+            </div>
+            <!-- Поле 10 -->
+            <div class="block-container" id="blockContainer10">
+                <div class="row mb-2">
+                    <div class="col-md-4">
+                        <label for="blockName10">Наименование блока:</label>
+                        <select class="form-control" id="blockName10" name="blocks[9].blockName">
+                            <option value="">Выберите блок</option>
+                            <option th:each="blockOption : ${blocksList}" th:value="${blockOption}" th:text="${blockOption}"></option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="blockNumber10">Номер блока:</label>
+                        <input type="text" class="form-control" id="blockNumber10" name="blocks[9].blockNumber">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="dateOfIssue10">Дата выпуска (дд.мм.гггг):</label>
+                        <input type="text" class="form-control" id="dateOfIssue10" name="blocks[9].dateOfIssue" placeholder="дд.мм.гггг">
+                        <div class="invalid-feedback">Введите дату в формате дд.мм.гггг</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Кнопка для добавления дополнительных строк -->
+        <div class="text-center mt-4" id="addRowsButtonContainer">
+            <button type="button" class="btn btn-info" id="addRowsButton" style="display:none;">Добавить строки для заполнения</button>
+        </div>
+
+        <!-- Кнопка отправки формы -->
+        <div class="row mt-4">
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-primary w-50">Сформировать</button>
+            </div>
+        </div>
+    </form>
+
+    <!-- Кнопка "Назад" -->
+    <div class="row mt-4">
+        <div class="col-md-3">
+            <form th:action="@{/repair_history/search}" method="post">
+                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                <input type="hidden" name="typeLoco" th:value="${typeLoco}">
+                <input type="hidden" name="numberLoco" th:value="${numberLoco}">
+                <button type="submit" class="btn btn-secondary w-50">Назад</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Bootstrap Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    $(document).ready(function() {
+        let currentBlock = 1;
+        let maxBlocks = 10;
+
+        // Показ первого блока
+        $('#blockContainer1').show();
+
+        // Проверка заполнения полей в текущем блоке
+        function checkBlockCompletion(blockId) {
+            let isComplete = true;
+            let container = $('#blockContainer' + blockId);
+
+            container.find('input').each(function() {
+                if ($(this).val() === "") {
+                    isComplete = false;
+                }
+            });
+
+            return isComplete;
+        }
+
+        // Обработка изменений в полях
+        $('#createBlockForm').on('change', 'select[id^="blockName"], input[id^="blockNumber"], input[id^="dateOfIssue"]', function() {
+            let blockId = parseInt($(this).attr('id').replace(/^\D+/g, ''));
+            if (checkBlockCompletion(blockId)) {
+                // Показать кнопку добавления строк
+                $('#addRowsButton').show();
+            } else {
+                $('#addRowsButton').hide();
+            }
+        });
+
+        // Добавление новых строк
+        $('#addRowsButton').on('click', function() {
+            let nextBlock = currentBlock + 1;
+
+            if (nextBlock <= maxBlocks) {
+                $('#blockContainer' + nextBlock).show();
+                currentBlock = nextBlock;
+
+                if (currentBlock === maxBlocks) {
+                    $('#addRowsButton').hide(); // Скрыть кнопку, если больше нет строк
+                }
+            }
+        });
+
+        // Проверка формы перед отправкой
+        $('#createBlockForm').on('submit', function(event) {
+            var isValid = true;
+
+            $('#blocksContainer .block-container').each(function() {
+                if ($(this).is(':visible')) {
+                    // Проверка поля "Номер блока"
+                    let blockNumber = $(this).find('input[name$="blockNumber"]');
+                    if (blockNumber.val() === "") {
+                        blockNumber.addClass('is-invalid');
+                        isValid = false;
+                    } else {
+                        blockNumber.removeClass('is-invalid');
+                    }
+
+                    // Валидация поля "Дата выпуска"
+                    let dateOfIssue = $(this).find('input[name$="dateOfIssue"]');
+                    let datePattern = /^\d{2}\.\d{2}\.\d{4}$/;
+                    if (!datePattern.test(dateOfIssue.val())) {
+                        dateOfIssue.addClass('is-invalid');
+                        isValid = false;
+                    } else {
+                        dateOfIssue.removeClass('is-invalid');
+                    }
+                }
+            });
+
+            if (!isValid) {
+                event.preventDefault();
+            }
+        });
+    });
+</script>
+</body>
+</html>

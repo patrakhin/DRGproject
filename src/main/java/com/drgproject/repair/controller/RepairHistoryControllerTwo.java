@@ -338,6 +338,9 @@ public class RepairHistoryControllerTwo {
         List<String> blocksOnLoco = blocksOnLocoList.stream()
                 .map(BlockOnLocoDTO::getBlockName)
                 .toList();
+        List<String> blockNumbers = blocksOnLocoList.stream()
+                .map(BlockOnLocoDTO::getBlockNumber)
+                .toList();
         LocalDate repairDate = LocalDate.now();
         int countBlocks = blocksOnLoco.size();
 
@@ -354,6 +357,7 @@ public class RepairHistoryControllerTwo {
         model.addAttribute("positionRepairDTOS", positionRepairDTOS);
         model.addAttribute("repairHistoryDto", new RepairHistoryDto());
         model.addAttribute("blocksOnLoco", blocksOnLoco);
+        model.addAttribute("blockNumbers", blockNumbers);
         model.addAttribute("countBlocks", countBlocks);
 
 
@@ -518,6 +522,7 @@ public class RepairHistoryControllerTwo {
     public String showInstallBlockPage(Model model, HttpSession session) {
         String typeLoco = (String) session.getAttribute(TYPE_LOCO);
         String numberLoco = (String) session.getAttribute("numberLoco");
+        String sectionNumber = (String) session.getAttribute("sectionNumber"); //Нужно получить номер секции из @Param здесь пока null!
         String depot = (String) session.getAttribute("unit");
 
         LocoListDTO locoListDTO = locoListService.getLocoListByNumberLocoAndTypeLoco(numberLoco, typeLoco);

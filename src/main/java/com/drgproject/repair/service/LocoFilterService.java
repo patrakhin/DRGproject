@@ -87,7 +87,8 @@ public class LocoFilterService {
         // Сохраняем обновленную секцию
         locoFilterRepository.save(endLoco);
     }
-    // Создание свободной секции (при создании, удалении секции)
+
+    // Создание свободной секции (при создании)
     public LocoFilterDTO createFreeSection (String homeRegion, String homeDepot, String locoType, String sectionNumber) {
         String freeSection = "да";
         String busySection = "нет";
@@ -101,6 +102,35 @@ public class LocoFilterService {
         );
         LocoFilter savedLocoFilter = locoFilterRepository.save(locoFilter);
         return convertToDTO(savedLocoFilter);
+    }
+
+    // Создание свободной секции (при расформировании ТПС)
+    public void freeSectionAfterDistMist (String homeRegion, String homeDepot, String locoType, String sectionNumber) {
+        String freeSection = "да";
+        String busySection = "нет";
+        // Находим существующую секцию по идентификатору
+        Optional<LocoFilter> existingLocoFilter = locoFilterRepository.findByHomeRegionAndHomeDepotAndLocoTypeAndSectionNumber(homeRegion, homeDepot, locoType, sectionNumber);
+        LocoFilter endLocoFilter;
+        if (existingLocoFilter.isPresent()) {
+            endLocoFilter = existingLocoFilter.get();
+            // Обновляем поля секции новыми данными
+            endLocoFilter.setFreeSection(freeSection);
+            endLocoFilter.setBusySection(busySection);
+        } else {
+            throw new IllegalArgumentException("Секция номер: " + sectionNumber + " не найдена при расформировании ТПС сервисный слой");
+        }
+        // Сохраняем обновленную секцию
+        locoFilterRepository.save(endLocoFilter);
+    }
+
+    //Удаление секции при удалении секции вообще из программы
+    public void deleteSection (String homeRegion, String homeDepot, String locoType, String sectionNumber){
+      Optional<LocoFilter> delSection = locoFilterRepository.findByHomeRegionAndHomeDepotAndLocoTypeAndSectionNumber(homeRegion, homeDepot, locoType, sectionNumber);
+        if(delSection.isPresent()){
+            locoFilterRepository.delete(delSection.get());
+        } else {
+        throw new IllegalArgumentException("Секция номер: " + sectionNumber + " не найдена при удалении сервисный слой");
+        }
     }
 
     // Обновление свободной секции (при редактировании секции при создании)

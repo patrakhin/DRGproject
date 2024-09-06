@@ -28,6 +28,10 @@ public class LocoListService {
         return locoListRepository.findAll().stream().map(this::convertToDTO).toList();
     }
 
+    public List<LocoListDTO> getAllLocoListsByRegion(String region) {
+        return locoListRepository.findAllByHomeRegion(region).stream().map(this::convertToDTO).toList();
+    }
+
     public LocoListDTO getLocoListById(Long id) {
         Optional<LocoList> locoList = locoListRepository.findById(id);
         return locoList.map(this::convertToDTO).orElse(null);

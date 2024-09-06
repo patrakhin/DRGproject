@@ -18,4 +18,6 @@ public interface LocoListRepository extends JpaRepository<LocoList, Long> {
 
     //ПРоверка на существование (для создания блока на секции)
     Optional<LocoList> findLocoListByTypeLocoAndLocoNumber(String typeLoco, String locoNumber);
+
+    List<LocoList> findAllByHomeRegion(String homeRegion);
 }
