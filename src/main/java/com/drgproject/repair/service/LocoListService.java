@@ -1,5 +1,6 @@
 package com.drgproject.repair.service;
 
+import com.drgproject.repair.dto.LocoFilterDTO;
 import com.drgproject.repair.dto.LocoListDTO;
 import com.drgproject.repair.entity.BlockOnLoco;
 import com.drgproject.repair.entity.LocoInfo;
@@ -61,6 +62,92 @@ public class LocoListService {
         Optional<LocoList> sectionIsExist = locoListRepository.findLocoListByTypeLocoAndLocoNumber(typeLoco, sectionNumber);
         return sectionIsExist.isPresent();
     }
+
+    // Метод сортировки, который учитывает как числовую, так и буквенную части
+    public List<LocoListDTO> sortLocoListByNumber(List<LocoListDTO> locoList) {
+        return locoList.stream()
+                .sorted((l1, l2) -> {
+                    // Извлекаем числовую и буквенную части из locoNumber
+                    int number1 = extractNumericPart(l1.getLocoNumber());
+                    int number2 = extractNumericPart(l2.getLocoNumber());
+
+                    // Сравниваем числовые части
+                    int numericComparison = Integer.compare(number1, number2);
+
+                    if (numericComparison == 0) {
+                        // Если числовые части одинаковы, сравниваем буквенные части
+                        String letter1 = extractLetterPart(l1.getLocoNumber());
+                        String letter2 = extractLetterPart(l2.getLocoNumber());
+                        return letter1.compareTo(letter2);
+                    }
+                    return numericComparison;
+                })
+                .toList();
+    }
+
+    // Вспомогательный метод для извлечения числовой части из номера секции
+    private int extractNumericPart(String locoNumber) {
+        String numericPart = locoNumber.replaceAll("\\D+", "");  // Убираем все нецифровые символы
+        return numericPart.isEmpty() ? 0 : Integer.parseInt(numericPart);  // Если пусто, возвращаем 0
+    }
+
+    // Вспомогательный метод для извлечения буквенной части из номера секции
+    private String extractLetterPart(String locoNumber) {
+        return locoNumber.replaceAll("\\d+", "");  // Убираем все цифры, остаются только буквы
+    }
+
+    // Получаем список список всех номеров секций по Region, homeDepot, typeLoco
+    public List<LocoListDTO> getSectionByRegionAndHomeDepotAndTypeLoco(String region, String homeDepot, String typeLoco){
+        List<LocoListDTO> filteredSection = locoListRepository.findAllByHomeRegionAndHomeDepotAndTypeLoco(region, homeDepot, typeLoco).stream()
+                .map(this::convertToDTO)
+                .toList();
+        return filteredSection;
+    }
+
+    /**
+     * Метод для получения отфильтрованного и отсортированного списка свободных секций
+     * @param locoList список отфильтрованных секций из LocoListDTO
+     * @param locoFilter список занятых секций из LocoFilterDTO
+     * @return отсортированный список свободных номеров секций
+     */
+    public List<String> getSortedFreeSections(List<LocoListDTO> locoList, List<LocoFilterDTO> locoFilter) {
+        // Получаем список всех номеров секций из LocoListDTO
+        List<String> locoNumbers = locoList.stream()
+                .map(LocoListDTO::getLocoNumber)
+                .toList();
+
+        // Получаем список занятых номеров секций из LocoFilterDTO, где секции заняты
+        List<String> busySections = locoFilter.stream()
+                .filter(filter -> "да".equals(filter.getBusySection()) && "нет".equals(filter.getFreeSection()))
+                .map(LocoFilterDTO::getSectionNumber)
+                .toList();
+
+        // Формируем список свободных секций, отфильтровывая занятые секции
+        List<String> freeSections = locoNumbers.stream()
+                .filter(section -> !busySections.contains(section))  // Оставляем только те секции, которые не заняты
+                .toList();
+
+        // Сортировка свободных секций по числовой части без учета букв
+        return freeSections.stream()
+                .sorted((section1, section2) -> {
+                    // Извлечение числовой части из номеров секций (например, 001А -> 001, 1234Б -> 1234)
+                    Integer num1 = Integer.parseInt(section1.replaceAll("[^0-9]", ""));
+                    Integer num2 = Integer.parseInt(section2.replaceAll("[^0-9]", ""));
+
+                    // Если числовая часть равна, сортируем по буквенной части
+                    int compare = num1.compareTo(num2);
+                    if (compare == 0) {
+                        // Сравниваем буквенные части
+                        char char1 = section1.replaceAll("[0-9]", "").charAt(0);
+                        char char2 = section2.replaceAll("[0-9]", "").charAt(0);
+                        return Character.compare(char1, char2);
+                    }
+                    return compare;
+                })
+                .toList();
+    }
+
+
 
     public LocoListDTO createLocoList(LocoListDTO locoListDTO) {
         LocoList locoList = new LocoList();

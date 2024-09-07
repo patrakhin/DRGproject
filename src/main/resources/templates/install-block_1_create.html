@@ -304,13 +304,19 @@
         $('#addRowsButton').on('click', function() {
             let nextBlock = currentBlock + 1;
 
-            if (nextBlock <= maxBlocks) {
-                $('#blockContainer' + nextBlock).show();
-                currentBlock = nextBlock;
+            // Добавляем диалоговое окно подтверждения перед добавлением строки
+            if (confirm('Вы уверены, что хотите добавить новую строку?')) {
+                if (nextBlock <= maxBlocks) {
+                    $('#blockContainer' + nextBlock).show();
+                    currentBlock = nextBlock;
 
-                if (currentBlock === maxBlocks) {
-                    $('#addRowsButton').hide(); // Скрыть кнопку, если больше нет строк
+                    if (currentBlock === maxBlocks) {
+                        $('#addRowsButton').hide(); // Скрыть кнопку, если больше нет строк
+                    }
                 }
+            } else {
+                // Если пользователь отменил действие, ничего не делаем
+                return false;
             }
         });
 

@@ -20,4 +20,7 @@ public interface LocoListRepository extends JpaRepository<LocoList, Long> {
     Optional<LocoList> findLocoListByTypeLocoAndLocoNumber(String typeLoco, String locoNumber);
 
     List<LocoList> findAllByHomeRegion(String homeRegion);
+
+    // Получаем список список всех номеров секций по Region, homeDepot, typeLoco
+    List<LocoList> findAllByHomeRegionAndHomeDepotAndTypeLoco(String homeRegion, String homeDepot, String typeLoco);
 }

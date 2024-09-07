@@ -13,22 +13,22 @@
         <thead>
         <tr>
             <th scope="col">ID</th>
-            <th scope="col">Номер договора</th>
             <th scope="col">Серия локомотива</th>
             <th scope="col">Номер секции</th>
-            <th scope="col">Регион</th>
             <th scope="col">Депо приписки</th>
+            <th scope="col">Регион</th>
+            <th scope="col">Номер договора</th>
             <th scope="col">Действия</th>
         </tr>
         </thead>
         <tbody>
         <tr th:each="locoList : ${locoLists}">
             <td th:text="${locoList.id}"></td>
-            <td th:text="${locoList.contractNumber}"></td>
             <td th:text="${locoList.typeLoco}"></td>
             <td th:text="${locoList.locoNumber}"></td>
-            <td th:text="${locoList.homeRegion}"></td>
             <td th:text="${locoList.homeDepot}"></td>
+            <td th:text="${locoList.homeRegion}"></td>
+            <td th:text="${locoList.contractNumber}"></td>
             <td>
                 <a th:href="@{/locos/detail/{id}(id=${locoList.id})}" class="btn btn-primary btn-sm">Детали</a>
                 <a th:href="@{/locos/edit/{id}(id=${locoList.id})}" class="btn btn-warning btn-sm">Редактировать</a>

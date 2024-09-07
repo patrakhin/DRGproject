@@ -54,6 +54,12 @@ public class LocoInfoController {
         List<RegionDTO> regions = regionService.getAllRegions();
         model.addAttribute("regions",regions);
 
+        // Получение списка свободных секций и добавление в модель
+        /*List<LocoListDTO> allSections = locoListService.getAllLocoLists();
+        List<LocoFilterDTO> allSectionsIntoLoco = locoFilterService.getAllLocoFilters();
+        List<String> freeSections = locoListService.getSortedFreeSections(allSections, allSectionsIntoLoco);
+        model.addAttribute("freeSections",freeSections);*/
+
         // Добавление параметров в модель, если они присутствуют
         if (successMessage != null) {
             model.addAttribute("successMessage", successMessage);
@@ -348,5 +354,16 @@ public class LocoInfoController {
     @ResponseBody
     public List<HomeDepotDTO> getDepotsByRegion(@RequestParam String regionName) {
         return homeDepotService.getDepotsByRegion(regionName);
+    }
+
+    // Новый метод для обработки AJAX-запроса (получаем свободные секции для конкретного типа ТПС)
+    @GetMapping("/sections")
+    @ResponseBody
+    public List<String> getFreeSectionsByRegionAndHomeDepotAndTypeLoco(@RequestParam String homeRegion,
+                                                                   @RequestParam String homeDepot,
+                                                                   @RequestParam String typeLoco) {
+        List<LocoListDTO> filteredSection = locoListService.getSectionByRegionAndHomeDepotAndTypeLoco(homeRegion, homeDepot, typeLoco);
+        List<LocoFilterDTO> allSectionsIntoLoco = locoFilterService.getAllLocoFilters();
+        return locoListService.getSortedFreeSections(filteredSection, allSectionsIntoLoco);
     }
 }

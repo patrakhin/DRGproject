@@ -1,6 +1,7 @@
 package com.drgproject.repair.controller;
 
 import com.drgproject.repair.dto.*;
+import com.drgproject.repair.entity.LocoInfo;
 import com.drgproject.repair.service.*;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
@@ -11,6 +12,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/locos")
@@ -23,10 +25,12 @@ public class LocoListController {
     private final RegionService regionService;
     private final HomeDepotService homeDepotService;
     private final LocoFilterService locoFilterService;
+    private final LocoInfoService locoInfoService;
 
     public LocoListController(LocoListService locoListService, TypeLocoService typeLocoService,
                               SystemNameService systemNameService, BlockOnLocoService blockOnLocoService,
-                              RegionService regionService, HomeDepotService homeDepotService, LocoFilterService locoFilterService) {
+                              RegionService regionService, HomeDepotService homeDepotService,
+                              LocoFilterService locoFilterService, LocoInfoService locoInfoService) {
         this.locoListService = locoListService;
         this.typeLocoService = typeLocoService;
         this.systemNameService = systemNameService;
@@ -34,6 +38,7 @@ public class LocoListController {
         this.regionService = regionService;
         this.homeDepotService = homeDepotService;
         this.locoFilterService = locoFilterService;
+        this.locoInfoService = locoInfoService;
     }
 
     @GetMapping
@@ -54,8 +59,8 @@ public class LocoListController {
             return "locos_2_list"; // Вернуть шаблон Thymeleaf для отображения списка локомотивов
         }
         List<LocoListDTO> locoLists = locoListService.getAllLocoLists();
-
-        model.addAttribute("locoLists", locoLists);
+        List<LocoListDTO> filteredLoco = locoListService.sortLocoListByNumber(locoLists);
+        model.addAttribute("locoLists", filteredLoco);
         return "locos_2_list"; // Вернуть шаблон Thymeleaf для отображения списка локомотивов
     }
 
@@ -190,22 +195,32 @@ public class LocoListController {
     @PostMapping("/deleteById")
     public String deleteLoco(@RequestParam Long id, RedirectAttributes redirectAttributes, Model model) {
         LocoListDTO delLocoList = locoListService.getLocoListById(id);
-        boolean isDeleted = locoListService.deleteLocoList(id);
-
         String homeRegion = delLocoList.getHomeRegion();
         String homeDepot = delLocoList.getHomeDepot();
         String locoType = delLocoList.getTypeLoco();
         String sectionNumber = delLocoList.getLocoNumber();
-        //Удалеям свободную секцию
-        locoFilterService.deleteLocoFilterByHomeRegion(homeRegion, homeDepot, locoType, sectionNumber);
+        boolean isDeleted = false;
+        // Получение локомотива по любому номеру секции (если секция в составе этого ТПС удалять нельзя)
+        Optional<LocoInfo> candidateLoco = locoInfoService.getLocoInfoByDepotAndSection(homeDepot, sectionNumber);
+        if (candidateLoco.isEmpty()) {
+            locoListService.deleteLocoList(id); // Это делать после того как прошла проверка свободна секция или в составе локомотива!!!
+            //Удалеям свободную секцию
+            locoFilterService.deleteLocoFilterByHomeRegion(homeRegion, homeDepot, locoType, sectionNumber);
+            isDeleted = true;
+        }
+        String candidateTry = "";
+        if (candidateLoco.isPresent()) {
+            candidateTry = candidateLoco.get().getLocoUnit();
+        }
+
         if (isDeleted) {
-            redirectAttributes.addFlashAttribute("successMessage", "Секция успешно удалена");
+            model.addAttribute("successMessage", "Секция успешно удалена");
         } else {
-            redirectAttributes.addFlashAttribute("errorMessage", "Ошибка при удалении секции");
+            model.addAttribute("errorMessage", "Ошибка! Секция в составе " + candidateTry);
         }
         List<LocoListDTO> locoLists = locoListService.getAllLocoLists();
         model.addAttribute("locoLists", locoLists);
-        return "locos_2_list"; // Перенаправление на список локомотивов после удаления
+        return "locos_7_intermediate_message"; // Перенаправление на промежуточную страницу результатов удаления
     }
 
     @GetMapping("/search")

@@ -278,6 +278,8 @@ public class LocoInfoService {
         return !sections.get(0)[0].equals(sections.get(1)[0]) && !sections.get(2)[0].equals(sections.get(3)[0]) && !sections.get(0)[0].isEmpty() && !sections.get(1)[0].isEmpty() && !sections.get(2)[0].isEmpty() && !sections.get(3)[0].isEmpty();
     }
 
+
+
     // Конвертация сущности в DTO
     public LocoInfoDTO convertToDTO(LocoInfo locoInfo) {
         LocoInfoDTO dto = new LocoInfoDTO();

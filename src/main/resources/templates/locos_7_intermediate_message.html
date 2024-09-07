@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Результат удаления</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <!-- Сообщение об успехе -->
+    <div th:if="${successMessage}" class="alert alert-success text-center" role="alert">
+        [[${successMessage}]]
+    </div>
+
+    <!-- Сообщение об ошибке -->
+    <div th:if="${errorMessage}" class="alert alert-danger text-center" role="alert">
+        [[${errorMessage}]]
+    </div>
+
+    <div class="text-center mt-4">
+        <a href="/locos/all" class="btn btn-primary">Вернуться к списку секций</a>
+    </div>
+</div>
+
+<!-- Автоматическое перенаправление через 5 секунд -->
+<script>
+    setTimeout(function() {
+        window.location.href = '/locos/all';
+    }, 3000); // Перенаправление через 3 секунды
+</script>
+
+</body>
+</html>
