@@ -78,6 +78,16 @@ public class LocoInfoService {
         }
     }
 
+    //Получение локомотива по номеру и серии и депо приписки
+    public LocoInfoDTO getLocoInfoByHomeDepotAndLocoTypeAndLocoUnit(String homeDepot, String locoType, String locoUnit){
+        Optional<LocoInfo> locoForSection1 = locoInfoRepository.findLocoInfoByHomeDepotAndLocoTypeAndLocoUnit(homeDepot, locoType, locoUnit);
+        if(locoForSection1.isPresent()){
+            return convertToDTO(locoForSection1.get());
+        }else {
+            throw new IllegalArgumentException("Локомотив " + locoUnit  + " для создания свободных секций не найден сервисный слой");
+        }
+    }
+
     //Получение локомотива по номеру и серии для истории ремонта
     public LocoInfoDTO getLocoByNumber(String locoUnit, String locoType){
         Optional<LocoInfo> locoNumber = locoInfoRepository.findByLocoUnitAndLocoType(locoUnit, locoType);
@@ -119,7 +129,7 @@ public class LocoInfoService {
     }
 
     private void addSectionIfValid(List<String> sectionsNumber, String section) {
-        if (section != null && !section.isEmpty() && !section.toLowerCase().contains("нет")) {
+        if (section != null && !section.isEmpty() && !section.toLowerCase().contains("нет") && !section.contains("Выберите секцию")) {
             sectionsNumber.add(section);
         }
     }
@@ -137,7 +147,7 @@ public class LocoInfoService {
     }
 
     private void addClearSectionIfValid(List<String> sectionsNumber, String section) {
-        if (section != null && !section.isEmpty() && !section.contains("нет")) {
+        if (section != null && !section.isEmpty() && !section.contains("нет") && !section.contains("Выберите секцию")) {
             sectionsNumber.add(section);
         }
     }

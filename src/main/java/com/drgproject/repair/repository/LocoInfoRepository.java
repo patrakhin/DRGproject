@@ -30,6 +30,9 @@ public interface LocoInfoRepository extends JpaRepository<LocoInfo, Long> {
     //Получение LocoInfo по  номеру локомотива и серии
     Optional<LocoInfo> findByLocoUnitAndLocoType(String locoUnit, String locoType);
 
+    //Получение LocoInfo по депо припики серии и номеру локомотива
+    Optional<LocoInfo> findLocoInfoByHomeDepotAndLocoTypeAndLocoUnit(String homeDepot, String locoType, String locoUnit);
+
     // Проверка на существование уже созданного локомотива
     Optional<LocoInfo> findByRegionAndHomeDepotAndLocoTypeAndLocoSection1(String region, String homeDepot, String locoType, String locoSection1);
 

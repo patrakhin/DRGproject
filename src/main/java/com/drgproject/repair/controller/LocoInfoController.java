@@ -249,15 +249,18 @@ public class LocoInfoController {
     @GetMapping("/delete")
     public String showDeleteDepotForm(Model model) {
         List<TypeLocoDTO> typeLocos = typeLocoService.getAllTypeLocos();
+        List<RegionDTO> regions = regionService.getAllRegions();
         model.addAttribute("typeLocos", typeLocos);
+        model.addAttribute("regions", regions);
+        List<HomeDepotDTO> homeDepots = new ArrayList<>();
         return "loco_info_3_delete";
     }
 
     @PostMapping("/deleteByName")
-    public String deleteHomeDepot(@RequestParam String locoUnit, @RequestParam String locoType, Model model) {
-        LocoInfoDTO locoForCreateSection = locoInfoService.getLocoInfoByNumber(locoUnit, locoType);
+    public String deleteHomeDepot(@RequestParam String homeDepot, @RequestParam String locoUnit, @RequestParam String locoType, Model model) {
+        LocoInfoDTO locoForCreateSection = locoInfoService.getLocoInfoByHomeDepotAndLocoTypeAndLocoUnit(homeDepot, locoType, locoUnit);
         String homeRegion = locoForCreateSection.getRegion();
-        String homeDepot = locoForCreateSection.getHomeDepot();
+        //String homeDepot = locoForCreateSection.getHomeDepot();
         List<String> sectionsNumber = locoInfoService.getLocoSections(locoForCreateSection);
         boolean isDeleted = locoInfoService.deleteLocoInfoByLocoUnit(locoUnit, locoType);
         if (isDeleted) {

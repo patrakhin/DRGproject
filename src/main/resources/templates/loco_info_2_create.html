@@ -64,7 +64,7 @@
                     <label for="section1" class="col-sm-3 col-form-label">Секция 1:</label>
                     <div class="col-sm-6">
                         <select id="section1" name="section1" class="form-select">
-                            <option value="">Выберите секцию</option>
+                            <option value="" data-default="true">Выберите секцию</option>
                         </select>
                     </div>
                     <div class="col-sm-3 d-flex align-items-center">
@@ -80,7 +80,7 @@
                     <label for="section2" class="col-sm-3 col-form-label">Секция 2:</label>
                     <div class="col-sm-6">
                         <select id="section2" name="section2" class="form-select">
-                            <option value="">Выберите секцию</option>
+                            <option value="" data-default="true">Выберите секцию</option>
                         </select>
                     </div>
                     <div class="col-sm-3 d-flex align-items-center">
@@ -96,7 +96,7 @@
                     <label for="section3" class="col-sm-3 col-form-label">Секция 3:</label>
                     <div class="col-sm-6">
                         <select id="section3" name="section3" class="form-select">
-                            <option value="">Выберите секцию</option>
+                            <option value="" data-default="true">Выберите секцию</option>
                         </select>
                     </div>
                     <div class="col-sm-3 d-flex align-items-center">
@@ -112,7 +112,7 @@
                     <label for="section4" class="col-sm-3 col-form-label">Секция 4:</label>
                     <div class="col-sm-6">
                         <select id="section4" name="section4" class="form-select">
-                            <option value="">Выберите секцию</option>
+                            <option value="" data-default="true">Выберите секцию</option>
                         </select>
                     </div>
                     <div class="col-sm-3 d-flex align-items-center">
@@ -170,6 +170,21 @@
 
         $('#typeLoco').change(function() {
             loadFreeSections();
+        });
+
+        // Обработчик для формы перед отправкой
+        $('form').on('submit', function(event) {
+            // Найти все выпадающие списки
+            $(this).find('select').each(function() {
+                var $select = $(this);
+                var defaultOption = $select.find('option[data-default]');
+
+                // Проверить, выбрана ли опция по умолчанию
+                if ($select.val() === defaultOption.val()) {
+                    // Удалить параметр, если значение выбрано по умолчанию
+                    $select.removeAttr('name');
+                }
+            });
         });
 
         // Проверка наличия успешного сообщения и задержка
