@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Список депо ремонта</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+  <h1 class="text-center">Список депо ремонта</h1>
+
+  <!-- Выпадающий список для Администратора -->
+  <div th:if="${isAdmin}">
+    <form id="regionForm" class="mb-3">
+      <label for="regionSelect" class="form-label">Выберите регион</label>
+      <select class="form-control" id="regionSelect" name="region" onchange="loadDepotsByRegion(this.value)">
+        <option value="">-- Выберите регион --</option>
+        <option th:each="region : ${regions}" th:value="${region}" th:text="${region}"></option>
+      </select>
+    </form>
+  </div>
+
+  <!-- Таблица с депо -->
+  <table class="table table-bordered mt-4">
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>Название</th>
+      <th>Регион</th>
+      <th>Действия</th>
+    </tr>
+    </thead>
+    <tbody id="depotTableBody">
+    <tr th:each="depot : ${depots}">
+      <td th:text="${depot.id}"></td>
+      <td th:text="${depot.name}"></td>
+      <td th:text="${depot.regionName}"></td>
+      <td>
+        <a th:href="@{/repair-depots/edit(id=${depot.id})}" class="btn btn-warning">Изменить</a>
+        <a th:href="@{/repair-depots/delete(id=${depot.id})}" class="btn btn-danger">Удалить</a>
+      </td>
+    </tr>
+    <!-- Если нет депо для отображения -->
+    <tr th:if="${#lists.isEmpty(depots)}">
+      <td colspan="3" class="text-center">Депо не найдено</td>
+    </tr>
+    </tbody>
+  </table>
+
+  <div class="text-center mt-4">
+    <a href="/repair-depots" class="btn btn-primary">Вернуться на главную</a>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Скрипт для загрузки депо по выбранному региону (используем AJAX) -->
+<script>
+  function loadDepotsByRegion(region) {
+    if (region === "") {
+      document.getElementById("depotTableBody").innerHTML = "<tr><td colspan='4' class='text-center'>Выберите регион</td></tr>";
+      return;
+    }
+
+    fetch(`/repair-depots/region?region=${region}`)
+            .then(response => response.json())
+            .then(data => {
+              const depotTableBody = document.getElementById("depotTableBody");
+              depotTableBody.innerHTML = ""; // Очищаем таблицу
+
+              if (data.length === 0) {
+                depotTableBody.innerHTML = "<tr><td colspan='4' class='text-center'>Депо не найдено</td></tr>";
+              } else {
+                data.forEach(depot => {
+                  depotTableBody.innerHTML += `
+              <tr>
+                <td>${depot.id}</td>
+                <td>${depot.name}</td>
+                <td>${depot.regionName}</td>
+                <td>
+                  <a href="/repair-depots/edit?id=${depot.id}" class="btn btn-warning">Изменить</a>
+                  <a href="/repair-depots/delete?id=${depot.id}&name=${encodeURIComponent(depot.name)}" class="btn btn-danger">Удалить</a>
+                </td>
+              </tr>
+            `;
+                });
+              }
+            })
+            .catch(error => console.error('Ошибка:', error));
+  }
+</script>
+</body>
+</html>

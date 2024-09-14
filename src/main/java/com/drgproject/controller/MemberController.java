@@ -1,6 +1,10 @@
 package com.drgproject.controller;
 
 import com.drgproject.dto.MemberDTO;
+import com.drgproject.repair.dto.RepDepotDTO;
+import com.drgproject.repair.dto.RegionDTO;
+import com.drgproject.repair.service.RegionService;
+import com.drgproject.repair.service.RepDepotService;
 import com.drgproject.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.http.ResponseEntity;
@@ -17,9 +21,15 @@ import java.util.List;
 public class MemberController {
 
     private final UserService userService;
+    private final RepDepotService repDepotService;
+    private final RegionService regionService;
 
-    public MemberController(UserService userService) {
+    public MemberController(UserService userService,
+                            RepDepotService repDepotService,
+                            RegionService regionService) {
         this.userService = userService;
+        this.repDepotService = repDepotService;
+        this.regionService = regionService;
     }
 
     @GetMapping()
@@ -77,26 +87,23 @@ public class MemberController {
 
     // Метод для отображения формы создания сотрудника
     @GetMapping("/create")
-    public String showCreateUserForm(Model model, HttpSession session) {
+    public String showCreateUserForm(Model model) {
         MemberDTO userDTO = new MemberDTO();
-        String post = (String) session.getAttribute("post");
-        if ("Регионал".equals(post)){
-            String region = (String) session.getAttribute("region");
-            userDTO.setRegion(region);
-        }
-        model.addAttribute("user", userDTO);
-        model.addAttribute("post", post); // Добавляем переменную post в модель
-        return "user_company_4_add";
+
+        // Получаем список всех регионов
+        List<String> regions = regionService.getAllRegions().stream()
+                .map(RegionDTO::getName)
+                .toList();
+        model.addAttribute("regions", regions);  // Добавляем список регионов в модель
+
+        model.addAttribute("user", userDTO);  // Добавляем DTO пользователя
+        return "user_company_4_add";  // Возвращаем имя шаблона
     }
 
     // Метод для обработки данных формы создания сотрудника
     @PostMapping("/create")
-    public String createUser(@ModelAttribute MemberDTO userDTO, Model model, HttpSession session) {
-        String post = (String) session.getAttribute("post");
-        if ("Регионал".equals(post)){
-            String region = (String) session.getAttribute("region");
-            userDTO.setRegion(region);
-        }
+    public String createUser(@ModelAttribute MemberDTO userDTO, Model model) {
+
         MemberDTO createdUser = userService.createUser(userDTO);
         model.addAttribute("createdUser", createdUser);
         return "user_company_4_add_success";
@@ -168,6 +175,12 @@ public class MemberController {
         }
 
         return "user_company_6_delete";
+    }
+
+    @GetMapping("/region")
+    @ResponseBody
+    public List<RepDepotDTO> getDepotsByRegion(@RequestParam String region) {
+        return repDepotService.getDepotsByRegionName(region);
     }
 
 }

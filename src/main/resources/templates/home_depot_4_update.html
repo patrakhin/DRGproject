@@ -8,10 +8,10 @@
 </head>
 <body>
 <div class="container mt-5">
-    <h1 class="text-center">Редактировать Депо</h1>
+    <h1 class="text-center">Редактировать Депо приписки</h1>
     <form th:action="@{/home-depots/edit/{id}(id=${homeDepot.id})}" method="post" th:object="${homeDepot}" class="mt-4">
         <div class="mb-3">
-            <label for="depot" class="form-label">Название Депо</label>
+            <label for="depot" class="form-label">Название Депо приписки</label>
             <input type="text" class="form-control" id="depot" th:field="*{depot}" required>
         </div>
         <div class="mb-3">

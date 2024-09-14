@@ -4,7 +4,6 @@ import com.drgproject.dto.ReceiptBlockDto;
 import com.drgproject.dto.SparePartsReceiptDto;
 import com.drgproject.entity.Members;
 import com.drgproject.repair.dto.*;
-import com.drgproject.repair.entity.BlockOnLoco;
 import com.drgproject.repair.entity.LocoInfo;
 import com.drgproject.repair.service.*;
 import com.drgproject.repository.MemberRepository;
@@ -54,6 +53,7 @@ public class RepairHistoryControllerTwo {
     private final LocoInfoService locoInfoService;
     private final HomeDepotService homeDepotService;
     private final RegionService regionService;
+    private final RepDepotService repDepotService;
 
     public RepairHistoryControllerTwo(RepairHistoryService repairHistoryService,
                                       LocoListService locoListService,
@@ -68,7 +68,8 @@ public class RepairHistoryControllerTwo {
                                       UserService userService,
                                       LocoInfoService locoInfoService,
                                       HomeDepotService homeDepotService,
-                                      RegionService regionService) {
+                                      RegionService regionService,
+                                      RepDepotService repDepotService) {
         this.repairHistoryService = repairHistoryService;
         this.locoListService = locoListService;
         this.blockOnLocoService = blockOnLocoService;
@@ -83,6 +84,7 @@ public class RepairHistoryControllerTwo {
         this.locoInfoService = locoInfoService;
         this.homeDepotService = homeDepotService;
         this.regionService = regionService;
+        this.repDepotService = repDepotService;
     }
 
     // Главная страница
@@ -1077,7 +1079,7 @@ public class RepairHistoryControllerTwo {
     public String showFilterForm(Model model) {
         List<RegionDTO> regions = regionService.getAllRegions();
         model.addAttribute("regions", regions);
-        model.addAttribute("depots", new ArrayList<HomeDepotDTO>());
+        model.addAttribute("depots", new ArrayList<RepDepotDTO>());
         return "repair_history_15_filter-report-sps"; // Имя HTML-формы
     }
 
@@ -1230,7 +1232,7 @@ public class RepairHistoryControllerTwo {
     public String showFilterFormWithout(Model model) {
         List<RegionDTO> regions = regionService.getAllRegions();
         model.addAttribute("regions", regions);
-        model.addAttribute("depots", new ArrayList<HomeDepotDTO>());
+        model.addAttribute("depots", new ArrayList<RepDepotDTO>());
         return "repair_history_17_filter-report-sps"; // Имя HTML-формы
     }
 
@@ -1378,4 +1380,10 @@ public class RepairHistoryControllerTwo {
         workbook.close();
     }
 
+    //Список депо по имени Региона
+    @GetMapping("/region")
+    @ResponseBody
+    public List<RepDepotDTO> getRepairDepotsByRegion(@RequestParam String region) {
+        return repDepotService.getDepotsByRegionName(region);
+    }
 }

@@ -8,7 +8,7 @@
 </head>
 <body>
 <div class="container mt-5">
-    <h1 class="text-center">Добавить Депо</h1>
+    <h1 class="text-center">Добавить Депо приписки</h1>
     <form th:action="@{/home-depots/create}" method="post" th:object="${homeDepot}" class="mt-4">
         <div class="mb-3">
             <label for="regionId" class="form-label">Регион</label>
@@ -17,7 +17,7 @@
             </select>
         </div>
         <div class="mb-3">
-            <label for="depot" class="form-label">Название Депо</label>
+            <label for="depot" class="form-label">Название Депо приписки</label>
             <input type="text" class="form-control" id="depot" th:field="*{depot}" required>
         </div>
         <div class="text-center">

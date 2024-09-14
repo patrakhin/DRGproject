@@ -10,7 +10,7 @@
 <div class="container">
     <div class="row justify-content-center mt-4">
         <div class="col-12 text-center mb-4">
-            <h1>Выберете депо выполнения ремонта и даты для формирования отчета</h1>
+            <h1>Выберите депо выполнения ремонта и даты для формирования отчета</h1>
         </div>
         <div class="col-12">
             <form action="/repair_history/gen-rep-sps" method="get">
@@ -24,10 +24,10 @@
                     </div>
                 </div>
                 <div class="mb-3 row">
-                    <label for="homeDepot" class="col-sm-2 col-form-label">Депо:</label>
+                    <label for="repairDepot" class="col-sm-2 col-form-label">Депо ремонта:</label>
                     <div class="col-sm-4">
-                        <select id="homeDepot" name="depot" class="form-select" required>
-                            <option value="">Выберите депо</option>
+                        <select id="repairDepot" name="depot" class="form-select" required>
+                            <option value="">Выберите депо ремонта</option>
                         </select>
                     </div>
                 </div>
@@ -64,18 +64,18 @@
         });
 
         function loadDepots(regionName) {
-            const $homeDepotSelect = $('#homeDepot');
-            $homeDepotSelect.empty();
-            $homeDepotSelect.append($('<option></option>').text('Выберите депо'));
+            const $repairDepotSelect = $('#repairDepot');
+            $repairDepotSelect.empty();
+            $repairDepotSelect.append($('<option></option>').text('Выберите депо'));
             if (regionName) {
                 $.ajax({
-                    url: '/repair_history/depots',
+                    url: '/repair_history/region', // Скорректированный URL для получения списка депо
                     type: 'GET',
-                    data: { regionName: regionName },
+                    data: { region: regionName },
                     success: function(data) {
                         $.each(data, function(index, depot) {
-                            const option = $('<option></option>').attr('value', depot.depot).text(depot.depot);
-                            $homeDepotSelect.append(option);
+                            const option = $('<option></option>').attr('value', depot.name).text(depot.name);
+                            $repairDepotSelect.append(option);
                         });
                     },
                     error: function() {
