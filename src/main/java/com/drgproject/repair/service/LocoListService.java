@@ -57,6 +57,12 @@ public class LocoListService {
         return locoListIsExist.isPresent();
     }
 
+    //Проверка на дублирование перед созданием секции при загрузке из файла
+    public boolean ifSectionIsExists(String homeRegion, String homeDepot, String typeLoco, String locoNumber){
+        Optional<LocoList> locoListIsExist = locoListRepository.findLocoListByHomeRegionAndHomeDepotAndTypeLocoAndLocoNumber(homeRegion, homeDepot, typeLoco, locoNumber);
+        return locoListIsExist.isPresent();
+    }
+
     // Приверка ну сущестование секции (для создания блока на секцию)
     public boolean ifSectionExist (String typeLoco, String sectionNumber){
         Optional<LocoList> sectionIsExist = locoListRepository.findLocoListByTypeLocoAndLocoNumber(typeLoco, sectionNumber);
@@ -148,6 +154,26 @@ public class LocoListService {
     }
 
 
+
+
+    //Создаем секции из документа Excel
+    public LocoListDTO createSectionList(String contractNumber, String typeLoco, String typeSystem,
+                                         String locoNumber, String homeRegion, String homeDepot, String comment ) {
+        LocoList locoList = new LocoList();
+        locoList.setContractNumber(contractNumber);
+        locoList.setTypeLoco(typeLoco);
+        locoList.setTypeSystem(typeSystem);
+        locoList.setLocoNumber(locoNumber);
+        locoList.setHomeRegion(homeRegion);
+        locoList.setHomeDepot(homeDepot);
+        locoList.setComment(comment);
+
+        // Пустой список блоков при создании локомотива
+        locoList.setBlockOnLocos(new ArrayList<>());
+
+        LocoList savedLocoList = locoListRepository.save(locoList);
+        return convertToDTO(savedLocoList);
+    }
 
     public LocoListDTO createLocoList(LocoListDTO locoListDTO) {
         LocoList locoList = new LocoList();

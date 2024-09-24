@@ -485,6 +485,7 @@ public class RepairHistoryControllerTwo {
         // Проверяем каждый блок на просроченность
         for (BlockOnLocoDTO block : blocksOnLocoList) {
             LocalDate dateOfIssue = LocalDate.parse(block.getDateOfIssue(), formatter);
+            //LocalDate dateOfIssue = LocalDate.parse(block.getDateOfIssue());
             boolean isExpired = dateOfIssue.plusYears(2).isBefore(currentDate);
             isBlockExpiredList.add(isExpired);
         }

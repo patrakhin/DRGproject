@@ -4,12 +4,19 @@ import com.drgproject.repair.dto.*;
 import com.drgproject.repair.entity.LocoInfo;
 import com.drgproject.repair.service.*;
 import jakarta.servlet.http.HttpSession;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -263,5 +270,62 @@ public class LocoListController {
     @ResponseBody
     public List<HomeDepotDTO> getDepotsByRegion(@RequestParam String regionName) {
         return homeDepotService.getDepotsByRegion(regionName);
+    }
+
+    // Метод GET для отображения формы загрузки файла
+    @GetMapping("/upload")
+    public String showUploadForm(Model model) {
+        return "locos_9_upload"; // Возвращаем название шаблона Thymeleaf
+    }
+
+    //Загрузка секций из Excel
+    @PostMapping("/upload")
+    public String uploadExcelFile(@RequestParam("fileExcel") MultipartFile fileExcel, Model model) {
+        try {
+            // Проверяем, что файл не пуст
+            if (fileExcel.isEmpty()) {
+                model.addAttribute("message", "Пожалуйста, выберите файл для загрузки");
+                return "locos_9_upload"; // Возвращаемся к форме загрузки
+            }
+
+            // Открываем файл с помощью Apache POI
+            try (Workbook workbook = new XSSFWorkbook(fileExcel.getInputStream())) {
+                Sheet sheet = workbook.getSheetAt(0); // Получаем первый лист
+
+                // Проходим по строкам начиная с 2-й строки (индекс 1)
+                for (int rowIndex = 1; rowIndex <= sheet.getLastRowNum(); rowIndex++) {
+                    Row row = sheet.getRow(rowIndex);
+
+                    if (row != null) {
+                        // Чтение данных из ячеек начиная с A2, B2 и т.д.
+                        String contractNumber = row.getCell(0).getStringCellValue();
+                        String typeLoco = row.getCell(1).getStringCellValue();
+                        String typeSystem = row.getCell(2).getStringCellValue();
+                        String locoNumber = row.getCell(3).getStringCellValue();
+                        String homeRegion = row.getCell(4).getStringCellValue();
+                        String homeDepot = row.getCell(5).getStringCellValue();
+                        String comment = row.getCell(6) != null ? row.getCell(6).getStringCellValue() : "";
+
+                        // Проверка на существование секции
+                        boolean locoListExists = locoListService.ifSectionIsExists(homeRegion, homeDepot, typeLoco, locoNumber);
+                        if (locoListExists) {
+                            model.addAttribute("message", "Секция с такими данными уже существует." + homeRegion + " " + homeDepot + " " + typeLoco + " " + locoNumber);
+                            return "locos_9_upload"; // Редирект на ту же страницу
+                        }
+                        // Вызываем сервисный метод для создания записи
+                        locoListService.createSectionList(contractNumber, typeLoco, typeSystem, locoNumber, homeRegion, homeDepot, comment);
+                        // Добавляем и как свободную секцию тоже, чтобы из свободных формировать ТПС
+                        locoFilterService.createFreeSection(homeRegion, homeDepot, typeLoco, locoNumber);
+                    }
+                }
+
+                model.addAttribute("message", "Файл успешно загружен и обработан.");
+            }
+        } catch (Exception e) {
+            model.addAttribute("message", "Ошибка при обработке файла: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return "locos_9_upload"; // возвращаем ту же форму с сообщением
     }
 }

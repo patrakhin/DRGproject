@@ -174,7 +174,7 @@ public class LocoInfoService {
     }
 
     @Transactional
-    // Удаление LocoInfo по ID
+    // Удаление LocoInfo по ID Секции делаются свободными в контроллере
     public void deleteLocoInfo(Long id) {
         if (locoInfoRepository.existsById(id)) {
             locoInfoRepository.deleteById(id);
@@ -184,7 +184,7 @@ public class LocoInfoService {
     }
 
     @Transactional
-    // Удаление LocoInfo по locoUnit
+    // Удаление LocoInfo по locoUnit Секции делаются свободными в контроллере
     public boolean deleteLocoInfoByLocoUnit(String locoUnit, String locoType) {
         Optional<LocoInfo> locoInfoOptional = locoInfoRepository.findByLocoUnit(locoUnit);
         if (locoInfoOptional.isPresent()) {
@@ -211,7 +211,7 @@ public class LocoInfoService {
         StringBuilder result = new StringBuilder();
 
         // Регулярное выражение для выделения номера и буквы
-        String regex = "(\\d+)([А-Я]?)";
+        String regex = "(\\d+)([А-ЯA-Z]?)";
 
         // Разделение секций на части (номер и буква)
         List<String[]> parsedSections = new ArrayList<>();
@@ -289,6 +289,106 @@ public class LocoInfoService {
     }
 
 
+    public List<String> createSections(String series, String number) {
+        String section1 = "";
+        String section2 = "";
+        String section3 = "";
+        String section4 = "";
+
+        // Определяем количество секций на основе серии
+        int sectionCount = getSectionCount(series);
+
+        // Разбиваем номер локомотива на части, если есть разделитель "/"
+        String[] parts = number.split("/");
+
+        // В зависимости от количества секций, присваиваем значения переменным
+        switch (sectionCount) {
+            case 1:
+                section1 = formatSection(parts[0], "А");
+                break;
+            case 2:
+                section1 = formatSection(parts[0], "А");
+                if (parts.length > 1) {
+                    section2 = formatSection(parts[1], "Б");
+                }
+                break;
+            case 3:
+                section1 = formatSection(parts[0], "А");
+                if (parts.length > 1) {
+                    section2 = formatSection(parts[1], "Б");
+                }
+                if (parts.length > 2) {
+                    section3 = formatSection(parts[2], extractLetter(parts[2]));
+                }
+                break;
+            case 4:
+                section1 = formatSection(parts[0], "А");
+                if (parts.length > 1) {
+                    section2 = formatSection(parts[1], "Б");
+                }
+                if (parts.length > 2) {
+                    section3 = formatSection(parts[2], extractLetter(parts[2]));
+                }
+                if (parts.length > 3) {
+                    section4 = formatSection(parts[3], extractLetter(parts[3]));
+                }
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid series format: " + series);
+        }
+
+        // Выводим результат
+        List<String> sectionsNumber = new ArrayList<>();
+
+        addClearSectionIfValid(sectionsNumber, section1);
+        addClearSectionIfValid(sectionsNumber, section2);
+        addClearSectionIfValid(sectionsNumber, section3);
+        addClearSectionIfValid(sectionsNumber, section4);
+        return sectionsNumber;
+    }
+
+    // Функция для определения количества секций на основе серии
+    private int getSectionCount(String series) {
+        if (series.startsWith("1.5")) {
+            return 3;
+        } else if (series.startsWith("2ВЛ")) {
+            return 4;
+        } else if (series.startsWith("ТЭМ14") || series.startsWith("ТЭМ18ДМ") || series.startsWith("ЭП1") || series.startsWith("ТЭП70бс") || series.startsWith("ТЭП70") || series.startsWith("ТЭМ7а")) {
+            return 1;
+        }else {
+            return 2; // Если серия начинается с других символов, то это 2 секции
+        }
+    }
+
+    // Форматирование номера секции (добавление буквы в конце)
+    private String formatSection(String numberPart, String letter) {
+        // Удаляем буквы из части номера, если они есть
+        String digits = numberPart.replaceAll("[^\\d]", "");
+        return digits + letter;
+    }
+
+    // Извлечение буквы из части номера
+    private String extractLetter(String part) {
+        String letter = part.replaceAll("[^A-ZА-Я]", ""); // Извлекаем букву из номера
+        if (!letter.isEmpty()) {
+            return letter;
+        }
+        return ""; // Если буквы нет, возвращаем пустую строку
+    }
+
+    // Получении серии для секций из серии локомотива
+    public String getTypeLocoListFromLoco (String typeLocoInfo){
+        String typeSection = typeLocoInfo;
+        if (typeLocoInfo.startsWith("1.5")){
+            //вызываем конструктор со строкой в качестве аргумента
+            typeSection = typeLocoInfo.substring(3);
+        }
+        if (typeLocoInfo.startsWith("2ВЛ")){
+            //вызываем конструктор со строкой в качестве аргумента
+            typeSection = typeLocoInfo.substring(1);
+        }
+        return typeSection;
+    }
 
     // Конвертация сущности в DTO
     public LocoInfoDTO convertToDTO(LocoInfo locoInfo) {

@@ -9,7 +9,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -82,6 +85,8 @@ public class InstallBlocksTemController {
         // Логика создания блоков
         try {
             int createdBlocksCount = 0;
+            SimpleDateFormat inputDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            SimpleDateFormat outputDateFormat = new SimpleDateFormat("dd.MM.yyyy");
             for (int i = 0; i < 10; i++) { // Максимум 10 блоков
                 String blockName = parameters.get("blocks[" + i + "].blockName");
                 String blockNumber = parameters.get("blocks[" + i + "].blockNumber");
@@ -91,11 +96,14 @@ public class InstallBlocksTemController {
                         blockNumber != null && !blockNumber.isEmpty() &&
                         dateOfIssue != null && !dateOfIssue.isEmpty()) {
 
+                    // Преобразование даты так как со страницы она приходит в гггг.мм.дд а в bloc_on_loco она в дд.мм.гггг
+                    String formattedDateOfIssue = convertDateFormat(dateOfIssue, inputDateFormat, outputDateFormat);
+
                     BlockOnLocoDTO blockDTO = new BlockOnLocoDTO(
                             null, // id можно оставить как null, если он не используется
                             blockName,
                             blockNumber,
-                            dateOfIssue,
+                            formattedDateOfIssue,
                             null, // locoListId можно оставить как null, если он не используется
                             typeLoco,
                             sectionNumber
@@ -108,7 +116,7 @@ public class InstallBlocksTemController {
             if (createdBlocksCount > 0) {
                 model.addAttribute("successMessage", createdBlocksCount + " блок(а/ов) успешно созданы");
             } else {
-                model.addAttribute("errorMessage", "Не создано ни одного блока. Пожалуйста, заполните хотя бы одно поле.");
+                model.addAttribute("errorMessage", "Не создано ни одного блока. Пожалуйста, заполните все поля.");
             }
         } catch (Exception e) {
             model.addAttribute("errorMessage", "Произошла ошибка при создании блоков: " + e.getMessage());
@@ -119,5 +127,16 @@ public class InstallBlocksTemController {
         model.addAttribute("numberLoco", numberLoco);
 
         return "install-block_2_create_end"; // Возвращаем страницу с результатом
+    }
+
+    private String convertDateFormat(String dateStr, SimpleDateFormat inputFormat, SimpleDateFormat outputFormat) {
+        try {
+            Date date = inputFormat.parse(dateStr);
+            return outputFormat.format(date);
+        } catch (ParseException e) {
+            // Логирование ошибки преобразования
+            e.printStackTrace();
+            return dateStr; // Возвращаем исходное значение, если произошла ошибка
+        }
     }
 }

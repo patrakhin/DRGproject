@@ -16,6 +16,9 @@ public interface LocoListRepository extends JpaRepository<LocoList, Long> {
     //Проверка на дублирование
     Optional<LocoList> findLocoListByHomeRegionAndHomeDepotAndLocoNumber(String homeRegion, String homeDepot, String locoNumber);
 
+    //Проверка на дублирование при загрузке из файла
+    Optional<LocoList> findLocoListByHomeRegionAndHomeDepotAndTypeLocoAndLocoNumber(String homeRegion, String homeDepot, String typeLoco, String locoNumber);
+
     //ПРоверка на существование (для создания блока на секции)
     Optional<LocoList> findLocoListByTypeLocoAndLocoNumber(String typeLoco, String locoNumber);
 

@@ -1,21 +1,21 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Тип системы успешно создан</title>
+    <title>Серия локомотива успешно обновлена</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
 <div class="container mt-5">
-    <h1 class="text-center">Тип системы успешно создан</h1>
+    <h1 class="text-center">Серия локомотива успешно обновлена</h1>
     <ul class="mt-4">
-        <li>ID: <span th:text="${createdSystemName.id}"></span></li>
-        <li>Системное имя: <span th:text="${createdSystemName.sysName}"></span></li>
+        <li>ID: <span th:text="${allTypeLocoUnit.id}"></span></li>
+        <li>Серия локомотива: <span th:text="${allTypeLocoUnit.typeLocoUnit}"></span></li>
     </ul>
     <div class="row mt-3">
         <div class="col-12 text-end">
-            <a href="/system-names" class="btn btn-link">Типы систем</a>
+            <a href="/all-type-unit" class="btn btn-link">Серии локомотивов</a>
         </div>
     </div>
 </div>
