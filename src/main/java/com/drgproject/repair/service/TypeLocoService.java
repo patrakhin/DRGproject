@@ -52,6 +52,10 @@ public class TypeLocoService {
         return false;
     }
 
+    public boolean sectionExists(String typeSection){
+        return typeLocoRepository.existsByLocoType(typeSection);
+    }
+
     private TypeLocoDTO convertToDTO(TypeLoco typeLoco) {
         return new TypeLocoDTO(typeLoco.getId(), typeLoco.getTypeLoco());
     }

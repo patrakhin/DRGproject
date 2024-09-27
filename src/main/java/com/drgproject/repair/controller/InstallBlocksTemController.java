@@ -46,6 +46,7 @@ public class InstallBlocksTemController {
                                       @RequestParam("sectionNumber") String sectionNumber,
                                       @RequestParam("typeLoco") String typeLoco,
                                       @RequestParam("numberLoco") String numberLoco,
+                                      @RequestParam("typeLocoUnit") String typeLocoUnit,
                                       Model model) {
         // Создаем список новых объектов DTO для блоков
         List<BlockOnLocoDTO> blocksOnLocoDTO = new ArrayList<>();
@@ -61,6 +62,7 @@ public class InstallBlocksTemController {
         model.addAttribute("sectionNumber", sectionNumber);
         model.addAttribute("typeLoco", typeLoco);
         model.addAttribute("numberLoco", numberLoco);
+        model.addAttribute("typeLocoUnit", typeLocoUnit);
 
         return "install-block_1_create"; // Шаблон для создания блока
     }
@@ -72,6 +74,7 @@ public class InstallBlocksTemController {
             @RequestParam(required = false) String typeLoco,
             @RequestParam(required = false) String numberLoco,
             @RequestParam Map<String, String> parameters,
+            @RequestParam String typeLocoUnit,
             Model model) {
 
         // Проверка существования секции
@@ -125,6 +128,7 @@ public class InstallBlocksTemController {
         // Передаем параметры для формы возврата
         model.addAttribute("typeLoco", typeLoco);
         model.addAttribute("numberLoco", numberLoco);
+        model.addAttribute("typeLocoUnit", typeLocoUnit);
 
         return "install-block_2_create_end"; // Возвращаем страницу с результатом
     }

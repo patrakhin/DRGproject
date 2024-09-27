@@ -38,8 +38,8 @@
       </div>
       <p><strong>Дата ремонта:</strong> <span th:text="${repairHistoryDto.repairDate}"></span></p>
       <p><strong>Депо приписки:</strong> <span th:text="${repairHistoryDto.homeDepot}"></span></p>
-      <p><strong>Тип локомотива:</strong> <span th:text="${repairHistoryDto.typeLoco}"></span></p>
-      <p><strong>Номер локомотива:</strong> <span th:text="${repairHistoryDto.locoNumber}"></span></p>
+      <p><strong>Серия локомотива:</strong> <span th:text="${repairHistoryDto.typeLoco}"></span></p>
+      <p><strong>Номер секции:</strong> <span th:text="${repairHistoryDto.locoNumber}"></span></p>
       <p><strong>Депо ремонта:</strong> <span th:text="${repairHistoryDto.repairDepot}"></span></p>
       <p><strong>Позиция ремонта:</strong> <span th:text="${repairHistoryDto.positionRepair}"></span></p>
       <p><strong>Тип системы:</strong> <span th:text="${repairHistoryDto.typeSystem}"></span></p>
@@ -143,6 +143,7 @@
       <input type="hidden" name="typeLoco" th:value="${typeLoco}" />
       <input type="hidden" name="firstNumber" th:value="${firstNumber}" />
       <input type="hidden" name="sectionNumber" th:value="${numberLoco}" />
+      <input type="hidden" name="typeLocoUnit" th:value="${typeLocoUnit}" />
       <button type="submit" class="btn btn-link">Возврат к Истории ремонта</button>
     </form>
   </div>

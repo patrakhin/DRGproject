@@ -5,10 +5,13 @@ import com.drgproject.repair.dto.RegionDTO;
 import com.drgproject.repair.service.RepDepotService;
 import com.drgproject.repair.service.RegionService;
 import jakarta.servlet.http.HttpSession;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Collections;
 import java.util.List;
@@ -190,5 +193,104 @@ public class RepDepotController {
     @ResponseBody
     public List<RepDepotDTO> getDepotsByRegion(@RequestParam String region) {
         return repDepotService.getDepotsByRegionName(region);
+    }
+
+    @GetMapping("/upload-rep_depots")
+    public String showUploadForm(Model model) {
+        return "repair_depot_7_upload"; // Возвращаем название шаблона Thymeleaf
+    }
+
+    @PostMapping("/upload-rep_depot")
+    public String uploadRepairDepotExcelFile(@RequestParam("fileExcel") MultipartFile fileExcel, Model model) {
+
+        try {
+            // Проверяем, что файл не пуст
+            if (fileExcel.isEmpty()) {
+                model.addAttribute("message", "Пожалуйста, выберите файл для загрузки");
+                return "repair_depot_7_upload"; // Возвращаемся к форме загрузки депо ремонта
+            }
+
+            StringBuilder message = new StringBuilder(); // Для вывода всех сообщений
+
+            // Открываем файл с помощью Apache POI
+            try (Workbook workbook = new XSSFWorkbook(fileExcel.getInputStream())) {
+                Sheet sheet = workbook.getSheetAt(0); // Получаем первый лист
+
+                // Проходим по строкам начиная с 2-й строки (индекс 1)
+                for (int rowIndex = 1; rowIndex <= sheet.getLastRowNum(); rowIndex++) {
+                    Row row = sheet.getRow(rowIndex);
+
+                    if (row != null) {
+                        // Чтение данных из ячеек (колонка 0 - homeRegion, колонка 1 - repDepot)
+                        String homeRegion = getCellValueAsString(row.getCell(0));
+                        String repDepot = getCellValueAsString(row.getCell(1));
+
+                        // Проверяем, если все ключевые ячейки пусты, прекращаем чтение
+                        if (isRowEmpty(homeRegion) || isRowEmpty(repDepot)) {
+                            continue; // Пропускаем пустую строку
+                        }
+
+                        // Проверка на существование региона
+                        boolean regionExist = regionService.existByName(homeRegion);
+                        if (!regionExist) {
+                            // Если регион не найден, выводим сообщение и пропускаем
+                            message.append("Регион ").append(homeRegion).append(" не найден. Пропускаем депо ").append(repDepot).append(".<br/>");
+                            continue;
+                        }
+
+                        // Проверка на существование депо ремонта в регионе
+                        boolean depotExists = repDepotService.existsByDepotAndRegion(repDepot, homeRegion);
+                        if (depotExists) {
+                            // Если депо ремонта уже существует в данном регионе, пропускаем его
+                            message.append("Депо ремонта ").append(repDepot).append(" уже существует в регионе ").append(homeRegion).append(". Пропускаем.<br/>");
+                            continue;
+                        }
+
+                        // Создаем новое депо ремонта
+                        // Сохраняем депо ремонта
+                        repDepotService.addRepairDepotFromFile(repDepot, homeRegion);
+
+                        // Добавляем сообщение о создании нового депо ремонта
+                        message.append("Депо ремонта ").append(repDepot).append(" успешно добавлено в регион ").append(homeRegion).append(".<br/>");
+                    }
+                }
+
+                model.addAttribute("message", message.toString()); // Отправляем все сообщения на фронт
+            }
+        } catch (Exception e) {
+            model.addAttribute("message", "Ошибка при обработке файла: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return "repair_depot_7_upload"; // Возвращаемся к той же форме загрузки с результатами
+    }
+
+    // Метод для безопасного чтения значений из ячейки
+    private String getCellValueAsString(Cell cell) {
+        if (cell == null) {
+            return ""; // Возвращаем пустую строку, если ячейка пустая
+        }
+
+        switch (cell.getCellType()) {
+            case STRING:
+                return cell.getStringCellValue();
+            case NUMERIC:
+                if (DateUtil.isCellDateFormatted(cell)) {
+                    return cell.getDateCellValue().toString();
+                } else {
+                    return String.valueOf((int) cell.getNumericCellValue());
+                }
+            case BOOLEAN:
+                return String.valueOf(cell.getBooleanCellValue());
+            case FORMULA:
+                return cell.getCellFormula();
+            default:
+                return "";
+        }
+    }
+
+    // Проверяем, пустая ли строка (все ключевые значения пустые)
+    private boolean isRowEmpty(String homeRegion) {
+        return homeRegion.isEmpty();
     }
 }

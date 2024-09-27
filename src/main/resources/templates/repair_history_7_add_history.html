@@ -15,7 +15,7 @@
 <body>
 <div class="container mt-5">
     <h1 class="text-center">Добавление записи о ремонте</h1>
-    <p class="text-center">на локомотиве <span th:text="${typeLoco}"></span> с номером <span th:text="${locoNumber}"></span> в депо <span th:text="${repairDepot}"></span></p>
+    <p class="text-center">на секции <span th:text="${typeLoco}"></span> № <span th:text="${locoNumber}"></span> в депо <span th:text="${repairDepot}"></span></p>
     <div th:if="${successMessage2}" class="alert alert-success mt-3" th:text="${successMessage2}"></div>
     <div th:if="${errorMessage}" class="alert alert-danger mt-3" th:text="${errorMessage}"></div>
     <div th:if="${errorMessage1}" class="alert alert-danger mt-3" th:text="${errorMessage1}"></div>
@@ -28,6 +28,7 @@
         <input type="hidden" name="employee" th:value="${employee}" />
         <input type="hidden" name="typeSystem" th:value="${typeSystem}" />
         <input type="hidden" name="repairDepot" th:value="${repairDepot}" />
+        <input type="hidden" name="typeLocoUnit" th:value="${typeLocoUnit}" />
 
         <div th:if="${errorMessage1}" class="alert alert-danger mt-3" th:text="${errorMessage1}"></div>
 
@@ -138,6 +139,7 @@
         <input type="hidden" name="typeLoco" th:value="${typeLoco}" />
         <input type="hidden" name="numberLoco" th:value="${firstNumber}" />
         <input type="hidden" name="sectionNumber" th:value="${locoNumber}" />
+        <input type="hidden" name="typeLocoUnit" th:value="${typeLocoUnit}" />
         <button type="submit" class="btn btn-link">Возврат на Панель Работ</button>
     </form>
     <div th:if="${successMessage2}" class="alert alert-success mt-3" th:text="${successMessage2}"></div>

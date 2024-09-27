@@ -10,4 +10,5 @@ import java.util.Optional;
 public interface RegionRepository extends JpaRepository<Region, Long> {
     Optional<Region> findRegionByName(String name);
     void deleteRegionByName(String name);
+    boolean existsRegionByName(String name);
 }

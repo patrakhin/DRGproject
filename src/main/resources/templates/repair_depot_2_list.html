@@ -13,9 +13,9 @@
   <!-- Выпадающий список для Администратора -->
   <div th:if="${isAdmin}">
     <form id="regionForm" class="mb-3">
-      <label for="regionSelect" class="form-label">Выберите регион</label>
+      <label for="regionSelect" class="form-label">Выберите дорогу</label>
       <select class="form-control" id="regionSelect" name="region" onchange="loadDepotsByRegion(this.value)">
-        <option value="">-- Выберите регион --</option>
+        <option value="">-- Выберите дорогу --</option>
         <option th:each="region : ${regions}" th:value="${region}" th:text="${region}"></option>
       </select>
     </form>
@@ -27,7 +27,7 @@
     <tr>
       <th>ID</th>
       <th>Название</th>
-      <th>Регион</th>
+      <th>Дорога</th>
       <th>Действия</th>
     </tr>
     </thead>
@@ -59,7 +59,7 @@
 <script>
   function loadDepotsByRegion(region) {
     if (region === "") {
-      document.getElementById("depotTableBody").innerHTML = "<tr><td colspan='4' class='text-center'>Выберите регион</td></tr>";
+      document.getElementById("depotTableBody").innerHTML = "<tr><td colspan='4' class='text-center'>Выберите дорогу</td></tr>";
       return;
     }
 

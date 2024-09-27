@@ -19,10 +19,14 @@ public class LocoListService {
 
     private final LocoListRepository locoListRepository;
     private final BlockOnLocoRepository blockOnLocoRepository;
+    private final LocoInfoService locoInfoService;
 
-    public LocoListService(LocoListRepository locoListRepository, BlockOnLocoRepository blockOnLocoRepository) {
+    public LocoListService(LocoListRepository locoListRepository,
+                           BlockOnLocoRepository blockOnLocoRepository,
+                           LocoInfoService locoInfoService) {
         this.locoListRepository = locoListRepository;
         this.blockOnLocoRepository = blockOnLocoRepository;
+        this.locoInfoService = locoInfoService;
     }
 
     public List<LocoListDTO> getAllLocoLists() {
@@ -100,6 +104,13 @@ public class LocoListService {
     // Вспомогательный метод для извлечения буквенной части из номера секции
     private String extractLetterPart(String locoNumber) {
         return locoNumber.replaceAll("\\d+", "");  // Убираем все цифры, остаются только буквы
+    }
+
+    // Вспомогательный метод для гарантированого изменения буквы в номере секции на кириллическ
+    public String getCyrillicSection (String locoNumber){
+        String numberWithoutLetter = String.valueOf(extractNumericPart(locoNumber));
+        String letter = locoInfoService.extractLetter(locoNumber);
+        return numberWithoutLetter + letter;
     }
 
     // Получаем список список всех номеров секций по Region, homeDepot, typeLoco

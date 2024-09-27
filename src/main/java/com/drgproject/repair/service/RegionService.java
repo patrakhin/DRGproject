@@ -68,6 +68,10 @@ public class RegionService {
         regionRepository.deleteRegionByName(regionName);
     }
 
+    public boolean existByName(String regionName){
+        return regionRepository.existsRegionByName(regionName);
+    }
+
     private RegionDTO convertToDTO(Region region) {
         List<Long> depotIds = region.getDepots().stream().map(HomeDepot::getId).toList();
         return new RegionDTO(region.getId(), region.getName(), depotIds);

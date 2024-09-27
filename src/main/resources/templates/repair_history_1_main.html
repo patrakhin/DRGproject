@@ -26,13 +26,13 @@
                         <label for="typeLoco" class="col-form-label">Серия локомотива:</label>
                     </div>
                     <div class="col-auto">
-                        <select id="typeLoco" name="typeLoco" class="form-select">
-                            <option th:each="typeLoco : ${typeLocos}" th:value="${typeLoco.locoType}" th:text="${typeLoco.locoType}"></option>
+                        <select id="typeLoco" name="typeLocoUnit" class="form-select">
+                            <option th:each="typeLoco : ${typeLocoUnit}" th:value="${typeLoco.typeLocoUnit}" th:text="${typeLoco.typeLocoUnit}"></option>
                         </select>
                     </div>
                     <div class="w-100"></div> <!-- Строка для переноса -->
                     <div class="col-auto">
-                        <label for="numberLoco" class="col-form-label">Номер локомотива. Например: 2234, 2345/1729А, 2ВЛ80С 4518/5614 </label>
+                        <label for="numberLoco" class="col-form-label">Номер локомотива. Например: 2234, 2345/1729А, 4518/5614 </label>
                     </div>
                     <div class="col-auto">
                         <input type="text" id="numberLoco" name="numberLoco" class="form-control"/>

@@ -104,6 +104,9 @@ public class HomeDepotService {
         return homeDepots.stream().map(this::convertToDTO).toList();
     }
 
+    public boolean existsByDepotAndRegionId(String depot, Long regionId) {
+        return homeDepotRepository.existsByDepotAndRegionId(depot, regionId);
+    }
 
     public HomeDepotDTO convertToDTO(HomeDepot homeDepot) {
         return new HomeDepotDTO(

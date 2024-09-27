@@ -54,6 +54,7 @@ public class RepairHistoryControllerTwo {
     private final HomeDepotService homeDepotService;
     private final RegionService regionService;
     private final RepDepotService repDepotService;
+    private final AllTypeLocoUnitService allTypeLocoUnitService;
 
     public RepairHistoryControllerTwo(RepairHistoryService repairHistoryService,
                                       LocoListService locoListService,
@@ -69,7 +70,8 @@ public class RepairHistoryControllerTwo {
                                       LocoInfoService locoInfoService,
                                       HomeDepotService homeDepotService,
                                       RegionService regionService,
-                                      RepDepotService repDepotService) {
+                                      RepDepotService repDepotService,
+                                      AllTypeLocoUnitService allTypeLocoUnitService) {
         this.repairHistoryService = repairHistoryService;
         this.locoListService = locoListService;
         this.blockOnLocoService = blockOnLocoService;
@@ -85,6 +87,7 @@ public class RepairHistoryControllerTwo {
         this.homeDepotService = homeDepotService;
         this.regionService = regionService;
         this.repDepotService = repDepotService;
+        this.allTypeLocoUnitService = allTypeLocoUnitService;
     }
 
     // Главная страница
@@ -104,8 +107,8 @@ public class RepairHistoryControllerTwo {
         model.addAttribute("shortName", shortName);
         model.addAttribute("data", LocalDate.now());
         model.addAttribute("locoList", new LocoListDTO());
-        List<TypeLocoDTO> typeLocos = typeLocoService.getAllTypeLocos();
-        model.addAttribute("typeLocos", typeLocos);
+        List<AllTypeLocoUnitDTO> typeLocoUnit = allTypeLocoUnitService.getAllTypeLocoUnit();
+        model.addAttribute("typeLocoUnit", typeLocoUnit);
         return "repair_history_1_main";
     }
 
@@ -125,9 +128,10 @@ public class RepairHistoryControllerTwo {
 
     // Результат поиска локомотива по типу и серии
     @PostMapping("/search")
-    public String searchLocoByTypeAndNumber(@RequestParam String typeLoco, @RequestParam String numberLoco, Model model, HttpSession session) {
-        LocoInfoDTO locoInfoDTO = locoInfoService.getLocoByNumber(numberLoco, typeLoco);
-
+    public String searchLocoByTypeAndNumber(@RequestParam String typeLocoUnit, @RequestParam String numberLoco, Model model, HttpSession session) {
+        LocoInfoDTO locoInfoDTO = locoInfoService.getLocoByNumber(numberLoco, typeLocoUnit);
+        // Создание серии для секции
+        String typeLoco = locoInfoService.getTypeLocoListFromLoco(typeLocoUnit);
         if (locoInfoDTO == null) {
             model.addAttribute("error", "Локомотив такой серии и номером не найден.");
             return showSearchForm(model, session);
@@ -158,6 +162,8 @@ public class RepairHistoryControllerTwo {
         model.addAttribute("sections", sections);
 
         model.addAttribute(TYPE_LOCO, typeLoco);
+        model.addAttribute("typeLocoUnit", typeLocoUnit);
+
         model.addAttribute("numberLoco", numberLoco);
         model.addAttribute("locoInfoDTO", locoInfoDTO);
 
@@ -166,7 +172,7 @@ public class RepairHistoryControllerTwo {
 
     // История ремонта
     @PostMapping("/repair_history")
-    public String showRepairHistory(@RequestParam String sectionNumber, Model model, HttpSession session) {
+    public String showRepairHistory(@RequestParam String sectionNumber, @RequestParam String typeLocoUnit, Model model, HttpSession session) {
 
         String typeLoco = (String) session.getAttribute(TYPE_LOCO);
         if(sectionNumber.isEmpty()){
@@ -185,7 +191,7 @@ public class RepairHistoryControllerTwo {
         // Добавляем в историю ремонта только три последние записи
         List<RepairHistoryDto> lastThreeEntries = getLastThreeEntries(repairHistoryDtos);
 
-        LocoInfoDTO locoInfoDTO = locoInfoService.getLocoByNumber(numberLoco, typeLoco);
+        LocoInfoDTO locoInfoDTO = locoInfoService.getLocoByNumber(numberLoco, typeLocoUnit);
         // Добавляем список секций
         List<String> sectionsNumber = Arrays.asList(
                 locoInfoDTO.getLocoSection1(),
@@ -209,6 +215,7 @@ public class RepairHistoryControllerTwo {
         model.addAttribute("blockOnLocoDTOS", blockOnLocoDTOS);
         model.addAttribute("receiptBlockDtos", receiptBlockDtos);
         model.addAttribute("sections", sections); // Добавляем список секций
+        model.addAttribute("typeLocoUnit", typeLocoUnit);
 
         return "repair_history_3_history_loco";
     }
@@ -227,10 +234,12 @@ public class RepairHistoryControllerTwo {
     public String deleteRepairHistory(@RequestParam String typeLoco,
                                       @RequestParam String numberLoco,
                                       @RequestParam String repairDate,
+                                      @RequestParam String typeLocoUnit,
                                       //@RequestParam String firstNumber,
                                       Model model, HttpSession session) {
         LocalDate date = LocalDate.parse(repairDate);
         String firstNumber = locoInfoService.getLocoByFirstNumberSection(numberLoco);
+        model.addAttribute("typeLocoUnit", typeLocoUnit);
         if (firstNumber == null || firstNumber.isEmpty()){
             firstNumber = (String) session.getAttribute("numberLoco");
         }
@@ -243,19 +252,19 @@ public class RepairHistoryControllerTwo {
 
             // Если это была последняя запись, перенаправляем на нужную страницу
             if (isLastEntry) {
-                return redirectToWorkBar(typeLoco, firstNumber, model, session);
+                return redirectToWorkBar(typeLoco, firstNumber, typeLocoUnit, model, session);
             }
         }
 
         // Возвращаем на ту же страницу истории, если ещё есть записи
-        return redirectToWorkBar(typeLoco, firstNumber, model, session);
+        return redirectToWorkBar(typeLoco, firstNumber, typeLocoUnit, model, session);
     }
 
     //Получился универсальный метод для всех ссылок "На панель работ" НЕ ЗАБУДЬ!
     //Вспомогательный метод для удаления записи
-    private String redirectToWorkBar(String typeLoco, String numberLoco, Model model, HttpSession session) {
-        LocoInfoDTO locoInfoDTO = locoInfoService.getLocoByNumber(numberLoco, typeLoco);
-
+    private String redirectToWorkBar(String typeLoco, String numberLoco, String typeLocoUnit, Model model, HttpSession session) {
+        //LocoInfoDTO locoInfoDTO = locoInfoService.getLocoByNumber(numberLoco, typeLoco);
+        LocoInfoDTO locoInfoDTO = locoInfoService.getLocoByNumber(numberLoco, typeLocoUnit);
         if (locoInfoDTO == null) {
             model.addAttribute("error", "Локомотив такой серии и номером не найден.");
             return showSearchForm(model, session); // Метод для отображения формы поиска
@@ -263,7 +272,7 @@ public class RepairHistoryControllerTwo {
 
         session.setAttribute(TYPE_LOCO, typeLoco);
         session.setAttribute("numberLoco", numberLoco);
-
+        model.addAttribute("typeLocoUnit", typeLocoUnit);
         // Получаем номера секций
         List<String> sectionsNumber = Arrays.asList(
                 locoInfoDTO.getLocoSection1(),
@@ -288,12 +297,13 @@ public class RepairHistoryControllerTwo {
         model.addAttribute("numberLoco", numberLoco);
         model.addAttribute("locoInfoDTO", locoInfoDTO);
 
+
         return "repair_history_2_work_bar";
     }
 
     // Подготовка к добавлению записи в историю ремонта
     @GetMapping("/add_history")
-    public String showAddHistoryForm(@RequestParam String sectionNumber, Model model, HttpSession session) {
+    public String showAddHistoryForm(@RequestParam String sectionNumber, @RequestParam String typeLocoUnit, Model model, HttpSession session) {
         String typeLoco = (String) session.getAttribute(TYPE_LOCO);
         String locoNumber = sectionNumber;
         String firstNumber = locoInfoService.getLocoByFirstNumberSection(sectionNumber);
@@ -362,6 +372,7 @@ public class RepairHistoryControllerTwo {
         model.addAttribute("blocksOnLoco", blocksOnLoco);
         model.addAttribute("blockNumbers", blockNumbers);
         model.addAttribute("countBlocks", countBlocks);
+        model.addAttribute("typeLocoUnit", typeLocoUnit);
 
 
         // Список имен полей для ввода
@@ -384,6 +395,7 @@ public class RepairHistoryControllerTwo {
                                  @RequestParam("typeSystem") String typeSystem,
                                  @RequestParam("repairDepot") String repairDepot,
                                  @RequestParam("positionRepair") Long positionRepairId,
+                                 @RequestParam("typeLocoUnit") String typeLocoUnit,
                                  Model model, HttpSession session) {
 
         String firstNumber;
@@ -451,13 +463,14 @@ public class RepairHistoryControllerTwo {
                 .toList();
         model.addAttribute("blocksOnLoco", blocksOnLoco);
         model.addAttribute("countBlocks", blocksOnLoco.size());
+        model.addAttribute("typeLocoUnit", typeLocoUnit);
 
-        return redirectToWorkBar(typeLoco, firstNumber, model, session);
+        return redirectToWorkBar(typeLoco, firstNumber, typeLocoUnit, model, session);
     }
 
     // История ремонта детально
     @GetMapping("/detail_history")
-    public String showDetailHistory(@RequestParam String typeLoco, @RequestParam String numberLoco, @RequestParam String repairDate, Model model, HttpSession session) {
+    public String showDetailHistory(@RequestParam String typeLoco, @RequestParam String numberLoco, @RequestParam String repairDate, @RequestParam String typeLocoUnit, Model model, HttpSession session) {
         Optional<RepairHistoryDto> repairHistoryDto = repairHistoryService.findByTypeLocoAndLocoNumberAndDate(typeLoco, numberLoco, LocalDate.parse(repairDate));
         session.setAttribute("sectionNumber", numberLoco);
         session.setAttribute("typeLoco", typeLoco);
@@ -492,6 +505,7 @@ public class RepairHistoryControllerTwo {
 
         // Добавляем информацию о просроченности блоков в модель
         model.addAttribute("isBlockExpiredList", isBlockExpiredList);
+        model.addAttribute("typeLocoUnit", typeLocoUnit);
 
         if (repairHistoryDto.isPresent()) {
 

@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TypeLocoRepository extends JpaRepository<TypeLoco, Long> {
+    boolean existsByLocoType(String locoType);
 }

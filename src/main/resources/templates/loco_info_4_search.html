@@ -16,10 +16,10 @@
             <form action="/loco_info/search/results" method="get">
                 <!-- Секция выбора региона -->
                 <div class="mb-3 row">
-                    <label for="region" class="col-sm-2 col-form-label">Регион:</label>
+                    <label for="region" class="col-sm-2 col-form-label">Дорога:</label>
                     <div class="col-sm-6">
                         <select id="region" name="region" class="form-select" required>
-                            <option value="">Выберите регион</option>
+                            <option value="">Выберите дорогу</option>
                             <option th:each="region : ${regions}" th:value="${region.name}" th:text="${region.name}"></option>
                         </select>
                     </div>
@@ -32,7 +32,7 @@
                     <div class="col-sm-6">
                         <select id="locoType" name="locoType" class="form-select" required>
                             <option value="">Выберите серию локомотива</option>
-                            <option th:each="typeLoco : ${typeLocos}" th:value="${typeLoco.locoType}" th:text="${typeLoco.locoType}"></option>
+                            <option th:each="typeLoco : ${typeLocos}" th:value="${typeLoco.typeLocoUnit}" th:text="${typeLoco.typeLocoUnit}"></option>
                         </select>
                     </div>
                 </div>

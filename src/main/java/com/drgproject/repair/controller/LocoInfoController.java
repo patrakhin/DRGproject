@@ -3,9 +3,7 @@ package com.drgproject.repair.controller;
 import com.drgproject.repair.dto.*;
 import com.drgproject.repair.entity.LocoInfo;
 import com.drgproject.repair.service.*;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
@@ -18,6 +16,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static java.sql.JDBCType.BOOLEAN;
+import static java.sql.JDBCType.NUMERIC;
+import static javax.management.openmbean.SimpleType.STRING;
+import static org.apache.poi.ss.formula.DataValidationEvaluator.ValidationEnum.FORMULA;
+
 @Controller
 @RequestMapping("/loco_info")
 public class LocoInfoController {
@@ -29,11 +32,17 @@ public class LocoInfoController {
     private final BlockOnLocoService blockOnLocoService;
     private final LocoListService locoListService;
     private final LocoFilterService locoFilterService;
+    private final AllTypeLocoUnitService allTypeLocoUnitService;
 
 
-    public LocoInfoController(LocoInfoService locoInfoService, TypeLocoService typeLocoService,
-                              RegionService regionService, HomeDepotService homeDepotService,
-                              BlockOnLocoService blockOnLocoService, LocoListService locoListService, LocoFilterService locoFilterService) {
+    public LocoInfoController(LocoInfoService locoInfoService,
+                              TypeLocoService typeLocoService,
+                              RegionService regionService,
+                              HomeDepotService homeDepotService,
+                              BlockOnLocoService blockOnLocoService,
+                              LocoListService locoListService,
+                              LocoFilterService locoFilterService,
+                              AllTypeLocoUnitService allTypeLocoUnitService) {
         this.locoInfoService = locoInfoService;
         this.typeLocoService = typeLocoService;
         this.regionService = regionService;
@@ -41,6 +50,7 @@ public class LocoInfoController {
         this.blockOnLocoService = blockOnLocoService;
         this.locoListService = locoListService;
         this.locoFilterService = locoFilterService;
+        this.allTypeLocoUnitService = allTypeLocoUnitService;
     }
 
     @GetMapping("/manage")
@@ -79,7 +89,7 @@ public class LocoInfoController {
     @GetMapping("/search")
     public String locoInfoSearch(Model model){
         //Получение серий локомотива и добавление в модель
-        List<TypeLocoDTO> typeLocos = typeLocoService.getAllTypeLocos();
+        List<AllTypeLocoUnitDTO> typeLocos= allTypeLocoUnitService.getAllTypeLocoUnit();// List<TypeLocoDTO> typeLocos = typeLocoService.getAllTypeLocos();
         model.addAttribute("typeLocos", typeLocos);
         // Получение всех регионов и добавление в модель
         List<RegionDTO> regions = regionService.getAllRegions();
@@ -132,7 +142,8 @@ public class LocoInfoController {
                                             Model model) {
         try {
             // Выполняем поиск локомотива по номеру
-            LocoInfoDTO locoInfo = locoInfoService.getLocoInfoByRegionAndHomeDepotAndLocoNumber(region, homeDepot, locoNumber);
+            String clearLocoNumber = locoInfoService.convertToCyrillic(locoNumber);
+            LocoInfoDTO locoInfo = locoInfoService.getLocoInfoByRegionAndHomeDepotAndLocoNumber(region, homeDepot, clearLocoNumber);
 
             // Если локомотив найден, добавляем информацию в модель
             model.addAttribute("locoInfo", locoInfo);
@@ -153,7 +164,7 @@ public class LocoInfoController {
         LocoListDTO overviewLoco = locoListService.getLocoListByNumberLoco(locoInfoDTO.getLocoSection1());
         // Получаем список секций и блоков
         List<String> locoSectionNumbers = locoInfoService.getLocoSections(locoInfoDTO);
-        String typeLoco = locoInfoDTO.getLocoType();
+        String typeLoco = locoInfoService.getTypeLocoListFromLoco(locoInfoDTO.getLocoType());
 
         // Создаем список секций с блоками
         List<SectionWithBlocksDTO> sections = new ArrayList<>();
@@ -191,14 +202,6 @@ public class LocoInfoController {
         List<TypeLocoDTO> typeLocos = typeLocoService.getAllTypeLocos();
         model.addAttribute("typeLocos", typeLocos);
 
-        // Проверка на существование локомотива
-        boolean locoExists = locoInfoService.ifLociUnitIsExists(region, homeDepot, typeLoco, section1);
-
-        if (locoExists) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Локомотив с такими данными уже существует.");
-            return "redirect:/loco_info/create"; // Редирект на ту же страницу
-        }
-
         // Подготовка к проверке на занятость секций
         if (section1.equals("Выберите секцию")){
             section1 = "";
@@ -225,6 +228,15 @@ public class LocoInfoController {
         //Получаем только те секции которые имеют номер
         List<String> clearNumbers = locoInfoService.getClearLocoSections(sectionsNumber);
 
+        int countSections = clearNumbers.size();
+        String typeLocoUnit = locoInfoService.getTypeLocoFromTypeSection(typeLoco, countSections);
+        // Проверка на существование локомотива
+        boolean locoExists = locoInfoService.ifLociUnitIsExists(region, homeDepot, typeLocoUnit, section1);
+
+        if (locoExists) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Локомотив с такими данными уже существует.");
+            return "redirect:/loco_info/create"; // Редирект на ту же страницу
+        }
 
         // Проверка на существование секций
         for (String section : clearNumbers) {
@@ -245,7 +257,7 @@ public class LocoInfoController {
         try {
             // Заполнение недостающих полей строкой "нет" и установка статуса оборудования
             LocoInfoDTO locoInfoDTO = fillMissingFieldsWithDefault(
-                    region, homeDepot, typeLoco, section1, section1Status,
+                    region, homeDepot, typeLocoUnit, section1, section1Status,
                     section2, section2Status, section3, section3Status,
                     section4, section4Status
             );
@@ -268,7 +280,7 @@ public class LocoInfoController {
 
     @GetMapping("/delete")
     public String showDeleteDepotForm(Model model) {
-        List<TypeLocoDTO> typeLocos = typeLocoService.getAllTypeLocos();
+        List<AllTypeLocoUnitDTO> typeLocos = allTypeLocoUnitService.getAllTypeLocoUnit(); // было List<TypeLocoDTO> typeLocos = typeLocoService.getAllTypeLocos();
         List<RegionDTO> regions = regionService.getAllRegions();
         model.addAttribute("typeLocos", typeLocos);
         model.addAttribute("regions", regions);
@@ -278,15 +290,18 @@ public class LocoInfoController {
 
     @PostMapping("/deleteByName")
     public String deleteHomeDepot(@RequestParam String homeDepot, @RequestParam String locoUnit, @RequestParam String locoType, Model model) {
+        //String clearLocoUnit = locoInfoService.c
         LocoInfoDTO locoForCreateSection = locoInfoService.getLocoInfoByHomeDepotAndLocoTypeAndLocoUnit(homeDepot, locoType, locoUnit);
         String homeRegion = locoForCreateSection.getRegion();
         //String homeDepot = locoForCreateSection.getHomeDepot();
         List<String> sectionsNumber = locoInfoService.getLocoSections(locoForCreateSection);
+        List<String> clearSectionNumber = locoInfoService.convertAllSectionsToCyrillic(sectionsNumber);
+        String locoTypeForSection = locoInfoService.getTypeLocoListFromLoco(locoType);
         boolean isDeleted = locoInfoService.deleteLocoInfoByLocoUnit(locoUnit, locoType);
         if (isDeleted) {
             // Для каждой секции в списке sectionsNumber делаем ее свободной
-            for (String sectionNumber : sectionsNumber) {
-                locoFilterService.freeSectionAfterDistMist(homeRegion, homeDepot, locoType, sectionNumber);
+            for (String sectionNumber : clearSectionNumber) {
+                locoFilterService.freeSectionAfterDistMist(homeRegion, homeDepot, locoTypeForSection, sectionNumber);
             }
             model.addAttribute("successMessage", "Локомотив успешно расформирован, секции освободились");
         } else {
@@ -310,15 +325,16 @@ public class LocoInfoController {
         String homeDepot = locoForCreateSection.getHomeDepot();
         String locoType = locoForCreateSection.getLocoType();
         List<String> sectionsNumber = locoInfoService.getLocoSections(locoForCreateSection);
+        String locoTypeForSection = locoInfoService.getTypeLocoListFromLoco(locoType);
 
         // Для каждой секции в списке sectionsNumber делаем ее свободной
         for (String sectionNumber : sectionsNumber) {
-            locoFilterService.freeSectionAfterDistMist(homeRegion, homeDepot, locoType, sectionNumber);
+            locoFilterService.freeSectionAfterDistMist(homeRegion, homeDepot, locoTypeForSection, sectionNumber);
         }
 
         try {
             locoInfoService.deleteLocoInfo(id);
-            model.addAttribute("successMessage", "Локомотив с ID " + id + " успешно удален.");
+            model.addAttribute("successMessage", "Локомотив с ID " + id + " успешно расформирован, секции освободились.");
         } catch (IllegalArgumentException e) {
             model.addAttribute("errorMessage", e.getMessage());
         }
@@ -378,17 +394,14 @@ public class LocoInfoController {
         return "loco_info_7_upload-loco"; // Возвращаем название шаблона Thymeleaf
     }
 
-    //Загрузка секций из Excel
+    //Загрузка локомотивов из Excel
     @PostMapping("/upload-loco")
     public String uploadExcelFile(@RequestParam("fileExcel") MultipartFile fileExcel, Model model) {
         String section1 = "";
         String section2 = "";
         String section3 = "";
         String section4 = "";
-        boolean section1Status = true;
-        boolean section2Status = true;
-        boolean section3Status = true;
-        boolean section4Status = true;
+
         try {
             // Проверяем, что файл не пуст
             if (fileExcel.isEmpty()) {
@@ -406,36 +419,71 @@ public class LocoInfoController {
 
                     if (row != null) {
                         // Чтение данных из ячеек начиная с A2, B2 и т.д.
-                        String homeRegion = row.getCell(0).getStringCellValue();
-                        String homeDepot = row.getCell(1).getStringCellValue();
-                        String typeLoco = row.getCell(2).getStringCellValue();
-                        String locoNumber = row.getCell(3).getStringCellValue();
+                        String homeRegion = getCellValueAsString(row.getCell(0));
+                        String homeDepot = getCellValueAsString(row.getCell(1));
+                        String typeLoco = getCellValueAsString(row.getCell(2));
+                        String locoNumber = getCellValueAsString(row.getCell(3));
 
+                        // Проверяем, если все ключевые ячейки пусты, прекращаем чтение
+                        if (isRowEmpty(homeRegion, homeDepot, typeLoco, locoNumber)) {
+                            break; // Останавливаем обработку, так как встретили пустую строку
+                        }
+
+                        // Оставшийся код для обработки строки
                         List<String> sectionNumbers = locoInfoService.createSections(typeLoco, locoNumber);
+                        List<String> clearNumbers = locoInfoService.convertAllSectionsToCyrillic(sectionNumbers);
+
                         // Создание серии
                         String typeLocoForSections = locoInfoService.getTypeLocoListFromLoco(typeLoco);
+
                         // Проверка на существование секций
-                        for (String section : sectionNumbers) {
+                        for (String section : clearNumbers) {
                             boolean sectionExists = locoFilterService.ifSectionIsExist(homeRegion, homeDepot, typeLocoForSections, section);
                             if (!sectionExists) {
                                 model.addAttribute("message", "Секция номер " + section + " не существует в свободных.");
                                 return "loco_info_7_upload-loco"; // Редирект на ту же страницу
                             }
                         }
+
                         // Проверка на свободность секций
-                        for(String section : sectionNumbers){
+                        for(String section : clearNumbers){
                             boolean sectionFree = locoFilterService.ifSectionIsFree(homeRegion, homeDepot, typeLocoForSections, section);
                             if (!sectionFree) {
                                 model.addAttribute("message", "Секция номер " + section + " не свободна.");
                                 return "loco_info_7_upload-loco"; // Редирект на ту же страницу
                             }
                         }
-                        section1 = sectionNumbers.get(0);
-                        section2 = sectionNumbers.get(1);
-                        section3 = sectionNumbers.get(2);
-                        section4 = sectionNumbers.get(3);
 
-                        // Заполнение недостающих полей строкой "нет" и установка статуса оборудования
+                        List<String> extendedList = new ArrayList<>(clearNumbers);
+
+                        int countSection = extendedList.size();
+                        // Добавляем строку "нет", пока размер списка меньше 4
+                        while (extendedList.size() < 4) {
+                            extendedList.add("нет");
+                        }
+                        section1 = extendedList.get(0);
+                        section2 = extendedList.get(1);
+                        section3 = extendedList.get(2);
+                        section4 = extendedList.get(3);
+
+                        boolean section1Status = true;
+                        boolean section2Status = true;
+                        boolean section3Status = true;
+                        boolean section4Status = true;
+
+                        if (countSection == 1) {
+                            section2Status = false;
+                            section3Status = false;
+                            section4Status = false;
+                        }
+                        if (countSection == 2) {
+                            section3Status = false;
+                            section4Status = false;
+                        }
+                        if (countSection == 3) {
+                            section4Status = false;
+                        }
+
                         LocoInfoDTO locoInfoDTO = fillMissingFieldsWithDefault(
                                 homeRegion, homeDepot, typeLoco, section1, section1Status,
                                 section2, section2Status, section3, section3Status,
@@ -443,9 +491,10 @@ public class LocoInfoController {
                         );
 
                         // Делаем секции занятыми
-                        for(String section : sectionNumbers){
+                        for (String section : clearNumbers) {
                             locoFilterService.updateSectionNonFree(homeRegion, homeDepot, typeLocoForSections, section);
                         }
+
                         // Создание локомотива
                         locoInfoService.createLocoInfo(locoInfoDTO);
                     }
@@ -459,6 +508,35 @@ public class LocoInfoController {
         }
 
         return "loco_info_7_upload-loco"; // возвращаем ту же форму с сообщением
+    }
+
+    // Метод для безопасного чтения значений из ячейки
+    private String getCellValueAsString(Cell cell) {
+        if (cell == null) {
+            return ""; // Возвращаем пустую строку, если ячейка пустая
+        }
+
+        switch (cell.getCellType()) {
+            case STRING:
+                return cell.getStringCellValue();
+            case NUMERIC:
+                if (DateUtil.isCellDateFormatted(cell)) {
+                    return cell.getDateCellValue().toString();
+                } else {
+                    return String.valueOf((int) cell.getNumericCellValue());
+                }
+            case BOOLEAN:
+                return String.valueOf(cell.getBooleanCellValue());
+            case FORMULA:
+                return cell.getCellFormula();
+            default:
+                return "";
+        }
+    }
+
+    // Проверяем, пустая ли строка (все ключевые значения пустые)
+    private boolean isRowEmpty(String homeRegion, String homeDepot, String typeLoco, String locoNumber) {
+        return homeRegion.isEmpty() && homeDepot.isEmpty() && typeLoco.isEmpty() && locoNumber.isEmpty();
     }
 
     // Новый метод для обработки AJAX-запроса

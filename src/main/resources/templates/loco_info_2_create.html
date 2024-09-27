@@ -33,10 +33,10 @@
 
                 <!-- Секция выбора региона, депо и серии локомотива -->
                 <div class="mb-3 row">
-                    <label for="region" class="col-sm-2 col-form-label">Регион:</label>
+                    <label for="region" class="col-sm-2 col-form-label">Дорога:</label>
                     <div class="col-sm-3">
                         <select id="region" name="region" class="form-select" required>
-                            <option value="">Выберите регион</option>
+                            <option value="">Выберите дорогу</option>
                             <option th:each="region : ${regions}" th:value="${region.name}" th:text="${region.name}"></option>
                         </select>
                     </div>
@@ -50,10 +50,10 @@
 
                 <!-- Секция выбора серии локомотива -->
                 <div class="mb-3 row">
-                    <label for="typeLoco" class="col-sm-3 col-form-label">Серия локомотива:</label>
+                    <label for="typeLoco" class="col-sm-3 col-form-label">Серия секции:</label>
                     <div class="col-sm-9">
                         <select id="typeLoco" name="typeLoco" class="form-select" required>
-                            <option value="">Выберите серию локомотива</option>
+                            <option value="">Выберите серию секции</option>
                             <option th:each="typeLoco : ${typeLocos}" th:value="${typeLoco.locoType}" th:text="${typeLoco.locoType}"></option>
                         </select>
                     </div>

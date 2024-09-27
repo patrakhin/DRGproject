@@ -11,10 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -244,13 +241,21 @@ public class LocoInfoService {
                     .append("/").append(parsedSections.get(1)[0]).append(parsedSections.get(1)[1])
                     .append("/").append(parsedSections.get(2)[0]).append(parsedSections.get(2)[1]);
         } else if (isQuadrupleSectionSame(parsedSections)) {
-            result.append("2ВЛ80С ").append(parsedSections.get(0)[0])
+            result.append(parsedSections.get(0)[0])  // было result.append("2ВЛ80С ").append(parsedSections.get(0)[0])
                     .append("/").append(parsedSections.get(2)[0]);
         } else if (isQuadrupleSectionDifferent(parsedSections)) {
             result.append(parsedSections.get(0)[0]).append(parsedSections.get(0)[1])
                     .append("/").append(parsedSections.get(1)[0]).append(parsedSections.get(1)[1])
                     .append("/").append(parsedSections.get(2)[0]).append(parsedSections.get(2)[1])
                     .append("/").append(parsedSections.get(3)[0]).append(parsedSections.get(3)[1]);
+        } else if (isQuadrupleSectionDifferentLastTwoSections(parsedSections)) {
+            result.append(parsedSections.get(0)[0])
+                    .append("/").append(parsedSections.get(2)[0]).append(parsedSections.get(2)[1])
+                    .append("/").append(parsedSections.get(3)[0]).append(parsedSections.get(3)[1]);
+        } else if (isQuadrupleSectionDifferentFirstTwoSection(parsedSections)) {
+            result.append(parsedSections.get(0)[0]).append(parsedSections.get(0)[1])
+                    .append("/").append(parsedSections.get(1)[0]).append(parsedSections.get(1)[1])
+                    .append("/").append(parsedSections.get(2)[0]);
         }
 
         return result.toString();
@@ -285,9 +290,17 @@ public class LocoInfoService {
     }
 
     private boolean isQuadrupleSectionDifferent(List<String[]> sections) {
+
         return !sections.get(0)[0].equals(sections.get(1)[0]) && !sections.get(2)[0].equals(sections.get(3)[0]) && !sections.get(0)[0].isEmpty() && !sections.get(1)[0].isEmpty() && !sections.get(2)[0].isEmpty() && !sections.get(3)[0].isEmpty();
     }
 
+    private boolean isQuadrupleSectionDifferentLastTwoSections(List<String[]> sections){
+        return sections.get(0)[0].equals(sections.get(1)[0]) && !sections.get(2)[0].equals(sections.get(3)[0]) && !sections.get(0)[0].isEmpty() && !sections.get(1)[0].isEmpty() && !sections.get(2)[0].isEmpty() && !sections.get(3)[0].isEmpty();
+    }
+
+    private boolean isQuadrupleSectionDifferentFirstTwoSection(List<String[]> sections){
+        return !sections.get(0)[0].equals(sections.get(1)[0]) && sections.get(2)[0].equals(sections.get(3)[0]) && !sections.get(0)[0].isEmpty() && !sections.get(1)[0].isEmpty() && !sections.get(2)[0].isEmpty() && !sections.get(3)[0].isEmpty();
+    }
 
     public List<String> createSections(String series, String number) {
         String section1 = "";
@@ -299,7 +312,7 @@ public class LocoInfoService {
         int sectionCount = getSectionCount(series);
 
         // Разбиваем номер локомотива на части, если есть разделитель "/"
-        String[] parts = number.split("/");
+        String[] parts = formatSplitSection(number.split("/"));
 
         // В зависимости от количества секций, присваиваем значения переменным
         switch (sectionCount) {
@@ -308,29 +321,54 @@ public class LocoInfoService {
                 break;
             case 2:
                 section1 = formatSection(parts[0], "А");
+                section2 = formatSection(parts[0], "Б");
                 if (parts.length > 1) {
-                    section2 = formatSection(parts[1], "Б");
+                    section1 = parts[0];
+                    section2 = parts[1];
                 }
                 break;
             case 3:
                 section1 = formatSection(parts[0], "А");
+                section2 = formatSection(parts[0], "Б");
                 if (parts.length > 1) {
-                    section2 = formatSection(parts[1], "Б");
+                    section3 = parts[1];
                 }
                 if (parts.length > 2) {
-                    section3 = formatSection(parts[2], extractLetter(parts[2]));
+                    section1 = parts[0];
+                    section2 = parts[1];
+                    section3 = parts[2];
                 }
                 break;
             case 4:
                 section1 = formatSection(parts[0], "А");
+                section2 = formatSection(parts[0], "Б");
                 if (parts.length > 1) {
-                    section2 = formatSection(parts[1], "Б");
+                    section3 = formatSection(parts[1], "А");
+                    section4 = formatSection(parts[1], "Б");
                 }
-                if (parts.length > 2) {
-                    section3 = formatSection(parts[2], extractLetter(parts[2]));
+                if (parts.length > 2 && (parts[0].contains("А") || parts[0].contains("Б"))) {
+                    section1 = parts[0];
+                    section2 = parts[1];
+                    section3 = formatSection(parts[2], "А");
+                    section4 = formatSection(parts[2], "Б");
+                }
+                if (parts.length > 2 && ((!parts[0].contains("А") || !parts[0].contains("Б")) && (parts[1].contains("А") || parts[1].contains("Б")))) {
+                    section1 = formatSection(parts[0], "А");
+                    section2 = formatSection(parts[0], "Б");
+                    section3 = parts[1];
+                    section4 = parts[2];
+                }
+                if (parts.length > 2 && ((parts[0].contains("А") || parts[0].contains("Б")) && (parts[1].contains("А") || parts[1].contains("Б")) && (!parts[2].contains("А") || !parts[2].contains("Б")))) {
+                    section1 = parts[0];
+                    section2 = parts[1];
+                    section3 = formatSection(parts[2], "А");
+                    section4 = formatSection(parts[2], "Б");
                 }
                 if (parts.length > 3) {
-                    section4 = formatSection(parts[3], extractLetter(parts[3]));
+                    section1 = parts[0];
+                    section2 = parts[1];
+                    section3 = parts[2];
+                    section4 = parts[3];
                 }
                 break;
             default:
@@ -349,11 +387,13 @@ public class LocoInfoService {
 
     // Функция для определения количества секций на основе серии
     private int getSectionCount(String series) {
-        if (series.startsWith("1.5")) {
+        if (series.startsWith("1.5") || series.startsWith("3ТЭ") || series.startsWith("3ЭС")) {
             return 3;
         } else if (series.startsWith("2ВЛ")) {
             return 4;
-        } else if (series.startsWith("ТЭМ14") || series.startsWith("ТЭМ18ДМ") || series.startsWith("ЭП1") || series.startsWith("ТЭП70бс") || series.startsWith("ТЭП70") || series.startsWith("ТЭМ7а")) {
+        } else if (series.startsWith("ТЭМ14") || series.startsWith("ТЭМ18ДМ") || series.startsWith("ЭП1")
+                || series.startsWith("ТЭП70бс") || series.startsWith("ТЭП70") || series.startsWith("ТЭМ7а")
+        || series.startsWith("ЭП1М") || series.startsWith("ТЭМ2") || series.startsWith("ЭП20")) {
             return 1;
         }else {
             return 2; // Если серия начинается с других символов, то это 2 секции
@@ -367,16 +407,49 @@ public class LocoInfoService {
         return digits + letter;
     }
 
+    // Форматирование номера секции (добавление буквы в конце) когда только посплитен весь номер
+    private String[] formatSplitSection(String[] parts) {
+        // Создаем новый массив для хранения отформатированных номеров
+        String[] formattedParts = new String[parts.length];
+
+        // Проходим по каждому элементу массива и форматируем его
+        for (int i = 0; i < parts.length; i++) {
+            // Удаляем буквы из части номера, если они есть
+            String digits = parts[i].replaceAll("[^\\d]", "");
+            String letters = extractLetter(parts[i]);
+            formattedParts[i] = digits + letters; // Добавляем результат в новый массив
+        }
+
+        return formattedParts; // Возвращаем массив с отформатированными номерами
+    }
+
+    // Маппинг для преобразования латинских букв в кириллические
+    private static final Map<Character, Character> LATIN_TO_CYRILLIC = new HashMap<>();
+
+    static {
+        LATIN_TO_CYRILLIC.put('A', 'А'); // A -> А
+        LATIN_TO_CYRILLIC.put('B', 'В'); // B -> В
+        LATIN_TO_CYRILLIC.put('E', 'Е'); // E -> Е
+        LATIN_TO_CYRILLIC.put('C', 'С'); // C -> С
+    }
+
     // Извлечение буквы из части номера
-    private String extractLetter(String part) {
+    public String extractLetter(String part) {
         String letter = part.replaceAll("[^A-ZА-Я]", ""); // Извлекаем букву из номера
         if (!letter.isEmpty()) {
+            char extractedChar = letter.charAt(0); // Извлекаем первый символ
+            // Если это латинская буква, которую нужно заменить на кириллическую
+            if (LATIN_TO_CYRILLIC.containsKey(extractedChar)) {
+                // Заменяем её на кириллическую
+                return String.valueOf(LATIN_TO_CYRILLIC.get(extractedChar));
+            }
+            // Если буква уже кириллическая, возвращаем её без изменений
             return letter;
         }
         return ""; // Если буквы нет, возвращаем пустую строку
     }
 
-    // Получении серии для секций из серии локомотива
+    // Получение серии для секций из серии локомотива
     public String getTypeLocoListFromLoco (String typeLocoInfo){
         String typeSection = typeLocoInfo;
         if (typeLocoInfo.startsWith("1.5")){
@@ -388,6 +461,57 @@ public class LocoInfoService {
             typeSection = typeLocoInfo.substring(1);
         }
         return typeSection;
+    }
+
+    // Получение серии локомотива из серии секций и количества секций
+    public String getTypeLocoFromTypeSection (String typeSection, int countSection){
+        String typeLocoInfo = typeSection;
+        if (countSection == 3){
+            typeLocoInfo = "1.5" + typeSection;
+        }
+        if (countSection == 4){
+            typeLocoInfo = "2" + typeSection;
+        }
+        return typeLocoInfo;
+    }
+
+    //Гарантированное получение заглавных кирилл симв в конце номера секций
+    public String convertToCyrillic(String sectionNumber) {
+        if (sectionNumber == null || sectionNumber.isEmpty()) {
+            return sectionNumber;
+        }
+
+        // Получаем последний символ
+        char lastChar = sectionNumber.charAt(sectionNumber.length() - 1);
+
+        // Карта соответствия латинских и кириллических букв
+        switch (lastChar) {
+            case 'A': return sectionNumber.substring(0, sectionNumber.length() - 1) + 'А';
+            case 'B': return sectionNumber.substring(0, sectionNumber.length() - 1) + 'Б';
+            case 'C': return sectionNumber.substring(0, sectionNumber.length() - 1) + 'С';
+            case 'E': return sectionNumber.substring(0, sectionNumber.length() - 1) + 'Е';
+            case 'H': return sectionNumber.substring(0, sectionNumber.length() - 1) + 'Н';
+            case 'K': return sectionNumber.substring(0, sectionNumber.length() - 1) + 'К';
+            case 'M': return sectionNumber.substring(0, sectionNumber.length() - 1) + 'М';
+            case 'O': return sectionNumber.substring(0, sectionNumber.length() - 1) + 'О';
+            case 'P': return sectionNumber.substring(0, sectionNumber.length() - 1) + 'Р';
+            case 'T': return sectionNumber.substring(0, sectionNumber.length() - 1) + 'Т';
+            case 'X': return sectionNumber.substring(0, sectionNumber.length() - 1) + 'Х';
+            // Заменяем кириллическую А на латинскую A
+            //case 'А': return sectionNumber.substring(0, sectionNumber.length() - 1) + 'A'; // кириллическая А -> латинская A
+            default: return sectionNumber; // Если буква уже кириллическая или не требует замены
+        }
+    }
+
+    // Функция для обработки списка номеров секций
+    public List<String> convertAllSectionsToCyrillic(List<String> clearNumbers) {
+        List<String> convertedSections = new ArrayList<>();
+
+        for (String section : clearNumbers) {
+            convertedSections.add(convertToCyrillic(section));
+        }
+
+        return convertedSections;
     }
 
     // Конвертация сущности в DTO

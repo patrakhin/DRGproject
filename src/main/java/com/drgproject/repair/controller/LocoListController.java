@@ -301,11 +301,12 @@ public class LocoListController {
                         String contractNumber = row.getCell(0).getStringCellValue();
                         String typeLoco = row.getCell(1).getStringCellValue();
                         String typeSystem = row.getCell(2).getStringCellValue();
-                        String locoNumber = row.getCell(3).getStringCellValue();
+                        String locoNumber1 = row.getCell(3).getStringCellValue();
                         String homeRegion = row.getCell(4).getStringCellValue();
                         String homeDepot = row.getCell(5).getStringCellValue();
                         String comment = row.getCell(6) != null ? row.getCell(6).getStringCellValue() : "";
 
+                        String locoNumber = locoListService.getCyrillicSection(locoNumber1);
                         // Проверка на существование секции
                         boolean locoListExists = locoListService.ifSectionIsExists(homeRegion, homeDepot, typeLoco, locoNumber);
                         if (locoListExists) {

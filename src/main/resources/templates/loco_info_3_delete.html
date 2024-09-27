@@ -19,9 +19,9 @@
 
                 <!-- Выпадающий список "Регион" -->
                 <div class="mb-3">
-                    <label for="region" class="form-label">Регион:</label>
+                    <label for="region" class="form-label">Дорога:</label>
                     <select id="region" name="region" class="form-select" required>
-                        <option value="">Выберите регион</option>
+                        <option value="">Выберите дорогу</option>
                         <option th:each="region : ${regions}" th:value="${region.name}" th:text="${region.name}"></option>
                     </select>
                 </div>
@@ -39,7 +39,7 @@
                     <label for="locoType" class="form-label">Серия локомотива:</label>
                     <select id="locoType" name="locoType" class="form-select" required>
                         <option value="">Выберите серию</option>
-                        <option th:each="typeLoco : ${typeLocos}" th:value="${typeLoco.locoType}" th:text="${typeLoco.locoType}"></option>
+                        <option th:each="typeLoco : ${typeLocos}" th:value="${typeLoco.typeLocoUnit}" th:text="${typeLoco.typeLocoUnit}"></option>
                     </select>
                 </div>
 

@@ -5,10 +5,13 @@ import com.drgproject.repair.dto.RegionDTO;
 import com.drgproject.repair.service.HomeDepotService;
 import com.drgproject.repair.service.RegionService;
 import jakarta.servlet.http.HttpSession;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Collections;
 import java.util.List;
@@ -123,5 +126,111 @@ public class HomeDepotController {
             model.addAttribute("errorMessage", "Ошибка при удалении депо");
         }
         return "home_depot_5_delete";
+    }
+
+    // Метод GET для отображения формы загрузки файла
+    @GetMapping("/upload-home_depots")
+    public String showUploadForm(Model model) {
+        return "home_depot_6_upload"; // Возвращаем название шаблона Thymeleaf
+    }
+
+    //Загрузка дорог из Excel
+    @PostMapping("/upload-home-depot")
+    public String uploadDepotExcelFile(@RequestParam("fileExcel") MultipartFile fileExcel, Model model) {
+
+        try {
+            // Проверяем, что файл не пуст
+            if (fileExcel.isEmpty()) {
+                model.addAttribute("message", "Пожалуйста, выберите файл для загрузки");
+                return "home_depot_6_upload"; // Возвращаемся к форме загрузки депо
+            }
+
+            StringBuilder message = new StringBuilder(); // Для вывода всех сообщений
+
+            // Открываем файл с помощью Apache POI
+            try (Workbook workbook = new XSSFWorkbook(fileExcel.getInputStream())) {
+                Sheet sheet = workbook.getSheetAt(0); // Получаем первый лист
+
+                // Проходим по строкам начиная с 2-й строки (индекс 1)
+                for (int rowIndex = 1; rowIndex <= sheet.getLastRowNum(); rowIndex++) {
+                    Row row = sheet.getRow(rowIndex);
+
+                    if (row != null) {
+                        // Чтение данных из ячеек (колонка 0 - homeRegion, колонка 1 - homeDepot)
+                        String homeRegion = getCellValueAsString(row.getCell(0));
+                        String homeDepot = getCellValueAsString(row.getCell(1));
+
+                        // Проверяем, если все ключевые ячейки пусты, прекращаем чтение
+                        if (isRowEmpty(homeRegion) || isRowEmpty(homeDepot)) {
+                            continue; // Пропускаем пустую строку
+                        }
+
+                        // Проверка на существование региона
+                        RegionDTO region = regionService.getRegionByName(homeRegion);
+                        if (region == null) {
+                            // Если регион не найден, выводим сообщение и пропускаем
+                            message.append("Регион ").append(homeRegion).append(" не найден. Пропускаем депо ").append(homeDepot).append(".<br/>");
+                            continue;
+                        }
+
+                        // Проверка на существование депо в регионе
+                        boolean depotExists = homeDepotService.existsByDepotAndRegionId(homeDepot, region.getId());
+                        if (depotExists) {
+                            // Если депо уже существует в данном регионе, пропускаем его
+                            message.append("Депо ").append(homeDepot).append(" уже существует в регионе ").append(homeRegion).append(". Пропускаем.<br/>");
+                            continue;
+                        }
+
+                        // Создаем новое депо
+                        HomeDepotDTO homeDepotDTO = new HomeDepotDTO();
+                        homeDepotDTO.setDepot(homeDepot);
+                        homeDepotDTO.setRegionId(region.getId());
+                        homeDepotDTO.setRegionName(region.getName());
+
+                        // Сохраняем депо
+                        homeDepotService.createHomeDepot(homeDepotDTO);
+
+                        // Добавляем сообщение о создании нового депо
+                        message.append("Депо ").append(homeDepot).append(" успешно добавлено в регион ").append(homeRegion).append(".<br/>");
+                    }
+                }
+
+                model.addAttribute("message", message.toString()); // Отправляем все сообщения на фронт
+            }
+        } catch (Exception e) {
+            model.addAttribute("message", "Ошибка при обработке файла: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return "home_depot_6_upload"; // Возвращаемся к той же форме загрузки с результатами
+    }
+
+    // Метод для безопасного чтения значений из ячейки
+    private String getCellValueAsString(Cell cell) {
+        if (cell == null) {
+            return ""; // Возвращаем пустую строку, если ячейка пустая
+        }
+
+        switch (cell.getCellType()) {
+            case STRING:
+                return cell.getStringCellValue();
+            case NUMERIC:
+                if (DateUtil.isCellDateFormatted(cell)) {
+                    return cell.getDateCellValue().toString();
+                } else {
+                    return String.valueOf((int) cell.getNumericCellValue());
+                }
+            case BOOLEAN:
+                return String.valueOf(cell.getBooleanCellValue());
+            case FORMULA:
+                return cell.getCellFormula();
+            default:
+                return "";
+        }
+    }
+
+    // Проверяем, пустая ли строка (все ключевые значения пустые)
+    private boolean isRowEmpty(String homeRegion) {
+        return homeRegion.isEmpty();
     }
 }

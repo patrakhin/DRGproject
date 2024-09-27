@@ -52,6 +52,10 @@ public class AllTypeLocoUnitService {
         return false;
     }
 
+    public boolean existTypeLocoUnit(String typeLocoUnit){
+        return allTypeLocoUnitRepository.existsByTypeLocoUnit(typeLocoUnit);
+    }
+
     private AllTypeLocoUnitDTO convertToDTO(AllTypeLocoUnit allTypeLocoUnit) {
 
         return new AllTypeLocoUnitDTO(allTypeLocoUnit.getId(), allTypeLocoUnit.getTypeLocoUnit());

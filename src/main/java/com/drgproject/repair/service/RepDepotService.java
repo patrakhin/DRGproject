@@ -94,6 +94,27 @@ public class RepDepotService {
         }
     }
 
+    public boolean existsByDepotAndRegion(String depot, String regionName) {
+        Region region = regionRepository.findRegionByName(regionName)
+                .orElseThrow(() -> new IllegalArgumentException("Регион с именем " + regionName + " не найден"));
+        return repDepotRepository.findByNameAndRegion(depot, region).isPresent();
+    }
+
+    public RepDepotDTO addRepairDepotFromFile(String depotName, String regionName) {
+        Region region = regionRepository.findRegionByName(regionName)
+                .orElseThrow(() -> new IllegalArgumentException("Регион с именем " + regionName + " не найден"));
+
+        // Проверка на существование депо в регионе
+        Optional<RepDepot> existingDepot = repDepotRepository.findByNameAndRegion(depotName, region);
+        if (existingDepot.isPresent()) {
+            throw new IllegalArgumentException("Депо ремонта с именем " + depotName + " уже существует в регионе " + regionName);
+        }
+
+        RepDepot newDepot = new RepDepot(depotName, region);
+        RepDepot savedDepot = repDepotRepository.save(newDepot);
+        return convertToDTO(savedDepot);
+    }
+
     // Конвертация из DTO в сущность
     private RepDepot convertToEntity(RepDepotDTO dto) {
         Region region = regionRepository.findRegionByName(dto.getRegionName())

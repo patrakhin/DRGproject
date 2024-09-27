@@ -11,7 +11,7 @@
     <div class="row justify-content-center">
         <div class="col-12 text-center mb-3">
             <h1>История Ремонта</h1>
-            <p>Локомотив <span th:text="${typeLoco}">[typeLoco]</span> номер <span th:text="${numberLoco}">[numberLoco]</span></p>
+            <p>Секция <span th:text="${typeLoco}">[typeLoco]</span> № <span th:text="${numberLoco}">[numberLoco]</span></p>
         </div>
         <div class="col-12">
             <table class="table table-bordered">
@@ -27,7 +27,8 @@
                 <tr th:each="history : ${lastThreeEntries}">
                     <td th:text="${history.repairDate}">[repairDate]</td>
                     <td th:text="${history.repairDepot}">[repairDepot]</td>
-                    <td><a th:href="@{/repair_history/detail_history(typeLoco=${typeLoco}, numberLoco=${numberLoco}, repairDate=${history.repairDate})}" class="btn btn-outline-primary btn-sm">Детально</a></td>
+                    <td><a th:href="@{/repair_history/detail_history(typeLoco=${typeLoco}, numberLoco=${numberLoco},
+                    repairDate=${history.repairDate}, typeLocoUnit=${typeLocoUnit})}" class="btn btn-outline-primary btn-sm">Детально</a></td>
                     <td>
                         <!-- Кнопка удаления только для записей с текущей датой -->
                         <form th:if="${history.repairDate} == ${T(java.time.LocalDate).now()}" th:action="@{/repair_history/delete}" method="post" class="d-inline">
@@ -36,6 +37,7 @@
                             <input type="hidden" name="numberLoco" th:value="${numberLoco}" /> <!--Передаем номер секции-->
                             <input type="hidden" name="repairDate" th:value="${history.repairDate}" /> <!--Передаем номер локомотива для перехода после удаления на "/search" -->
                             <input type="hidden" name="firstNumber" th:value="${firstNumber}" />
+                            <input type="hidden" name="typeLocoUnit" th:value="${typeLocoUnit}" />
                             <button type="submit" class="btn btn-danger btn-sm">Удалить</button>
                         </form>
                     </td>
@@ -46,6 +48,7 @@
             <form class="mb-3" th:action="@{/repair_history/add_history}" method="get">
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                 <input type="hidden" name="sectionNumber" th:value="${numberLoco}" />
+                <input type="hidden" name="typeLocoUnit" th:value="${typeLocoUnit}" />
                 <button type="submit" class="btn btn-primary me-2">Добавить Запись</button>
             </form>
 
@@ -53,7 +56,7 @@
             <form class="mb-3" th:action="@{/repair_history/search}" method="post">
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                 <input type="hidden" name="typeLoco" th:value="${typeLoco}" />
-
+                <input type="hidden" name="typeLocoUnit" th:value="${typeLocoUnit}" />
                 <input type="hidden" name="numberLoco" th:value="${firstNumber}" />
                 <button type="submit" class="btn btn-link">Возврат на Панель Работ</button>
             </form>
