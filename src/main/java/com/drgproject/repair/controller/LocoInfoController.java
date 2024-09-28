@@ -438,7 +438,7 @@ public class LocoInfoController {
 
                         // Проверка на существование секций
                         for (String section : clearNumbers) {
-                            boolean sectionExists = locoFilterService.ifSectionIsExist(homeRegion, homeDepot, typeLocoForSections, section);
+                            boolean sectionExists = locoListService.existsSectionByRegionAndDepotAndTypeAndNumber(homeRegion, homeDepot, typeLocoForSections, section);
                             if (!sectionExists) {
                                 model.addAttribute("message", "Секция номер " + section + " не существует в свободных.");
                                 return "loco_info_7_upload-loco"; // Редирект на ту же страницу
@@ -449,7 +449,7 @@ public class LocoInfoController {
                         for(String section : clearNumbers){
                             boolean sectionFree = locoFilterService.ifSectionIsFree(homeRegion, homeDepot, typeLocoForSections, section);
                             if (!sectionFree) {
-                                model.addAttribute("message", "Секция номер " + section + " не свободна.");
+                                model.addAttribute("message", "Секция номер " + section + " не свободна. Уже в составе ТПС");
                                 return "loco_info_7_upload-loco"; // Редирект на ту же страницу
                             }
                         }

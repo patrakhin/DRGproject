@@ -121,6 +121,11 @@ public class LocoListService {
         return filteredSection;
     }
 
+    // Приверка на сущ по дороге депо прип серии секци и номеру секции
+    public boolean existsSectionByRegionAndDepotAndTypeAndNumber(String region, String depot, String type, String number){
+        return locoListRepository.existsByHomeRegionAndHomeDepotAndTypeLocoAndLocoNumber(region, depot, type, number);
+    }
+
     /**
      * Метод для получения отфильтрованного и отсортированного списка свободных секций
      * @param locoList список отфильтрованных секций из LocoListDTO
