@@ -27,7 +27,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="regionSelect">Регион</label>
+                    <label for="regionSelect">Дорога</label>
                     <select id="regionSelect" name="region" class="form-control" onchange="loadDepotsByRegion(this.value)" required>
                         <option value="">-- Выберите регион --</option>
                         <option th:each="region : ${regions}" th:value="${region}" th:text="${region}"></option>
