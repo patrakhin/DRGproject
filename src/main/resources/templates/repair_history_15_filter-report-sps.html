@@ -15,10 +15,10 @@
         <div class="col-12">
             <form action="/repair_history/gen-report-sps" method="get">
                 <div class="mb-3 row">
-                    <label for="region" class="col-sm-2 col-form-label">Регион:</label>
+                    <label for="region" class="col-sm-2 col-form-label">Дорога:</label>
                     <div class="col-sm-4">
                         <select id="region" name="region" class="form-select" required>
-                            <option value="">Выберите регион</option>
+                            <option value="">Выберите дорогу</option>
                             <option th:each="region : ${regions}" th:value="${region.name}" th:text="${region.name}"></option>
                         </select>
                     </div>
