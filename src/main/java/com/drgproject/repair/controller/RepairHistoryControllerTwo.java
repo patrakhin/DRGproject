@@ -311,10 +311,11 @@ public class RepairHistoryControllerTwo {
         String locoNumber = sectionNumber;
         //String homeDepot = locoListService.getLocoListByNumberLocoAndTypeLoco(locoNumber, typeLoco).getHomeDepot();
         //String firstNumber = locoInfoService.getLocoByFirstNumberSection(sectionNumber); // закрыл 02012024
-        String firstNumber = locoInfoService.getLocoByFirstNumberSectionAndTypeLocoUint(sectionNumber, typeLocoUnit, homeDepot);
+        /*String firstNumber = locoInfoService.getLocoByFirstNumberSectionAndTypeLocoUint(sectionNumber, typeLocoUnit, homeDepot);
         if (firstNumber == null || firstNumber.isEmpty()){
             firstNumber = (String) session.getAttribute("numberLoco");
-        }
+        }*/
+        String firstNumber = (String) session.getAttribute("numberLoco");
         String repairDepot = (String) session.getAttribute("unit");
         String numberTable = (String) session.getAttribute("number_table");
 
