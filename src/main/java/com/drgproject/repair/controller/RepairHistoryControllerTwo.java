@@ -166,6 +166,8 @@ public class RepairHistoryControllerTwo {
 
         model.addAttribute("numberLoco", numberLoco);
         model.addAttribute("locoInfoDTO", locoInfoDTO);
+        String homeDepot = locoInfoDTO.getHomeDepot();
+        model.addAttribute("homeDepot", homeDepot);
 
         return "repair_history_2_work_bar";
     }
@@ -216,7 +218,8 @@ public class RepairHistoryControllerTwo {
         model.addAttribute("receiptBlockDtos", receiptBlockDtos);
         model.addAttribute("sections", sections); // Добавляем список секций
         model.addAttribute("typeLocoUnit", typeLocoUnit);
-
+        String homeDepot = locoInfoDTO.getHomeDepot();
+        model.addAttribute("homeDepot", homeDepot);
         return "repair_history_3_history_loco";
     }
 
@@ -303,10 +306,10 @@ public class RepairHistoryControllerTwo {
 
     // Подготовка к добавлению записи в историю ремонта
     @GetMapping("/add_history")
-    public String showAddHistoryForm(@RequestParam String sectionNumber, @RequestParam String typeLocoUnit, Model model, HttpSession session) {
+    public String showAddHistoryForm(@RequestParam String sectionNumber, @RequestParam String typeLocoUnit, @RequestParam String homeDepot, Model model, HttpSession session) {
         String typeLoco = (String) session.getAttribute(TYPE_LOCO);
         String locoNumber = sectionNumber;
-        String homeDepot = locoListService.getLocoListByNumberLocoAndTypeLoco(locoNumber, typeLoco).getHomeDepot();
+        //String homeDepot = locoListService.getLocoListByNumberLocoAndTypeLoco(locoNumber, typeLoco).getHomeDepot();
         //String firstNumber = locoInfoService.getLocoByFirstNumberSection(sectionNumber); // закрыл 02012024
         String firstNumber = locoInfoService.getLocoByFirstNumberSectionAndTypeLocoUint(sectionNumber, typeLocoUnit, homeDepot);
         if (firstNumber == null || firstNumber.isEmpty()){
