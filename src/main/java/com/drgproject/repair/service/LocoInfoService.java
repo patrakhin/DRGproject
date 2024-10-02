@@ -101,12 +101,17 @@ public class LocoInfoService {
     }
 
     // Получение локомотива по номеру первой секции и серии локомотива
-    public String getLocoByFirstNumberSectionAndTypeLocoUint(String firstSectionNumber, String typeLocoUnit, String homeDepot){
-        Optional <LocoInfo> numberLoco = locoInfoRepository.findLocoInfoByLocoSection1AndLocoTypeAndHomeDepot(firstSectionNumber, typeLocoUnit, homeDepot);
-        if (numberLoco.isEmpty()){
-            return null;
+    public String getLocoByFirstNumberSectionAndTypeLocoUint(String firstSectionNumber, String typeLocoUnit, String homeDepot) {
+        // Поиск локомотива по номеру первой секции, типу локомотива и депо
+        Optional<LocoInfo> locoInfos = locoInfoRepository.findLocoInfoByLocoSection1AndLocoTypeAndHomeDepot(firstSectionNumber, typeLocoUnit, homeDepot);
+
+        // Проверка на наличие записей
+        if (locoInfos.isEmpty()) {
+            throw new IllegalArgumentException("Запрос вернулся пустым для секции: " + firstSectionNumber + " сервисный слой");
         }
-        return locoInfoRepository.findLocoInfoByLocoSection1(firstSectionNumber).get().getLocoUnit();
+
+        // Возвращаем единственный результат
+        return locoInfos.get().getLocoUnit();
     }
 
     // Получение локомотива по любому номеру секции
