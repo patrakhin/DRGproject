@@ -144,6 +144,10 @@
       <input type="hidden" name="firstNumber" th:value="${firstNumber}" />
       <input type="hidden" name="sectionNumber" th:value="${numberLoco}" />
       <input type="hidden" name="typeLocoUnit" th:value="${typeLocoUnit}" />
+      <input type="hidden" th:each="number, iterStat : ${clearNumbers}" name="clearNumbers" th:value="${number}" />
+
+      <!-- Передача indicateRepairOnToday -->
+      <input type="hidden" th:each="indicate, iterStat : ${indicateRepairOnToday}" name="indicateRepairOnToday" th:value="${indicate}" />
       <button type="submit" class="btn btn-link">Возврат к Истории ремонта</button>
     </form>
   </div>

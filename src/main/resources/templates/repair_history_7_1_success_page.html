@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Успех</title>
+</head>
+<body>
+<h1>Успешно добавлено!</h1>
+<p th:text="${successMessage2}"></p>
+
+<form class="mb-3" th:action="@{/repair_history/search_result}" method="get">
+    <input type="hidden" name="typeLocoUnit" th:value="${typeLocoUnit}" />
+    <input type="hidden" name="numberLoco" th:value="${firstNumber}" />
+    <button type="submit">На панель работ</button>
+</form>
+</body>
+</html>

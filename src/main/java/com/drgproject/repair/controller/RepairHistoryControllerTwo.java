@@ -22,6 +22,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.apache.poi.ss.usermodel.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
 
 import java.io.IOException;
@@ -55,6 +56,7 @@ public class RepairHistoryControllerTwo {
     private final RegionService regionService;
     private final RepDepotService repDepotService;
     private final AllTypeLocoUnitService allTypeLocoUnitService;
+    private final HttpSession httpSession;
 
     public RepairHistoryControllerTwo(RepairHistoryService repairHistoryService,
                                       LocoListService locoListService,
@@ -71,7 +73,8 @@ public class RepairHistoryControllerTwo {
                                       HomeDepotService homeDepotService,
                                       RegionService regionService,
                                       RepDepotService repDepotService,
-                                      AllTypeLocoUnitService allTypeLocoUnitService) {
+                                      AllTypeLocoUnitService allTypeLocoUnitService,
+                                      HttpSession httpSession) {
         this.repairHistoryService = repairHistoryService;
         this.locoListService = locoListService;
         this.blockOnLocoService = blockOnLocoService;
@@ -88,6 +91,7 @@ public class RepairHistoryControllerTwo {
         this.regionService = regionService;
         this.repDepotService = repDepotService;
         this.allTypeLocoUnitService = allTypeLocoUnitService;
+        this.httpSession = httpSession;
     }
 
     // Главная страница
@@ -112,22 +116,16 @@ public class RepairHistoryControllerTwo {
         return "repair_history_1_main";
     }
 
-    //Поиск номера локомотива по первым двум цифрам
-/*    @GetMapping("/locomotives")
-    @ResponseBody
-    public List<String> getLocomotiveNumbers(@RequestParam("term") String term) {
-        return locoListService.findNumbersByPrefix(term);
-    }*/
-
-    // Новый поиск локомотива 280824
+/*    // Новый поиск локомотива 280824
     @GetMapping("/locomotives")
     @ResponseBody
     public List<String> getLocomotiveNumbers(@RequestParam("term") String term) {
         return locoInfoService.getFindNumbersByPrefix(term);
-    }
+    }*/
 
     // Результат поиска локомотива по типу и серии
-    @PostMapping("/search")
+    //@PostMapping("/search_result")
+    @GetMapping("/search_result")
     public String searchLocoByTypeAndNumber(@RequestParam String typeLocoUnit, @RequestParam String numberLoco, Model model, HttpSession session) {
         LocoInfoDTO locoInfoDTO = locoInfoService.getLocoByNumber(numberLoco, typeLocoUnit);
         // Создание серии для секции
@@ -158,6 +156,29 @@ public class RepairHistoryControllerTwo {
             sections.add(section);
         }
 
+        // Текущая дата для сравнения
+        LocalDate today = LocalDate.now();
+
+        List<Boolean> indicateRepairOnToday = new ArrayList<>(clearNumbers.size());
+        for (String sectionNumber : clearNumbers) {
+            // Получаем список историй ремонта для конкретной секции
+            List<RepairHistoryDto> repairHistoryDtos = repairHistoryService.findByTypeLocoAndLocoNumber(typeLoco, sectionNumber);
+
+            // Фильтруем список, оставляя только те ремонты, которые были сделаны сегодня
+            List<RepairHistoryDto> repairHistoryToday = repairHistoryDtos.stream()
+                    .filter(repairHistoryDto -> today.equals(repairHistoryDto.getRepairDate())) // Сравнение даты ремонта с текущей датой
+                    .toList();
+            // Если хотя бы один ремонт был сегодня, добавляем true, иначе false
+            if (!repairHistoryToday.isEmpty()) {
+                indicateRepairOnToday.add(true);
+            } else {
+                indicateRepairOnToday.add(false);
+            }
+        }
+
+
+        model.addAttribute("clearNumbers", clearNumbers);
+        model.addAttribute("indicateRepairOnToday", indicateRepairOnToday);
         // Добавляем список DTO в модель
         model.addAttribute("sections", sections);
 
@@ -167,12 +188,16 @@ public class RepairHistoryControllerTwo {
         model.addAttribute("numberLoco", numberLoco);
         model.addAttribute("locoInfoDTO", locoInfoDTO);
 
+        model.addAttribute("sectionNumber", sections.get(0).getLocoNumber());
         return "repair_history_2_work_bar";
     }
 
     // История ремонта
     @PostMapping("/repair_history")
-    public String showRepairHistory(@RequestParam String sectionNumber, @RequestParam String typeLocoUnit, Model model, HttpSession session) {
+    public String showRepairHistory(@RequestParam String sectionNumber,
+                                    @RequestParam String typeLocoUnit,
+                                    @RequestParam List<Boolean> indicateRepairOnToday,
+                                    Model model, HttpSession session) {
 
         String typeLoco = (String) session.getAttribute(TYPE_LOCO);
         if(sectionNumber.isEmpty()){
@@ -217,6 +242,9 @@ public class RepairHistoryControllerTwo {
         model.addAttribute("sections", sections); // Добавляем список секций
         model.addAttribute("typeLocoUnit", typeLocoUnit);
 
+        model.addAttribute("clearNumbers", clearNumbers);
+        model.addAttribute("indicateRepairOnToday", indicateRepairOnToday);
+
         return "repair_history_3_history_loco";
     }
 
@@ -235,11 +263,14 @@ public class RepairHistoryControllerTwo {
                                       @RequestParam String numberLoco,
                                       @RequestParam String repairDate,
                                       @RequestParam String typeLocoUnit,
+                                      @RequestParam List<Boolean> indicateRepairOnToday,
                                       //@RequestParam String firstNumber,
                                       Model model, HttpSession session) {
         LocalDate date = LocalDate.parse(repairDate);
         String firstNumber = locoInfoService.getLocoByFirstNumberSection(numberLoco);
+
         model.addAttribute("typeLocoUnit", typeLocoUnit);
+        model.addAttribute("indicateRepairOnToday", indicateRepairOnToday);
         if (firstNumber == null || firstNumber.isEmpty()){
             firstNumber = (String) session.getAttribute("numberLoco");
         }
@@ -252,17 +283,19 @@ public class RepairHistoryControllerTwo {
 
             // Если это была последняя запись, перенаправляем на нужную страницу
             if (isLastEntry) {
-                return redirectToWorkBar(typeLoco, firstNumber, typeLocoUnit, model, session);
+                return "redirect:/repair_history/search_result?typeLocoUnit=" + typeLocoUnit + "&numberLoco=" + numberLoco;
             }
         }
 
         // Возвращаем на ту же страницу истории, если ещё есть записи
-        return redirectToWorkBar(typeLoco, firstNumber, typeLocoUnit, model, session);
+        return redirectToWorkBar(typeLoco, firstNumber, typeLocoUnit, indicateRepairOnToday, model, session);
     }
 
     //Получился универсальный метод для всех ссылок "На панель работ" НЕ ЗАБУДЬ!
     //Вспомогательный метод для удаления записи
-    private String redirectToWorkBar(String typeLoco, String numberLoco, String typeLocoUnit, Model model, HttpSession session) {
+    private String redirectToWorkBar(String typeLoco, String numberLoco,
+                                     String typeLocoUnit, List<Boolean> indicateRepairOnToday,
+                                     Model model, HttpSession session) {
         //LocoInfoDTO locoInfoDTO = locoInfoService.getLocoByNumber(numberLoco, typeLoco);
         LocoInfoDTO locoInfoDTO = locoInfoService.getLocoByNumber(numberLoco, typeLocoUnit);
         if (locoInfoDTO == null) {
@@ -284,6 +317,25 @@ public class RepairHistoryControllerTwo {
         // Фильтруем номера секций, чтобы получить только те, которые не пустые
         List<String> clearNumbers = locoInfoService.getClearLocoSections(sectionsNumber);
 
+        // Текущая дата для сравнения
+        LocalDate today = LocalDate.now();
+
+        indicateRepairOnToday = new ArrayList<>(clearNumbers.size());
+        for (String sectionNumber : clearNumbers) {
+            // Получаем список историй ремонта для конкретной секции
+            List<RepairHistoryDto> repairHistoryDtos = repairHistoryService.findByTypeLocoAndLocoNumber(typeLoco, sectionNumber);
+
+            // Фильтруем список, оставляя только те ремонты, которые были сделаны сегодня
+            List<RepairHistoryDto> repairHistoryToday = repairHistoryDtos.stream()
+                    .filter(repairHistoryDto -> today.equals(repairHistoryDto.getRepairDate())) // Сравнение даты ремонта с текущей датой
+                    .toList();
+            // Если хотя бы один ремонт был сегодня, добавляем true, иначе false
+            if (!repairHistoryToday.isEmpty()) {
+                indicateRepairOnToday.add(true);
+            } else {
+                indicateRepairOnToday.add(false);
+            }
+        }
         // Получаем DTO для каждой секции из списка clearNumbers
         List<LocoListDTO> sections = new ArrayList<>();
         for (String sectionNumber : clearNumbers) {
@@ -291,19 +343,29 @@ public class RepairHistoryControllerTwo {
             sections.add(section);
         }
 
+
         // Добавляем список DTO в модель
         model.addAttribute("sections", sections);
         model.addAttribute(TYPE_LOCO, typeLoco);
         model.addAttribute("numberLoco", numberLoco);
         model.addAttribute("locoInfoDTO", locoInfoDTO);
 
+        model.addAttribute("indicateRepairOnToday", indicateRepairOnToday);
+        model.addAttribute("clearNumbers", clearNumbers);
+        model.addAttribute("sectionNumber", sections.get(0));
 
-        return "repair_history_2_work_bar";
+        //return "repair_history_2_work_bar";
+        //return showSearchForm(model, httpSession);
+        //return searchLocoByTypeAndNumber(typeLocoUnit, numberLoco, model, httpSession);
+        return "redirect:/repair_history/search_result?typeLocoUnit=" + typeLocoUnit + "&numberLoco=" + numberLoco;
     }
 
     // Подготовка к добавлению записи в историю ремонта
     @GetMapping("/add_history")
-    public String showAddHistoryForm(@RequestParam String sectionNumber, @RequestParam String typeLocoUnit, Model model, HttpSession session) {
+    public String showAddHistoryForm(@RequestParam String sectionNumber, @RequestParam String typeLocoUnit,
+                                     @RequestParam List<String> clearNumbers,
+                                     @RequestParam List<Boolean> indicateRepairOnToday,
+                                     Model model, HttpSession session) {
         String typeLoco = (String) session.getAttribute(TYPE_LOCO);
         String locoNumber = sectionNumber;
         String firstNumber = locoInfoService.getLocoByFirstNumberSection(sectionNumber);
@@ -319,12 +381,6 @@ public class RepairHistoryControllerTwo {
 
         LocalDate repairDateOld = LocalDate.now();
 
-        // Извлечение сообщения об успешном добавлении из сессии
-        /*String successMessage2 = (String) session.getAttribute("successMessage2");
-        if (successMessage2 != null) {
-            model.addAttribute("successMessage2", successMessage2);
-
-        }*/
         try {
             Optional<RepairHistoryDto> repairHistoryOld = repairHistoryService.findByTypeLocoAndLocoNumberAndDate(typeLoco, locoNumber, repairDateOld);
             if (repairHistoryOld.isPresent()) {
@@ -374,6 +430,8 @@ public class RepairHistoryControllerTwo {
         model.addAttribute("countBlocks", countBlocks);
         model.addAttribute("typeLocoUnit", typeLocoUnit);
 
+        model.addAttribute("clearNumbers", clearNumbers);
+        model.addAttribute("indicateRepairOnToday", indicateRepairOnToday);
 
         // Список имен полей для ввода
         List<String> fieldNames = IntStream.rangeClosed(1, countBlocks)
@@ -396,6 +454,8 @@ public class RepairHistoryControllerTwo {
                                  @RequestParam("repairDepot") String repairDepot,
                                  @RequestParam("positionRepair") Long positionRepairId,
                                  @RequestParam("typeLocoUnit") String typeLocoUnit,
+                                 @RequestParam List<String> clearNumbers,
+                                 @RequestParam List<Boolean> indicateRepairOnToday,
                                  Model model, HttpSession session) {
 
         String firstNumber;
@@ -409,6 +469,7 @@ public class RepairHistoryControllerTwo {
         }
 
         try {
+            // Заполнение данных
             repairHistoryDto.setRepairDate(LocalDate.parse(repairDate));
             repairHistoryDto.setHomeDepot(homeDepot);
             repairHistoryDto.setTypeLoco(typeLoco);
@@ -417,34 +478,35 @@ public class RepairHistoryControllerTwo {
             repairHistoryDto.setTypeSystem(typeSystem);
             repairHistoryDto.setRepairDepot(repairDepot);
 
+            // Устанавливаем позицию ремонта
             String positionRepair = positionRepairService.getPositionRepairById(positionRepairId).getPosRepair();
             repairHistoryDto.setPositionRepair(positionRepair);
 
             // Обработка данных по пломбам
-            repairHistoryDto.setBlock1Seal(repairHistoryDto.getBlock1Seal() != null && !repairHistoryDto.getBlock1Seal().isEmpty() ? repairHistoryDto.getBlock1Seal() : "нет");
-            repairHistoryDto.setBlock2Seal(repairHistoryDto.getBlock2Seal() != null && !repairHistoryDto.getBlock2Seal().isEmpty() ? repairHistoryDto.getBlock2Seal() : "нет");
-            repairHistoryDto.setBlock3Seal(repairHistoryDto.getBlock3Seal() != null && !repairHistoryDto.getBlock3Seal().isEmpty() ? repairHistoryDto.getBlock3Seal() : "нет");
-            repairHistoryDto.setBlock4Seal(repairHistoryDto.getBlock4Seal() != null && !repairHistoryDto.getBlock4Seal().isEmpty() ? repairHistoryDto.getBlock4Seal() : "нет");
-            repairHistoryDto.setBlock5Seal(repairHistoryDto.getBlock5Seal() != null && !repairHistoryDto.getBlock5Seal().isEmpty() ? repairHistoryDto.getBlock5Seal() : "нет");
-            repairHistoryDto.setBlock6Seal(repairHistoryDto.getBlock6Seal() != null && !repairHistoryDto.getBlock6Seal().isEmpty() ? repairHistoryDto.getBlock6Seal() : "нет");
-            repairHistoryDto.setBlock7Seal(repairHistoryDto.getBlock7Seal() != null && !repairHistoryDto.getBlock7Seal().isEmpty() ? repairHistoryDto.getBlock7Seal() : "нет");
-            repairHistoryDto.setBlock8Seal(repairHistoryDto.getBlock8Seal() != null && !repairHistoryDto.getBlock8Seal().isEmpty() ? repairHistoryDto.getBlock8Seal() : "нет");
-            repairHistoryDto.setBlock9Seal(repairHistoryDto.getBlock9Seal() != null && !repairHistoryDto.getBlock9Seal().isEmpty() ? repairHistoryDto.getBlock9Seal() : "нет");
-            repairHistoryDto.setBlock10Seal(repairHistoryDto.getBlock10Seal() != null && !repairHistoryDto.getBlock10Seal().isEmpty() ? repairHistoryDto.getBlock10Seal() : "нет");
+            repairHistoryDto.setBlock1Seal(getOrDefault(repairHistoryDto.getBlock1Seal()));
+            repairHistoryDto.setBlock2Seal(getOrDefault(repairHistoryDto.getBlock2Seal()));
+            repairHistoryDto.setBlock3Seal(getOrDefault(repairHistoryDto.getBlock3Seal()));
+            repairHistoryDto.setBlock4Seal(getOrDefault(repairHistoryDto.getBlock4Seal()));
+            repairHistoryDto.setBlock5Seal(getOrDefault(repairHistoryDto.getBlock5Seal()));
+            repairHistoryDto.setBlock6Seal(getOrDefault(repairHistoryDto.getBlock6Seal()));
+            repairHistoryDto.setBlock7Seal(getOrDefault(repairHistoryDto.getBlock7Seal()));
+            repairHistoryDto.setBlock8Seal(getOrDefault(repairHistoryDto.getBlock8Seal()));
+            repairHistoryDto.setBlock9Seal(getOrDefault(repairHistoryDto.getBlock9Seal()));
+            repairHistoryDto.setBlock10Seal(getOrDefault(repairHistoryDto.getBlock10Seal()));
 
-
+            // Сохраняем данные
             repairHistoryService.save(repairHistoryDto);
 
-
+            // Добавляем успешное сообщение и сохраняем в сессии номер секции
             model.addAttribute("successMessage2", "Запись успешно добавлена, перейдите на панель работ по ссылке внизу страницы");
-            //session.setAttribute("successMessage2", "Запись успешно добавлена, перейдите на панель работ по ссылке внизу страницы");
             session.setAttribute("sectionNumber", locoNumber);
-            //return "repair_history_7_add_history"; // Возвращаемся на ту же страницу
+
         } catch (Exception e) {
             model.addAttribute("errorMessage", "Ошибка добавления записи: " + e.getMessage());
-            //return "repair_history_7_add_history"; // Повторное отображение формы
+            return "repair_history_7_add_history"; // Возврат к форме при ошибке
         }
-        // В случае ошибки или успешного добавления, добавляем данные обратно в модель
+
+        // Подготовка данных для модели, если все успешно
         model.addAttribute("repairDate", repairDate);
         model.addAttribute("homeDepot", homeDepot);
         model.addAttribute(TYPE_LOCO, typeLoco);
@@ -464,13 +526,26 @@ public class RepairHistoryControllerTwo {
         model.addAttribute("blocksOnLoco", blocksOnLoco);
         model.addAttribute("countBlocks", blocksOnLoco.size());
         model.addAttribute("typeLocoUnit", typeLocoUnit);
+        model.addAttribute("clearNumbers", clearNumbers);
+        model.addAttribute("indicateRepairOnToday", indicateRepairOnToday);
 
-        return redirectToWorkBar(typeLoco, firstNumber, typeLocoUnit, model, session);
+        return "repair_history_7_1_success_page";
+    }
+
+    // Утилита для обработки пломб (можно вынести в отдельный сервис)
+    private String getOrDefault(String blockSeal) {
+        return (blockSeal != null && !blockSeal.isEmpty()) ? blockSeal : "нет";
     }
 
     // История ремонта детально
     @GetMapping("/detail_history")
-    public String showDetailHistory(@RequestParam String typeLoco, @RequestParam String numberLoco, @RequestParam String repairDate, @RequestParam String typeLocoUnit, Model model, HttpSession session) {
+    public String showDetailHistory(@RequestParam String typeLoco,
+                                    @RequestParam String numberLoco,
+                                    @RequestParam String repairDate,
+                                    @RequestParam String typeLocoUnit,
+                                    @RequestParam List<String> clearNumbers,
+                                    @RequestParam List<Boolean> indicateRepairOnToday,
+                                    Model model, HttpSession session) {
         Optional<RepairHistoryDto> repairHistoryDto = repairHistoryService.findByTypeLocoAndLocoNumberAndDate(typeLoco, numberLoco, LocalDate.parse(repairDate));
         session.setAttribute("sectionNumber", numberLoco);
         session.setAttribute("typeLoco", typeLoco);
@@ -513,6 +588,9 @@ public class RepairHistoryControllerTwo {
         } else {
             model.addAttribute("error", "История для этой секции на эту дату не найдена.");
         }
+
+        model.addAttribute("clearNumbers", clearNumbers);
+        model.addAttribute("indicateRepairOnToday", indicateRepairOnToday);
 
         return "repair_history_6_detail_history";
     }

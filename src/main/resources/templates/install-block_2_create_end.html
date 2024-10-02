@@ -21,7 +21,7 @@
   </div>
 
   <!-- Скрытая форма для возврата -->
-  <form id="returnForm" method="post" action="/repair_history/search" th:action="@{/repair_history/search}">
+  <form id="returnForm" method="post" action="/repair_history/search_result" th:action="@{/repair_history/search}">
     <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
     <input type="hidden" name="typeLoco" th:value="${typeLoco}">
     <input type="hidden" name="numberLoco" th:value="${numberLoco}">

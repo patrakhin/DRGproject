@@ -29,6 +29,10 @@
         <input type="hidden" name="typeSystem" th:value="${typeSystem}" />
         <input type="hidden" name="repairDepot" th:value="${repairDepot}" />
         <input type="hidden" name="typeLocoUnit" th:value="${typeLocoUnit}" />
+        <!-- Передача clearNumbers -->
+        <input type="hidden" th:each="number, iterStat : ${clearNumbers}" name="clearNumbers" th:value="${number}" />
+        <!-- Передача indicateRepairOnToday -->
+        <input type="hidden" th:each="indicate, iterStat : ${indicateRepairOnToday}" name="indicateRepairOnToday" th:value="${indicate}" />
 
         <div th:if="${errorMessage1}" class="alert alert-danger mt-3" th:text="${errorMessage1}"></div>
 
@@ -134,12 +138,18 @@
         </div>
     </form>
     <!-- Форма для возврата на панель работ -->
-    <form class="mb-3" th:action="@{/repair_history/repair_history}" method="post">
+    <form class="mb-3" th:action="@{/repair_history/search_result}" method="get">
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
         <input type="hidden" name="typeLoco" th:value="${typeLoco}" />
         <input type="hidden" name="numberLoco" th:value="${firstNumber}" />
         <input type="hidden" name="sectionNumber" th:value="${locoNumber}" />
         <input type="hidden" name="typeLocoUnit" th:value="${typeLocoUnit}" />
+        <!-- Передача clearNumbers -->
+        <input type="hidden" th:each="number, iterStat : ${clearNumbers}" name="clearNumbers" th:value="${number}" />
+
+        <!-- Передача indicateRepairOnToday -->
+        <input type="hidden" th:each="indicate, iterStat : ${indicateRepairOnToday}" name="indicateRepairOnToday" th:value="${indicate}" />
+
         <button type="submit" class="btn btn-link">Возврат на Панель Работ</button>
     </form>
     <div th:if="${successMessage2}" class="alert alert-success mt-3" th:text="${successMessage2}"></div>
