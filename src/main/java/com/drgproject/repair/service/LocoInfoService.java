@@ -101,8 +101,8 @@ public class LocoInfoService {
     }
 
     // Получение локомотива по номеру первой секции и серии локомотива
-    public String getLocoByFirstNumberSectionAndTypeLocoUint(String firstSectionNumber, String typeLocoUnit){
-        Optional <LocoInfo> numberLoco = locoInfoRepository.findLocoInfoByLocoSection1AndLocoType(firstSectionNumber, typeLocoUnit);
+    public String getLocoByFirstNumberSectionAndTypeLocoUint(String firstSectionNumber, String typeLocoUnit, String homeDepot){
+        Optional <LocoInfo> numberLoco = locoInfoRepository.findLocoInfoByLocoSection1AndLocoTypeAndHomeDepot(firstSectionNumber, typeLocoUnit, homeDepot);
         if (numberLoco.isEmpty()){
             return null;
         }

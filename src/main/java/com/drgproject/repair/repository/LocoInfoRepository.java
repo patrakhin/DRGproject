@@ -43,7 +43,7 @@ public interface LocoInfoRepository extends JpaRepository<LocoInfo, Long> {
     //Получение локомотива по номеру первой секции
     Optional<LocoInfo> findLocoInfoByLocoSection1(String firstLocoSection);
 
-    Optional<LocoInfo> findLocoInfoByLocoSection1AndLocoType(String firstLocoSection, String locoType);
+    Optional<LocoInfo> findLocoInfoByLocoSection1AndLocoTypeAndHomeDepot(String firstLocoSection, String locoType, String homeDepot);
 
     @Query("SELECT l FROM LocoInfo l WHERE l.homeDepot = :homeDepot AND " +
             "(l.locoSection1 = :locoSection OR l.locoSection2 = :locoSection OR " +

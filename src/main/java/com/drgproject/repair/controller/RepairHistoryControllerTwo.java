@@ -306,8 +306,9 @@ public class RepairHistoryControllerTwo {
     public String showAddHistoryForm(@RequestParam String sectionNumber, @RequestParam String typeLocoUnit, Model model, HttpSession session) {
         String typeLoco = (String) session.getAttribute(TYPE_LOCO);
         String locoNumber = sectionNumber;
+        String homeDepot = locoListService.getLocoListByNumberLocoAndTypeLoco(locoNumber, typeLoco).getHomeDepot();
         //String firstNumber = locoInfoService.getLocoByFirstNumberSection(sectionNumber); // закрыл 02012024
-        String firstNumber = locoInfoService.getLocoByFirstNumberSectionAndTypeLocoUint(sectionNumber, typeLocoUnit);
+        String firstNumber = locoInfoService.getLocoByFirstNumberSectionAndTypeLocoUint(sectionNumber, typeLocoUnit, homeDepot);
         if (firstNumber == null || firstNumber.isEmpty()){
             firstNumber = (String) session.getAttribute("numberLoco");
         }
@@ -315,7 +316,7 @@ public class RepairHistoryControllerTwo {
         String numberTable = (String) session.getAttribute("number_table");
 
         List<PositionRepairDTO> positionRepairDTOS = positionRepairService.getAllPositionRepairs();
-        String homeDepot = locoListService.getLocoListByNumberLocoAndTypeLoco(locoNumber, typeLoco).getHomeDepot();
+        //String homeDepot = locoListService.getLocoListByNumberLocoAndTypeLoco(locoNumber, typeLoco).getHomeDepot();
         String typeSystem = locoListService.getLocoListByNumberLocoAndTypeLoco(locoNumber, typeLoco).getTypeSystem();
 
         LocalDate repairDateOld = LocalDate.now();
