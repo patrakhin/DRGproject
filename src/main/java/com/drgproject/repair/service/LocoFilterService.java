@@ -40,7 +40,7 @@ public class LocoFilterService {
     public List<LocoFilterDTO> getAllLocoFilters() {
         return locoFilterRepository.findAll().stream()
                 .map(this::convertToDTO)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     // Получение записи по ID
@@ -159,6 +159,11 @@ public class LocoFilterService {
 
 
     // Получение списка свободных секций
+    public List<LocoFilterDTO> getAllFreeSect(String homeRegion, String homeDepot, String locoType, String freeSection) {
+        return locoFilterRepository.findByHomeRegionAndHomeDepotAndLocoTypeAndFreeSection(homeRegion, homeDepot, locoType, freeSection).stream()
+                .map(this::convertToDTO)
+                .toList();
+    }
 
     // Удаление записи по ID
     public void deleteLocoFilterById(Long id) {

@@ -122,6 +122,9 @@ public class LocoInfoService {
                 .toList();
     }
 
+    //Получение свободных секций
+
+
     //Получение списка секций из локомотива
     public List<String> getLocoSections(LocoInfoDTO locoInfoDTO) {
         List<String> sectionsNumber = new ArrayList<>();

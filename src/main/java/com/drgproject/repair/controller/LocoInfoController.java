@@ -552,8 +552,13 @@ public class LocoInfoController {
     public List<String> getFreeSectionsByRegionAndHomeDepotAndTypeLoco(@RequestParam String homeRegion,
                                                                    @RequestParam String homeDepot,
                                                                    @RequestParam String typeLoco) {
-        List<LocoListDTO> filteredSection = locoListService.getSectionByRegionAndHomeDepotAndTypeLoco(homeRegion, homeDepot, typeLoco);
-        List<LocoFilterDTO> allSectionsIntoLoco = locoFilterService.getAllLocoFilters();
-        return locoListService.getSortedFreeSections(filteredSection, allSectionsIntoLoco);
+        String freeSection = "да";
+        //List<LocoListDTO> filteredSection = locoListService.getSectionByRegionAndHomeDepotAndTypeLoco(homeRegion, homeDepot, typeLoco);
+        //List<LocoFilterDTO> allSectionsIntoLoco = locoFilterService.getAllLocoFilters();
+        List<LocoFilterDTO> filterSectionByFree = locoFilterService.getAllFreeSect(homeRegion, homeDepot, typeLoco, freeSection);
+        // Получение списка номеров секций
+        return filterSectionByFree.stream()
+                .map(LocoFilterDTO::getSectionNumber) // Извлечение номера секции
+                .toList();
     }
 }
