@@ -100,6 +100,15 @@ public class LocoInfoService {
         return locoInfoRepository.findLocoInfoByLocoSection1(firstSectionNumber).get().getLocoUnit();
     }
 
+    // Получение локомотива по номеру первой секции и серии локомотива
+    public String getLocoByFirstNumberSectionAndTypeLocoUint(String firstSectionNumber, String typeLocoUnit){
+        Optional <LocoInfo> numberLoco = locoInfoRepository.findLocoInfoByLocoSection1AndLocoType(firstSectionNumber, typeLocoUnit);
+        if (numberLoco.isEmpty()){
+            return null;
+        }
+        return locoInfoRepository.findLocoInfoByLocoSection1(firstSectionNumber).get().getLocoUnit();
+    }
+
     // Получение локомотива по любому номеру секции
     public Optional<LocoInfo> getLocoInfoByDepotAndSection(String homeDepot, String locoSection) {
         return locoInfoRepository.findByHomeDepotAndAnySection(homeDepot, locoSection);
