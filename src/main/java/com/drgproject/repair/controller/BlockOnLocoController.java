@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -15,21 +14,21 @@ import java.util.List;
 @RequestMapping("/block-on-locos")
 public class BlockOnLocoController {
 
+    public static final String BLOCK = "block";
     private final BlockOnLocoService blockOnLocoService;
     private final TypeLocoService typeLocoService;
-    private final RegionService regionService;
-    private final HomeDepotService homeDepotService;
     private final SystemNameService systemNameService;
     private final LocoBlockService locoBlockService;
     private final LocoListService locoListService;
 
     @Autowired
-    public BlockOnLocoController(BlockOnLocoService blockOnLocoService, TypeLocoService typeLocoService,
-                                 RegionService regionService, HomeDepotService homeDepotService, SystemNameService systemNameService, LocoBlockService locoBlockService, LocoListService locoListService) {
+    public BlockOnLocoController(BlockOnLocoService blockOnLocoService,
+                                 TypeLocoService typeLocoService,
+                                 SystemNameService systemNameService,
+                                 LocoBlockService locoBlockService,
+                                 LocoListService locoListService) {
         this.blockOnLocoService = blockOnLocoService;
         this.typeLocoService = typeLocoService;
-        this.regionService = regionService;
-        this.homeDepotService = homeDepotService;
         this.systemNameService = systemNameService;
         this.locoBlockService = locoBlockService;
         this.locoListService = locoListService;
@@ -60,18 +59,14 @@ public class BlockOnLocoController {
     public String showCreateBlockForm(@RequestParam("typeSystem") String typeSystem, Model model) {
         // Создаем новый объект DTO для блока
         BlockOnLocoDTO blockOnLocoDTO = new BlockOnLocoDTO();
-
         // Фильтруем блоки по выбранному типу системы и добавляем в модель
         List<String> blocks = locoBlockService.getBlocksBySystemType(typeSystem);
         model.addAttribute("blocksList", blocks);
-
         // Список серий локомотива
         List<TypeLocoDTO> typeLocos = typeLocoService.getAllTypeLocos();
         model.addAttribute("typeLocos", typeLocos);
-
         // Добавляем объект для заполнения формы
-        model.addAttribute("block", blockOnLocoDTO);
-
+        model.addAttribute(BLOCK, blockOnLocoDTO);
         return "block_on_locos_3_create"; // Шаблон для создания блока
     }
 
@@ -80,22 +75,20 @@ public class BlockOnLocoController {
         String sectionNumber = blockOnLocoDTO.getLocoNumber();
         String typeLoco = blockOnLocoDTO.getTypeLoco();
         boolean locoSectionExists = locoListService.ifSectionExist(typeLoco, sectionNumber);
-
         if (!locoSectionExists) {
             model.addAttribute("errorMessage", "Секции не существует");
             return "redirect:/block-on-locos/select-system";
         }
-
         blockOnLocoService.createBlockOnLoco(blockOnLocoDTO);
         // Добавляем объект для заполнения формы
-        model.addAttribute("block", blockOnLocoDTO);
+        model.addAttribute(BLOCK, blockOnLocoDTO);
         return "block_on_locos_3_end_create";
     }
 
     @GetMapping("/update/{id}")
     public String showUpdateBlockForm(@PathVariable Long id, Model model) {
         BlockOnLocoDTO blockOnLoco = blockOnLocoService.getBlockOnLocoById(id);
-        model.addAttribute("block", blockOnLoco);
+        model.addAttribute(BLOCK, blockOnLoco);
         return "block_on_locos_4_update";
     }
 
@@ -130,7 +123,7 @@ public class BlockOnLocoController {
     @PostMapping("/search")
     public String searchBlockOnLoco(@RequestParam String locoNumber, @RequestParam String typeLoco, Model model) {
         BlockOnLocoDTO blockOnLoco = blockOnLocoService.getBlockOnLocoByLocoNumberAndTypeLoco(locoNumber, typeLoco);
-        model.addAttribute("block", blockOnLoco);
+        model.addAttribute(BLOCK, blockOnLoco);
         return "block_on_locos_7_view";
     }
 

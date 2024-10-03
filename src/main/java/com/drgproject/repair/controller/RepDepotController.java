@@ -267,26 +267,7 @@ public class RepDepotController {
 
     // Метод для безопасного чтения значений из ячейки
     private String getCellValueAsString(Cell cell) {
-        if (cell == null) {
-            return ""; // Возвращаем пустую строку, если ячейка пустая
-        }
-
-        switch (cell.getCellType()) {
-            case STRING:
-                return cell.getStringCellValue();
-            case NUMERIC:
-                if (DateUtil.isCellDateFormatted(cell)) {
-                    return cell.getDateCellValue().toString();
-                } else {
-                    return String.valueOf((int) cell.getNumericCellValue());
-                }
-            case BOOLEAN:
-                return String.valueOf(cell.getBooleanCellValue());
-            case FORMULA:
-                return cell.getCellFormula();
-            default:
-                return "";
-        }
+        return getString(cell);
     }
 
     // Проверяем, пустая ли строка (все ключевые значения пустые)

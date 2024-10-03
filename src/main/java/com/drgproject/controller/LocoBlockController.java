@@ -3,7 +3,6 @@ package com.drgproject.controller;
 import com.drgproject.dto.LocoBlockDto;
 import com.drgproject.repair.dto.RegionDTO;
 import com.drgproject.repair.dto.SystemNameDTO;
-import com.drgproject.repair.service.BlockOnLocoService;
 import com.drgproject.repair.service.RegionService;
 import com.drgproject.repair.service.SystemNameService;
 import com.drgproject.service.LocoBlockService;
@@ -19,6 +18,13 @@ import java.util.List;
 @Controller
 @RequestMapping("/loco_blocks")
 public class LocoBlockController {
+
+    private static final String ADMIN = "Администратор";
+    private static final String MANAGER = "Регионал";
+    private static final String REGION = "region";
+    private static final String LOCO_BLOCK = "locoBlock";
+    private static final String ERROR_MESSAGE = "errorMessage";
+    private static final String LOC_BL_5_UP = "locoblock_5_update";
 
     private final LocoBlockService locoBlockService;
     private final SystemNameService systemNameService;
@@ -39,10 +45,10 @@ public class LocoBlockController {
     public String getAllLocoBlocksPage(Model model, HttpSession session) {
         String post = (String) session.getAttribute("post");
         List<LocoBlockDto> locoBlocks = Collections.emptyList();
-        if ("Администратор".equals(post)) {
+        if (ADMIN.equals(post)) {
             locoBlocks = locoBlockService.getAllLocoBlocks();
-        } else if ("Регионал".equals(post)) {
-            String region = (String) session.getAttribute("region");
+        } else if (MANAGER.equals(post)) {
+            String region = (String) session.getAttribute(REGION);
             locoBlocks = locoBlockService.getLocoBlocksByRegion(region);
         }
         model.addAttribute("locoBlocks", locoBlocks);
@@ -56,18 +62,16 @@ public class LocoBlockController {
 
     @GetMapping("/byName")
     public String getLocoBlockByName(@RequestParam String name, Model model, HttpSession session) {
-        String region = (String) session.getAttribute("region");
+        String region = (String) session.getAttribute(REGION);
         String post = (String) session.getAttribute("post");
-
         List<LocoBlockDto> locoBlock = locoBlockService.getLocoBlockByName(name);
-
-        if (locoBlock != null && "Администратор".equals(post)) {
-            model.addAttribute("locoBlock", locoBlock);
-        } else if (locoBlock != null && "Регионал".equals(post)) {
+        if (locoBlock != null && ADMIN.equals(post)) {
+            model.addAttribute(LOCO_BLOCK, locoBlock);
+        } else if (locoBlock != null && MANAGER.equals(post)) {
             locoBlock = locoBlockService.getLocoBlockByRegionAndName(region, name);
-            model.addAttribute("locoBlock", locoBlock);
+            model.addAttribute(LOCO_BLOCK, locoBlock);
         } else {
-            model.addAttribute("errorMessage", "Блок с таким именем не найден");
+            model.addAttribute(ERROR_MESSAGE, "Блок с таким именем не найден");
         }
         return "locoblock_3_search";
     }
@@ -76,19 +80,17 @@ public class LocoBlockController {
     public String showCreateLocoBlockForm(Model model, HttpSession session) {
         LocoBlockDto locoBlockDto = new LocoBlockDto();
         String post = (String) session.getAttribute("post");
-        if ("Регионал".equals(post)) {
-            String region = (String) session.getAttribute("region");
+        if (MANAGER.equals(post)) {
+            String region = (String) session.getAttribute(REGION);
             locoBlockDto.setRegion(region);
         }
         // Получение всех типов систем и добавление в модель
         List<SystemNameDTO> systemNames = systemNameService.getAllSystemNames();
         model.addAttribute("systemNames", systemNames);
-
         // Получение всех регионов и добавление в модель
         List<RegionDTO> regions = regionService.getAllRegions();
         model.addAttribute("regions",regions);
-
-        model.addAttribute("locoBlock", locoBlockDto);
+        model.addAttribute(LOCO_BLOCK, locoBlockDto);
         model.addAttribute("post", post); // Добавляем переменную post в модель
         return "locoblock_4_add";
     }
@@ -96,8 +98,8 @@ public class LocoBlockController {
     @PostMapping("/create")
     public String createLocoBlock(@ModelAttribute LocoBlockDto locoBlockDto, Model model, HttpSession session) {
         String post = (String) session.getAttribute("post");
-        if ("Регионал".equals(post)) {
-            String region = (String) session.getAttribute("region");
+        if (MANAGER.equals(post)) {
+            String region = (String) session.getAttribute(REGION);
             locoBlockDto.setRegion(region);
         }
         LocoBlockDto createdLocoBlock = locoBlockService.createLocoBlock(locoBlockDto);
@@ -109,12 +111,11 @@ public class LocoBlockController {
     public String showEditLocoBlockForm(@RequestParam long id, Model model) {
         LocoBlockDto locoBlockDto = locoBlockService.getLocoBlockById(id);
         if (locoBlockDto != null) {
-            model.addAttribute("locoBlock", locoBlockDto);
-            return "locoblock_5_update";
+            model.addAttribute(LOCO_BLOCK, locoBlockDto);
         } else {
-            model.addAttribute("errorMessage", "Блок с таким ID не найден");
-            return "locoblock_5_update";
+            model.addAttribute(ERROR_MESSAGE, "Блок с таким ID не найден");
         }
+        return LOC_BL_5_UP;
     }
 
     @PostMapping("/edit/{id}")
@@ -124,8 +125,8 @@ public class LocoBlockController {
             model.addAttribute("updatedLocoBlock", updatedLocoBlock);
             return "locoblock_5_update_success";
         } else {
-            model.addAttribute("errorMessage", "Не удалось обновить данные блока");
-            return "locoblock_5_update";
+            model.addAttribute(ERROR_MESSAGE, "Не удалось обновить данные блока");
+            return LOC_BL_5_UP;
         }
     }
 
@@ -140,27 +141,25 @@ public class LocoBlockController {
     @PostMapping("/deleteByBlockNumber")
     public String deleteLocoBlockByBlockNumber(@RequestParam String blockNumber, Model model, HttpSession session) {
         String post = (String) session.getAttribute("post");
-        String region = (String) session.getAttribute("region");
-
+        String region = (String) session.getAttribute(REGION);
         try {
-            if ("Администратор".equals(post)) {
+            if (ADMIN.equals(post)) {
                 locoBlockService.deleteLocoBlockByBlockNumber(blockNumber);
                 model.addAttribute("successMessage", "Блок успешно удален");
-            } else if ("Регионал".equals(post)) {
+            } else if (REGION.equals(post)) {
                 LocoBlockDto locoBlock = locoBlockService.getLocoBlockByBlockNumber(blockNumber);
                 if (locoBlock != null && region.equals(locoBlock.getRegion())) {
                     locoBlockService.deleteLocoBlockByBlockNumber(blockNumber);
                     model.addAttribute("successMessage", "Блок успешно удален");
                 } else {
-                    model.addAttribute("errorMessage", "У вас нет прав на удаление этого блока");
+                    model.addAttribute(ERROR_MESSAGE, "У вас нет прав на удаление этого блока");
                 }
             } else {
-                model.addAttribute("errorMessage", "Неверная роль пользователя");
+                model.addAttribute(ERROR_MESSAGE, "Неверная роль пользователя");
             }
         } catch (Exception e) {
-            model.addAttribute("errorMessage", "Ошибка при удалении блока: " + e.getMessage());
+            model.addAttribute(ERROR_MESSAGE, "Ошибка при удалении блока: " + e.getMessage());
         }
-
         return "locoblock_6_delete";
     }
 

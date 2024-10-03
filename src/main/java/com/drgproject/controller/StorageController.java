@@ -15,6 +15,12 @@ import java.util.List;
 @Controller
 @RequestMapping("/storages")
 public class StorageController {
+    private static final String ADMIN = "Администратор";
+    private static final String MANAGER = "Регионал";
+    private static final String REGION = "region";
+    public static final String STORAGE = "storage";
+    public static final String ERROR_MESSAGE = "errorMessage";
+    public static final String STORAGE_5_UPDATE = "storage_5_update";
 
     private final StorageService storageService;
 
@@ -29,12 +35,12 @@ public class StorageController {
 
     @GetMapping("/all")
     public String getAllStoragesPage(Model model, HttpSession session) {
-        String region = (String) session.getAttribute("region");
+        String region = (String) session.getAttribute(REGION);
         String post = (String) session.getAttribute("post");
         List<StorageDto> storages = Collections.emptyList();
-        if ("Администратор".equals(post)) {
+        if (ADMIN.equals(post)) {
             storages = storageService.getAllStorages();
-        } else if ("Регионал".equals(post)) {
+        } else if (MANAGER.equals(post)) {
             storages = storageService.getStoragesByRegion(region);
         }
         model.addAttribute("storages", storages);
@@ -57,17 +63,17 @@ public class StorageController {
 
     @GetMapping("/byName")
     public String getStorageByName(@RequestParam String name, Model model, HttpSession session) {
-        String region = (String) session.getAttribute("region");
+        String region = (String) session.getAttribute(REGION);
         String post = (String) session.getAttribute("post");
         StorageDto storage = storageService.getStorageByName(name);
 
-        if (storage != null && "Администратор".equals(post)) {
-            model.addAttribute("storage", storage);
-        } else if (storage != null && "Регионал".equals(post)) {
+        if (storage != null && ADMIN.equals(post)) {
+            model.addAttribute(STORAGE, storage);
+        } else if (storage != null && MANAGER.equals(post)) {
             storage = storageService.getStorageByRegionAndName(region, name);
-            model.addAttribute("storage", storage);
+            model.addAttribute(STORAGE, storage);
         } else {
-            model.addAttribute("errorMessage", "Склад с таким именем не найден");
+            model.addAttribute(ERROR_MESSAGE, "Склад с таким именем не найден");
         }
         return "storage_3_search";
     }
@@ -76,11 +82,11 @@ public class StorageController {
     public String showCreateStorageForm(Model model, HttpSession session) {
         StorageDto storageDto = new StorageDto();
         String post = (String) session.getAttribute("post");
-        if ("Регионал".equals(post)) {
-            String region = (String) session.getAttribute("region");
+        if (MANAGER.equals(post)) {
+            String region = (String) session.getAttribute(REGION);
             storageDto.setStorageRegion(region);
         }
-        model.addAttribute("storage", storageDto);
+        model.addAttribute(STORAGE, storageDto);
         model.addAttribute("post", post); // Добавляем переменную post в модель
         return "storage_4_add";
     }
@@ -88,8 +94,8 @@ public class StorageController {
     @PostMapping("/create")
     public String createStorage(@ModelAttribute StorageDto storageDto, Model model, HttpSession session) {
         String post = (String) session.getAttribute("post");
-        if ("Регионал".equals(post)) {
-            String region = (String) session.getAttribute("region");
+        if (MANAGER.equals(post)) {
+            String region = (String) session.getAttribute(REGION);
             storageDto.setStorageRegion(region);
         }
         StorageDto createdStorage = storageService.createStorage(storageDto);
@@ -101,12 +107,11 @@ public class StorageController {
     public String showEditStorageForm(@RequestParam long id, Model model) {
         StorageDto storageDto = storageService.getStorageById(id);
         if (storageDto != null) {
-            model.addAttribute("storage", storageDto);
-            return "storage_5_update";
+            model.addAttribute(STORAGE, storageDto);
         } else {
-            model.addAttribute("errorMessage", "Склад с таким ID не найден");
-            return "storage_5_update";
+            model.addAttribute(ERROR_MESSAGE, "Склад с таким ID не найден");
         }
+        return STORAGE_5_UPDATE;
     }
 
     @PostMapping("/edit/{id}")
@@ -116,8 +121,8 @@ public class StorageController {
             model.addAttribute("updatedStorage", updatedStorage);
             return "storage_5_update_success";
         } else {
-            model.addAttribute("errorMessage", "Не удалось обновить данные склада");
-            return "storage_5_update";
+            model.addAttribute(ERROR_MESSAGE, "Не удалось обновить данные склада");
+            return STORAGE_5_UPDATE;
         }
     }
 
@@ -137,27 +142,25 @@ public class StorageController {
     @PostMapping("/deleteByName")
     public String deleteStorageByName(@RequestParam String name, Model model, HttpSession session) {
         String post = (String) session.getAttribute("post");
-        String region = (String) session.getAttribute("region");
-
+        String region = (String) session.getAttribute(REGION);
         try {
-            if ("Администратор".equals(post)) {
+            if (ADMIN.equals(post)) {
                 storageService.deleteStorageByName(name);
                 model.addAttribute("successMessage", "Склад успешно удален");
-            } else if ("Регионал".equals(post)) {
+            } else if (MANAGER.equals(post)) {
                 StorageDto storage = storageService.getStorageByName(name);
                 if (storage != null && region.equals(storage.getStorageRegion())) {
                     storageService.deleteStorageByName(name);
                     model.addAttribute("successMessage", "Склад успешно удален");
                 } else {
-                    model.addAttribute("errorMessage", "У вас нет прав на удаление этого склада");
+                    model.addAttribute(ERROR_MESSAGE, "У вас нет прав на удаление этого склада");
                 }
             } else {
-                model.addAttribute("errorMessage", "Неверная роль пользователя");
+                model.addAttribute(ERROR_MESSAGE, "Неверная роль пользователя");
             }
         } catch (Exception e) {
-            model.addAttribute("errorMessage", "Ошибка при удалении склада");
+            model.addAttribute(ERROR_MESSAGE, "Ошибка при удалении склада");
         }
-
         return "storage_6_delete";
     }
 }

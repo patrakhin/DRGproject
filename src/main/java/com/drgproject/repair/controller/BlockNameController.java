@@ -17,10 +17,12 @@ import java.util.stream.Collectors;
 @RequestMapping("/block-names")
 public class BlockNameController {
 
+    public static final String ERROR_MESSAGE = "errorMessage";
     private final BlockNameService blockNameService;
     private final SystemNameService systemNameService;
 
-    public BlockNameController(BlockNameService blockNameService, SystemNameService systemNameService) {
+    public BlockNameController(BlockNameService blockNameService,
+                               SystemNameService systemNameService) {
         this.blockNameService = blockNameService;
         this.systemNameService = systemNameService;
     }
@@ -28,17 +30,14 @@ public class BlockNameController {
     @GetMapping
     public String getAllBlockNames(Model model) {
         List<BlockNameDTO> blockNames = blockNameService.getAllBlockNames();
-
         // Получение всех систем, чтобы сопоставить ID с наименованием
         List<SystemNameDTO> systemNames = systemNameService.getAllSystemNames();
         // Создание маппинга ID системы на её наименование
         Map<Long, String> systemNameMap = systemNames.stream()
                 .collect(Collectors.toMap(SystemNameDTO::getId, SystemNameDTO::getSysName));
-
         // Добавление данных в модель
         model.addAttribute("systemNameMap", systemNameMap);
         model.addAttribute("blockNames", blockNames);
-
         return "block_name_1_main"; // Страница со списком всех BlockNames
     }
 
@@ -64,11 +63,10 @@ public class BlockNameController {
             List<SystemNameDTO> systemNames = systemNameService.getAllSystemNames();
             model.addAttribute("systemNames", systemNames);
             model.addAttribute("blockName", blockNameDTO);
-            return "block_name_3_update";
         } else {
-            model.addAttribute("errorMessage", "Наименование блока с таким ID не найдено");
-            return "block_name_3_update";
+            model.addAttribute(ERROR_MESSAGE, "Наименование блока с таким ID не найдено");
         }
+        return "block_name_3_update";
     }
 
     @PostMapping("/edit/{id}")
@@ -78,7 +76,7 @@ public class BlockNameController {
             model.addAttribute("updatedBlockName", updatedBlockName);
             return "block_name_3_update_success"; // Страница с сообщением об успешном обновлении
         } else {
-            model.addAttribute("errorMessage", "Не удалось обновить наименование блока");
+            model.addAttribute(ERROR_MESSAGE, "Не удалось обновить наименование блока");
             return "block_name_3_update"; // Страница с сообщением об ошибке
         }
     }
@@ -95,7 +93,7 @@ public class BlockNameController {
         if (isDeleted) {
             model.addAttribute("successMessage", "Наименование блока успешно удалено");
         } else {
-            model.addAttribute("errorMessage", "Ошибка при удалении наименования");
+            model.addAttribute(ERROR_MESSAGE, "Ошибка при удалении наименования");
         }
         model.addAttribute("blockNameId", id); // Сохраняем ID для возможности возврата на страницу подтверждения
         return "redirect:/block-names";

@@ -20,12 +20,19 @@ import java.util.List;
 @RequestMapping("/block_removal")
 public class BlockRemovalController {
 
+    public static final String BLOCK_REMOVAL_DTOS = "blockRemovalDtos";
+    public static final String REDIRECT_BLOCK_REMOVAL_ALL = "redirect:/block_removal/all";
+    public static final String BLOCK_REMOVAL_2_LIST = "block_removal_2_list";
+
     private final BlockRemovalService blockRemovalService;
     private final RegionService regionService;
     private final HomeDepotService homeDepotService;
     private final BlockOnLocoService blockOnLocoService;
 
-    public BlockRemovalController(BlockRemovalService blockRemovalService, RegionService regionService, HomeDepotService homeDepotService, BlockOnLocoService blockOnLocoService) {
+    public BlockRemovalController(BlockRemovalService blockRemovalService,
+                                  RegionService regionService,
+                                  HomeDepotService homeDepotService,
+                                  BlockOnLocoService blockOnLocoService) {
         this.blockRemovalService = blockRemovalService;
         this.regionService = regionService;
         this.homeDepotService = homeDepotService;
@@ -47,22 +54,22 @@ public class BlockRemovalController {
             String region = (String) session.getAttribute("region");
             blockRemovalDtos = blockRemovalService.getBlockRemovalByRegion(region);
         }
-        model.addAttribute("blockRemovalDtos", blockRemovalDtos);
-        return "block_removal_2_list";
+        model.addAttribute(BLOCK_REMOVAL_DTOS, blockRemovalDtos);
+        return BLOCK_REMOVAL_2_LIST;
     }
 
     @GetMapping("/byRegion/{region}")
     public String getBlockRemovalByRegion(@PathVariable String region, Model model) {
         List<BlockRemovalDto> blockRemovalDtos = blockRemovalService.getBlockRemovalByRegion(region);
-        model.addAttribute("blockRemovalDtos", blockRemovalDtos);
-        return "block_removal_2_list";
+        model.addAttribute(BLOCK_REMOVAL_DTOS, blockRemovalDtos);
+        return BLOCK_REMOVAL_2_LIST;
     }
 
     @GetMapping("/byTypeAndNumber")
     public String getBlockRemovalByTypeLocoAndNumberLoco(@RequestParam String typeLoco, @RequestParam String numberLoco, Model model) {
         List<BlockRemovalDto> blockRemovalDtos = blockRemovalService.getBlockRemovalByTypeLocoAndNumberLoco(typeLoco, numberLoco);
-        model.addAttribute("blockRemovalDtos", blockRemovalDtos);
-        return "block_removal_2_list";
+        model.addAttribute(BLOCK_REMOVAL_DTOS, blockRemovalDtos);
+        return BLOCK_REMOVAL_2_LIST;
     }
 
     @GetMapping("/bySystemTypeAndBlock")
@@ -83,7 +90,7 @@ public class BlockRemovalController {
     @PostMapping("/create")
     public String createBlockRemoval(@ModelAttribute BlockRemovalDto blockRemovalDto) {
         blockRemovalService.createBlockRemoval(blockRemovalDto);
-        return "redirect:/block_removal/all";
+        return REDIRECT_BLOCK_REMOVAL_ALL;
     }
 
     @PostMapping("/removeFromLoco")
@@ -91,13 +98,13 @@ public class BlockRemovalController {
         String blockName = blockRemovalDto.getBlockName();
         String blockNumber = blockRemovalDto.getBlockNumber();
         blockOnLocoService.deleteBlockOnLocoByBlNameAndBlNumberWithLogging(blockName, blockNumber);
-        return "redirect:/block_removal/all";
+        return REDIRECT_BLOCK_REMOVAL_ALL;
     }
 
     @PostMapping("/cancelRemoval")
     public String cancelBlockRemovalFromLoco(@ModelAttribute BlockRemovalDto blockRemovalDto) {
         blockRemovalService.cancelBlockRemovalFromLoco(blockRemovalDto);
-        return "redirect:/block_removal/all";
+        return REDIRECT_BLOCK_REMOVAL_ALL;
     }
 
     @GetMapping("/homeDepots/{region}")

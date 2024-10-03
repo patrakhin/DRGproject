@@ -1,7 +1,6 @@
 package com.drgproject.repair.controller;
 
 import com.drgproject.repair.dto.AllTypeLocoUnitDTO;
-import com.drgproject.repair.dto.TypeLocoDTO;
 import com.drgproject.repair.service.AllTypeLocoUnitService;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -16,6 +15,9 @@ import java.util.List;
 @Controller
 @RequestMapping("/all-type-unit")
 public class AllTypeLocoUnitController {
+    public static final String ERROR_MESSAGE = "errorMessage";
+    public static final String ALL_TYPE_LOCO_5_UPLOAD = "all_type_loco_5_upload";
+    public static final String MESSAGE = "message";
     private final AllTypeLocoUnitService allTypeLocoUnitService;
 
     public AllTypeLocoUnitController(AllTypeLocoUnitService allTypeLocoUnitService){
@@ -48,7 +50,7 @@ public class AllTypeLocoUnitController {
         if (allTypeLocoUnitDTO != null) {
             model.addAttribute("allTypeLocoUnitDTO", allTypeLocoUnitDTO);
         } else {
-            model.addAttribute("errorMessage", "Серия локомотива с таким ID не найдена");
+            model.addAttribute(ERROR_MESSAGE, "Серия локомотива с таким ID не найдена");
         }
         return "all_type_loco_3_update";
     }
@@ -60,13 +62,13 @@ public class AllTypeLocoUnitController {
             model.addAttribute("allTypeLocoUnit", allTypeLocoUnit);
             return "all_type_loco_3_update_success";
         } else {
-            model.addAttribute("errorMessage", "Не удалось обновить серию локомотива");
+            model.addAttribute(ERROR_MESSAGE, "Не удалось обновить серию локомотива");
             return "all_type_loco_3_update";
         }
     }
 
     @GetMapping("/delete")
-    public String showDeleteTypeLoco(Model model) {
+    public String showDeleteTypeLoco() {
         return "all_type_loco_4_delete";
     }
 
@@ -76,15 +78,15 @@ public class AllTypeLocoUnitController {
         if (isDeleted) {
             model.addAttribute("successMessage", "Серия успешно удалена");
         } else {
-            model.addAttribute("errorMessage", "Ошибка при удалении серии локомотива");
+            model.addAttribute(ERROR_MESSAGE, "Ошибка при удалении серии локомотива");
         }
         return "all_type_loco_4_delete";
     }
 
     // Метод GET для отображения формы загрузки файла
     @GetMapping("/upload-type-locoUnits")
-    public String showUploadForm(Model model) {
-        return "all_type_loco_5_upload"; // Возвращаем название шаблона Thymeleaf
+    public String showUploadForm() {
+        return ALL_TYPE_LOCO_5_UPLOAD; // Возвращаем название шаблона Thymeleaf
     }
 
     //Загрузка дорог из Excel
@@ -94,12 +96,11 @@ public class AllTypeLocoUnitController {
         try {
             // Проверяем, что файл не пуст
             if (fileExcel.isEmpty()) {
-                model.addAttribute("message", "Пожалуйста, выберите файл для загрузки");
-                return "all_type_loco_5_upload"; // Возвращаемся к форме загрузки
+                model.addAttribute(MESSAGE, "Пожалуйста, выберите файл для загрузки");
+                return ALL_TYPE_LOCO_5_UPLOAD; // Возвращаемся к форме загрузки
             }
 
             StringBuilder message = new StringBuilder(); // Для вывода всех сообщений
-
             // Открываем файл с помощью Apache POI
             try (Workbook workbook = new XSSFWorkbook(fileExcel.getInputStream())) {
                 Sheet sheet = workbook.getSheetAt(0); // Получаем первый лист
@@ -108,63 +109,41 @@ public class AllTypeLocoUnitController {
                 for (int rowIndex = 1; rowIndex <= sheet.getLastRowNum(); rowIndex++) {
                     Row row = sheet.getRow(rowIndex);
 
-                    if (row != null) {
-                        // Чтение данных из ячеек начиная с A2, B2 и т.д.
-                        String typeLocoUnit = getCellValueAsString(row.getCell(0));
-                        // Проверяем, если все ключевые ячейки пусты, прекращаем чтение
-                        if (isRowEmpty(typeLocoUnit)) {
-                            break; // Останавливаем обработку, так как встретили пустую строку
-                        }
+                    // Проверяем, что строка не пустая и ячейка не пуста
+                    String typeLocoUnit = (row != null) ? getCellValueAsString(row.getCell(0)) : null;
 
-                        // Проверка на существование дороги
+                    if (row != null && !isRowEmpty(typeLocoUnit)) {
+                        // Проверка на существование серии локомотива
                         boolean typeSLocoUnitExists = allTypeLocoUnitService.existTypeLocoUnit(typeLocoUnit);
                         if (typeSLocoUnitExists) {
-                            // Добавляем сообщение о пропуске уже существующей дороги
-                            message.append("Серия локомотива").append(typeLocoUnit).append(" уже присутствует. Пропускаем.<br/>");
-                            continue; // Пропускаем создание этой дороги и переходим к следующей
+                            // Добавляем сообщение о пропуске уже существующей серии
+                            message.append("Серия локомотива ").append(typeLocoUnit).append(" уже присутствует. Пропускаем.<br/>");
+                            continue; // Пропускаем создание этой серии и переходим к следующей строке
                         }
-
                         // Создаем новую серию ТПС
                         AllTypeLocoUnitDTO allTypeLocoUnitDTO = new AllTypeLocoUnitDTO();
                         allTypeLocoUnitDTO.setTypeLocoUnit(typeLocoUnit);
                         allTypeLocoUnitService.createAllTypeLocoUnit(allTypeLocoUnitDTO);
-
                         // Добавляем сообщение о создании новой серии
                         message.append("Серия локомотива ").append(typeLocoUnit).append(" успешно добавлена.<br/>");
                     }
                 }
 
-                model.addAttribute("message", message.toString());
+                model.addAttribute(MESSAGE, message.toString());
             }
         } catch (Exception e) {
-            model.addAttribute("message", "Ошибка при обработке файла: " + e.getMessage());
-            e.printStackTrace();
+            model.addAttribute(MESSAGE, "Ошибка при обработке файла: " + e.getMessage());
         }
-        return "all_type_loco_5_upload"; // возвращаем ту же форму с сообщением
+        return ALL_TYPE_LOCO_5_UPLOAD; // возвращаем ту же форму с сообщением
     }
 
     // Метод для безопасного чтения значений из ячейки
     private String getCellValueAsString(Cell cell) {
-        if (cell == null) {
-            return ""; // Возвращаем пустую строку, если ячейка пустая
-        }
+        return getString(cell);
+    }
 
-        switch (cell.getCellType()) {
-            case STRING:
-                return cell.getStringCellValue();
-            case NUMERIC:
-                if (DateUtil.isCellDateFormatted(cell)) {
-                    return cell.getDateCellValue().toString();
-                } else {
-                    return String.valueOf((int) cell.getNumericCellValue());
-                }
-            case BOOLEAN:
-                return String.valueOf(cell.getBooleanCellValue());
-            case FORMULA:
-                return cell.getCellFormula();
-            default:
-                return "";
-        }
+    static String getString(Cell cell) {
+        return HomeDepotController.getString(cell);
     }
 
     // Проверяем, пустая ли строка (все ключевые значения пустые)

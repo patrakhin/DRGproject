@@ -15,6 +15,17 @@ import java.util.List;
 @RequestMapping("/spare_parts_receipts")
 public class SparePartsReceiptController {
 
+    public static final String ADMIN = "Администратор";
+    public static final String MANAGER = "Регионал";
+    public static final String REGION = "region";
+    public static final String BRIG = "Бригадир";
+    public static final String SPARE_PARTS_RECEIPTS = "sparePartsReceipts";
+    public static final String ERROR_MESSAGE = "errorMessage";
+    public static final String NUMBER_TABLE = "number_table";
+    public static final String SPAREPARTSRECEIPT_5_WRITEOFF = "sparepartsreceipt_5_writeoff";
+    public static final String ON_STORAGE = "на складе";
+    public static final String SPAREPARTSRECEIPT_4_ADD = "sparepartsreceipt_4_add";
+    public static final String SPAREPARTSRECEIPT_1_MAIN = "sparepartsreceipt_1_main";
     private final SparePartsReceiptService sparePartsReceiptService;
 
     public SparePartsReceiptController(SparePartsReceiptService sparePartsReceiptService) {
@@ -23,23 +34,23 @@ public class SparePartsReceiptController {
 
     @GetMapping()
     public String getSparePartsReceiptsPage() {
-        return "sparepartsreceipt_1_main";
+        return SPAREPARTSRECEIPT_1_MAIN;
     }
 
     @GetMapping("/all")
     public String getAllSparePartsReceiptsPage(Model model, HttpSession session) {
         String post = (String) session.getAttribute("post");
         List<SparePartsReceiptDto> sparePartsReceipts = Collections.emptyList();
-        if ("Администратор".equals(post)) {
+        if (ADMIN.equals(post)) {
             sparePartsReceipts = sparePartsReceiptService.getAllSparePart();
-        } else if ("Регионал".equals(post)) {
-            String region = (String) session.getAttribute("region");
+        } else if (MANAGER.equals(post)) {
+            String region = (String) session.getAttribute(REGION);
             sparePartsReceipts = sparePartsReceiptService.getSparePartsReceiptByRegion(region);
-        } else if ("Бригадир".equals(post)) {
+        } else if (BRIG.equals(post)) {
             String storageName = (String) session.getAttribute("unit");
             sparePartsReceipts = sparePartsReceiptService.getSparePartsReceiptByStorageName(storageName);
         }
-        model.addAttribute("sparePartsReceipts", sparePartsReceipts);
+        model.addAttribute(SPARE_PARTS_RECEIPTS, sparePartsReceipts);
         return "sparepartsreceipt_2_list";
     }
 
@@ -47,16 +58,16 @@ public class SparePartsReceiptController {
     public String getAllSparePartsReceiptsStock(Model model, HttpSession session) {
         String post = (String) session.getAttribute("post");
         List<SparePartsReceiptDto> sparePartsReceipts = Collections.emptyList();
-        if ("Администратор".equals(post)) {
+        if (ADMIN.equals(post)) {
             sparePartsReceipts = sparePartsReceiptService.getAllSparePartsStock();
-        } else if ("Регионал".equals(post)) {
-            String region = (String) session.getAttribute("region");
+        } else if (MANAGER.equals(post)) {
+            String region = (String) session.getAttribute(REGION);
             sparePartsReceipts = sparePartsReceiptService.getAllSparePartsStockByRegion(region);
-        } else if ("Бригадир".equals(post)) {
+        } else if (BRIG.equals(post)) {
             String storageName = (String) session.getAttribute("unit");
             sparePartsReceipts = sparePartsReceiptService.getAllSparePartsStockByStorageName(storageName);
         }
-        model.addAttribute("sparePartsReceipts", sparePartsReceipts);
+        model.addAttribute(SPARE_PARTS_RECEIPTS, sparePartsReceipts);
         return "sparepartsreceipt_2_stock";
     }
 
@@ -65,16 +76,16 @@ public class SparePartsReceiptController {
     public String getAllSparePartsReceiptsShipped(Model model, HttpSession session) {
         String post = (String) session.getAttribute("post");
         List<SparePartsReceiptDto> sparePartsReceipts = Collections.emptyList();
-        if ("Администратор".equals(post)) {
+        if (ADMIN.equals(post)) {
             sparePartsReceipts = sparePartsReceiptService.getAllSparePartsShipped();
-        } else if ("Регионал".equals(post)) {
-            String region = (String) session.getAttribute("region");
+        } else if (MANAGER.equals(post)) {
+            String region = (String) session.getAttribute(REGION);
             sparePartsReceipts = sparePartsReceiptService.getAllSparePartsShippedByRegion(region);
-        } else if ("Бригадир".equals(post)) {
+        } else if (BRIG.equals(post)) {
             String storageName = (String) session.getAttribute("unit");
             sparePartsReceipts = sparePartsReceiptService.getAllSparePartsShippedByRegion(storageName);
         }
-        model.addAttribute("sparePartsReceipts", sparePartsReceipts);
+        model.addAttribute(SPARE_PARTS_RECEIPTS, sparePartsReceipts);
         return "sparepartsreceipt_2_shipped";
     }
 
@@ -85,20 +96,20 @@ public class SparePartsReceiptController {
 
     @GetMapping("/byId")
     public String getSparePartsReceiptById(@RequestParam Long id, Model model, HttpSession session) {
-        String region = (String) session.getAttribute("region");
+        String region = (String) session.getAttribute(REGION);
         String post = (String) session.getAttribute("post");
         String storageName = (String) session.getAttribute("unit");
 
         SparePartsReceiptDto sparePartsReceipt = sparePartsReceiptService.getSparePartsReceiptById(id);
 
-        if (sparePartsReceipt != null && "Администратор".equals(post)) {
-            model.addAttribute("sparePartsReceipt", sparePartsReceipt);
-        } else if (sparePartsReceipt != null && "Регионал".equals(post) && region.equals(sparePartsReceipt.getRegion())) {
-            model.addAttribute("sparePartsReceipt", sparePartsReceipt);
-        } else if (sparePartsReceipt != null && "Бригадир".equals(post) && region.equals(sparePartsReceipt.getRegion()) && storageName.equals(sparePartsReceipt.getStorageName())) {
-            model.addAttribute("sparePartsReceipt", sparePartsReceipt);
+        if (sparePartsReceipt != null && ADMIN.equals(post)) {
+            model.addAttribute(SPARE_PARTS_RECEIPTS, sparePartsReceipt);
+        } else if (sparePartsReceipt != null && MANAGER.equals(post) && region.equals(sparePartsReceipt.getRegion())) {
+            model.addAttribute(SPARE_PARTS_RECEIPTS, sparePartsReceipt);
+        } else if (sparePartsReceipt != null && BRIG.equals(post) && region.equals(sparePartsReceipt.getRegion()) && storageName.equals(sparePartsReceipt.getStorageName())) {
+            model.addAttribute(SPARE_PARTS_RECEIPTS, sparePartsReceipt);
         } else {
-            model.addAttribute("errorMessage", "Запись с таким ID не найдена или у вас нет прав на просмотр");
+            model.addAttribute(ERROR_MESSAGE, "Запись с таким ID не найдена или у вас нет прав на просмотр");
         }
         return "sparepartsreceipt_3_search";
     }
@@ -107,29 +118,29 @@ public class SparePartsReceiptController {
     public String showWriteOffSparePartsReceiptForm(Model model, HttpSession session) {
         String post = (String) session.getAttribute("post");
 
-        if ("Администратор".equals(post) || "Регионал".equals(post)) {
-            model.addAttribute("sparePartsReceipt", new SparePartsReceiptDto());
-            return "sparepartsreceipt_5_writeoff";
-        } else if ("Бригадир".equals(post)) {
-            String numberTable = (String) session.getAttribute("number_table");
+        if (ADMIN.equals(post) || MANAGER.equals(post)) {
+            model.addAttribute(SPARE_PARTS_RECEIPTS, new SparePartsReceiptDto());
+            return SPAREPARTSRECEIPT_5_WRITEOFF;
+        } else if (BRIG.equals(post)) {
+            String numberTable = (String) session.getAttribute(NUMBER_TABLE);
             String storageName = (String) session.getAttribute("unit");
-            String region = (String) session.getAttribute("region");
+            String region = (String) session.getAttribute(REGION);
             SparePartsReceiptDto sparePartsReceiptDto = new SparePartsReceiptDto();
             sparePartsReceiptDto.setEmployeeNumber(numberTable);
             sparePartsReceiptDto.setStorageName(storageName);
             sparePartsReceiptDto.setRegion(region);
-            sparePartsReceiptDto.setTransactionType("на складе");
-            model.addAttribute("sparePartsReceipt", sparePartsReceiptDto);
-            return "sparepartsreceipt_5_writeoff";
+            sparePartsReceiptDto.setTransactionType(ON_STORAGE);
+            model.addAttribute(SPARE_PARTS_RECEIPTS, sparePartsReceiptDto);
+            return SPAREPARTSRECEIPT_5_WRITEOFF;
         } else {
-            model.addAttribute("errorMessage", "У вас нет прав на выполнение данной операции");
-            return "sparepartsreceipt_1_main";
+            model.addAttribute(ERROR_MESSAGE, "У вас нет прав на выполнение данной операции");
+            return SPAREPARTSRECEIPT_1_MAIN;
         }
     }
 
     @PostMapping("/write_off")
     public String writeOffSparePartsReceipt(@ModelAttribute SparePartsReceiptDto sparePartsReceiptDto, Model model, HttpSession session) {
-        String numberTable = (String) session.getAttribute("number_table");
+        String numberTable = (String) session.getAttribute(NUMBER_TABLE);
         try {
             SparePartsReceiptDto preparedWriteOffSparePartsReceiptDto = sparePartsReceiptService.prepareWriteOffSparePartDto(
                     sparePartsReceiptDto.getRegion(),
@@ -138,7 +149,7 @@ public class SparePartsReceiptController {
                     sparePartsReceiptDto.getSparePartName(),
                     sparePartsReceiptDto.getMeasure(),
                     sparePartsReceiptDto.getSparePartNumber(),
-                    "на складе",
+                    ON_STORAGE,
                     sparePartsReceiptDto.getQuantity()
             );
 
@@ -147,9 +158,9 @@ public class SparePartsReceiptController {
             model.addAttribute("writeOffSparePartsReceipt", writeOffSparePartsReceipt);
             return "sparepartsreceipt_5_write_off_success";
         } catch (IllegalArgumentException e) {
-            model.addAttribute("errorMessage", "Ошибка при списании: " + e.getMessage());
-            model.addAttribute("sparePartsReceipt", sparePartsReceiptDto);
-            return "sparepartsreceipt_5_writeoff";
+            model.addAttribute(ERROR_MESSAGE, "Ошибка при списании: " + e.getMessage());
+            model.addAttribute(SPARE_PARTS_RECEIPTS, sparePartsReceiptDto);
+            return SPAREPARTSRECEIPT_5_WRITEOFF;
         }
     }
 
@@ -157,29 +168,29 @@ public class SparePartsReceiptController {
     public String showAddSparePartsReceiptForm(Model model, HttpSession session) {
         String post = (String) session.getAttribute("post");
 
-        if ("Администратор".equals(post) || "Регионал".equals(post)) {
-            model.addAttribute("sparePartsReceipt", new SparePartsReceiptDto());
-            return "sparepartsreceipt_4_add";
-        } else if ("Бригадир".equals(post)) {
-            String numberTable = (String) session.getAttribute("number_table");
+        if (ADMIN.equals(post) || MANAGER.equals(post)) {
+            model.addAttribute(SPARE_PARTS_RECEIPTS, new SparePartsReceiptDto());
+            return SPAREPARTSRECEIPT_4_ADD;
+        } else if (BRIG.equals(post)) {
+            String numberTable = (String) session.getAttribute(NUMBER_TABLE);
             String storageName = (String) session.getAttribute("unit");
-            String region = (String) session.getAttribute("region");
+            String region = (String) session.getAttribute(REGION);
             SparePartsReceiptDto sparePartsReceiptDto = new SparePartsReceiptDto();
             sparePartsReceiptDto.setEmployeeNumber(numberTable);
             sparePartsReceiptDto.setStorageName(storageName);
             sparePartsReceiptDto.setRegion(region);
-            sparePartsReceiptDto.setTransactionType("на складе");
+            sparePartsReceiptDto.setTransactionType(ON_STORAGE);
             model.addAttribute("sparePartsReceipt", sparePartsReceiptDto);
-            return "sparepartsreceipt_4_add";
+            return SPAREPARTSRECEIPT_4_ADD;
         } else {
-            model.addAttribute("errorMessage", "У вас нет прав на выполнение данной операции");
-            return "sparepartsreceipt_1_main";
+            model.addAttribute(ERROR_MESSAGE, "У вас нет прав на выполнение данной операции");
+            return SPAREPARTSRECEIPT_1_MAIN;
         }
     }
 
     @PostMapping("/create")
     public String createSparePartsReceipt(@ModelAttribute SparePartsReceiptDto sparePartsReceiptDto, Model model, HttpSession session) {
-        String numberTable = (String) session.getAttribute("number_table");
+        String numberTable = (String) session.getAttribute(NUMBER_TABLE);
         try {
             SparePartsReceiptDto preparedSparePartsReceiptDto = sparePartsReceiptService.prepareSparePartsReceiptDto(
                     sparePartsReceiptDto.getRegion(),
@@ -188,7 +199,7 @@ public class SparePartsReceiptController {
                     sparePartsReceiptDto.getSparePartName(),
                     sparePartsReceiptDto.getMeasure(),
                     sparePartsReceiptDto.getSparePartNumber(),
-                    "на складе",
+                    ON_STORAGE,
                     sparePartsReceiptDto.getQuantity()
             );
 
@@ -197,9 +208,9 @@ public class SparePartsReceiptController {
             model.addAttribute("createdSparePartsReceipt", createdSparePartsReceipt);
             return "sparepartsreceipt_4_add_success";
         } catch (IllegalArgumentException e) {
-            model.addAttribute("errorMessage", "Ошибка при добавлении: " + e.getMessage());
+            model.addAttribute(ERROR_MESSAGE, "Ошибка при добавлении: " + e.getMessage());
             model.addAttribute("sparePartsReceipt", sparePartsReceiptDto);
-            return "sparepartsreceipt_4_add";
+            return SPAREPARTSRECEIPT_4_ADD;
         }
     }
 
@@ -216,14 +227,14 @@ public class SparePartsReceiptController {
 
         try {
             SparePartsReceiptDto sparePartsReceipt = sparePartsReceiptService.getSparePartsReceiptById(id);
-            if (sparePartsReceipt != null && ("Администратор".equals(post) || "Регионал".equals(post) || "Бригадир".equals(post))) {
+            if (sparePartsReceipt != null && (ADMIN.equals(post) || MANAGER.equals(post) || BRIG.equals(post))) {
                 sparePartsReceiptService.deleteSparePartsReceiptById(id);
                 model.addAttribute("successMessage", "Запись успешно удалена");
             } else {
-                model.addAttribute("errorMessage", "У вас нет прав на удаление этой записи");
+                model.addAttribute(ERROR_MESSAGE, "У вас нет прав на удаление этой записи");
             }
         } catch (Exception e) {
-            model.addAttribute("errorMessage", "Ошибка при удалении записи: " + e.getMessage());
+            model.addAttribute(ERROR_MESSAGE, "Ошибка при удалении записи: " + e.getMessage());
         }
 
         return "sparepartsreceipt_6_delete";
@@ -242,14 +253,14 @@ public class SparePartsReceiptController {
 
         try {
             SparePartsReceiptDto sparePartsReceipt = sparePartsReceiptService.getSparePartsReceiptById(id);
-            if (sparePartsReceipt != null && ("Администратор".equals(post) || "Регионал".equals(post) || "Бригадир".equals(post))) {
+            if (sparePartsReceipt != null && (ADMIN.equals(post) || MANAGER.equals(post) || BRIG.equals(post))) {
                 sparePartsReceiptService.deleteSparePartsStockById(id);
                 model.addAttribute("successMessage", "Запись успешно удалена");
             } else {
-                model.addAttribute("errorMessage", "У вас нет прав на удаление этой записи");
+                model.addAttribute(ERROR_MESSAGE, "У вас нет прав на удаление этой записи");
             }
         } catch (Exception e) {
-            model.addAttribute("errorMessage", "Ошибка при удалении записи: " + e.getMessage());
+            model.addAttribute(ERROR_MESSAGE, "Ошибка при удалении записи: " + e.getMessage());
         }
 
         return "sparepartsreceipt_6_delete_stock";

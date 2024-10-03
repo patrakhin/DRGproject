@@ -6,7 +6,6 @@ public class ShipmentBlockRequestDto {
     private String systemType;
     private String nameBlock;
     private String blockNumber;
-    // нужно добавить storageName and region
     private String storageName;
     private String region;
 

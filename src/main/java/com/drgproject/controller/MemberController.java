@@ -20,6 +20,11 @@ import java.util.List;
 @RequestMapping("/users")
 public class MemberController {
 
+    private static final String ADMIN = "Администратор";
+    private static final String MANAGER = "Регионал";
+    private static final String REGION = "region";
+    private static final String ERROR_MESSAGE = "errorMessage";
+
     private final UserService userService;
     private final RepDepotService repDepotService;
     private final RegionService regionService;
@@ -34,19 +39,18 @@ public class MemberController {
 
     @GetMapping()
     public String getUsersPage() {
-        return "user_company_1_main"; // Имя шаблона Thymeleaf без .html
+        return "user_company_1_main";
     }
 
     @GetMapping("/all")
     public String getAllUsersPage(Model model, HttpSession session) {
-        String region = (String) session.getAttribute("region");
+        String region = (String) session.getAttribute(REGION);
         String post = (String) session.getAttribute("post");
-        //List<UserDTO> users = userService.getAllUsers();
         List<MemberDTO> users = Collections.emptyList();
-        if("Администратор".equals(post)){
+        if(ADMIN.equals(post)){
             users = userService.getAllUsers();
         }
-        if("Регионал".equals(post)){
+        if(MANAGER.equals(post)){
             users = userService.getUsersByRegion(region);
         }
         model.addAttribute("users", users);
@@ -70,17 +74,17 @@ public class MemberController {
 
     @GetMapping("/byNumberTable")
     public String getUserByNumberTable(@RequestParam String number, Model model, HttpSession session) {
-        String region = (String) session.getAttribute("region");
+        String region = (String) session.getAttribute(REGION);
         String post = (String) session.getAttribute("post");
         MemberDTO userDTO = userService.getUserByNumberTable(number);
 
-        if (userDTO != null && "Администратор".equals(post)) {
+        if (userDTO != null && ADMIN.equals(post)) {
             model.addAttribute("user", userDTO);
-        } else if (userDTO != null && "Регионал".equals(post)) {
+        } else if (userDTO != null && MANAGER.equals(post)) {
             userDTO= userService.getUserByRegionAndNumberTable(region, number);
             model.addAttribute("user", userDTO);
         } else {
-            model.addAttribute("errorMessage", "Сотрудник с таким табельным номером не найден");
+            model.addAttribute(ERROR_MESSAGE, "Сотрудник с таким табельным номером не найден");
         }
         return "user_company_3_search"; // Имя шаблона Thymeleaf без .html
     }
@@ -103,7 +107,6 @@ public class MemberController {
     // Метод для обработки данных формы создания сотрудника
     @PostMapping("/create")
     public String createUser(@ModelAttribute MemberDTO userDTO, Model model) {
-
         MemberDTO createdUser = userService.createUser(userDTO);
         model.addAttribute("createdUser", createdUser);
         return "user_company_4_add_success";
@@ -115,11 +118,10 @@ public class MemberController {
         MemberDTO userDTO = userService.getUserById(id);
         if (userDTO != null) {
             model.addAttribute("user", userDTO);
-            return "user_company_5_update";
         } else {
-            model.addAttribute("errorMessage", "Сотрудник с таким ID не найден");
-            return "user_company_5_update";
+            model.addAttribute(ERROR_MESSAGE, "Сотрудник с таким ID не найден");
         }
+        return "user_company_5_update";
     }
 
     // Метод для обработки данных формы
@@ -130,7 +132,7 @@ public class MemberController {
             model.addAttribute("updatedUser", updatedUser);
             return "user_company_5_update_success";
         } else {
-            model.addAttribute("errorMessage", "Не удалось обновить данные сотрудника");
+            model.addAttribute(ERROR_MESSAGE, "Не удалось обновить данные сотрудника");
             return "user_company_5_update";
         }
     }
@@ -153,27 +155,25 @@ public class MemberController {
     @PostMapping("/deleteByNumberTable")
     public String deleteUserByNumberTable(@RequestParam String numTable, Model model, HttpSession session) {
         String post = (String) session.getAttribute("post");
-        String region = (String) session.getAttribute("region");
-
+        String region = (String) session.getAttribute(REGION);
         try {
-            if ("Администратор".equals(post)) {
+            if (ADMIN.equals(post)) {
                 userService.deleteUserByNumberTable(numTable);
                 model.addAttribute("successMessage", "Сотрудник успешно удален");
-            } else if ("Регионал".equals(post)) {
+            } else if (MANAGER.equals(post)) {
                 MemberDTO user = userService.getUserByNumberTable(numTable);
                 if (user != null && region.equals(user.getRegion())) {
                     userService.deleteUserByNumberTable(numTable);
                     model.addAttribute("successMessage", "Сотрудник успешно удален");
                 } else {
-                    model.addAttribute("errorMessage", "У вас нет прав на удаление этого сотрудника");
+                    model.addAttribute(ERROR_MESSAGE, "У вас нет прав на удаление этого сотрудника");
                 }
             } else {
-                model.addAttribute("errorMessage", "Неверная роль пользователя");
+                model.addAttribute(ERROR_MESSAGE, "Неверная роль пользователя");
             }
         } catch (Exception e) {
-            model.addAttribute("errorMessage", "Ошибка при удалении сотрудника");
+            model.addAttribute(ERROR_MESSAGE, "Ошибка при удалении сотрудника");
         }
-
         return "user_company_6_delete";
     }
 

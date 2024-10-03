@@ -21,10 +21,14 @@ import java.util.List;
 @RequestMapping("/home-depots")
 public class HomeDepotController {
 
+    public static final String ERROR_MESSAGE = "errorMessage";
+    public static final String HOME_DEPOT_6_UPLOAD = "home_depot_6_upload";
+    public static final String MESSAGE = "message";
     private final HomeDepotService homeDepotService;
     private final RegionService regionService;
 
-    public HomeDepotController(HomeDepotService homeDepotService, RegionService regionService) {
+    public HomeDepotController(HomeDepotService homeDepotService,
+                               RegionService regionService) {
         this.homeDepotService = homeDepotService;
         this.regionService = regionService;
     }
@@ -76,14 +80,13 @@ public class HomeDepotController {
         Long id = regionService.getRegionByName(regionName).getId();
         createdHomeDepot.setRegionId(id);
         createdHomeDepot.setRegionName(regionName); // Добавление имени региона в DTO
-        if (createdHomeDepot != null) {
-            model.addAttribute("createdHomeDepot", createdHomeDepot);
-            model.addAttribute("regionName", regionName); // Добавление имени региона в модель
-            return "home_depot_3_add_success";
-        } else {
-            model.addAttribute("errorMessage", "Ошибка при создании депо");
+        if (createdHomeDepot == null) {
+            model.addAttribute(ERROR_MESSAGE, "Ошибка при создании депо");
             return "home_depot_3_add";
         }
+        model.addAttribute("createdHomeDepot", createdHomeDepot);
+        model.addAttribute("regionName", regionName); // Добавление имени региона в модель
+        return "home_depot_3_add_success";
     }
 
     @GetMapping("/edit")
@@ -93,11 +96,10 @@ public class HomeDepotController {
         if (homeDepotDTO != null) {
             model.addAttribute("homeDepot", homeDepotDTO);
             model.addAttribute("regions", regions);
-            return "home_depot_4_update";
         } else {
-            model.addAttribute("errorMessage", "Депо с таким ID не найдено");
-            return "home_depot_4_update";
+            model.addAttribute(ERROR_MESSAGE, "Депо с таким ID не найдено");
         }
+        return "home_depot_4_update";
     }
 
     @PostMapping("/edit/{id}")
@@ -107,13 +109,13 @@ public class HomeDepotController {
             model.addAttribute("updatedHomeDepot", updatedHomeDepot);
             return "home_depot_4_update_success";
         } else {
-            model.addAttribute("errorMessage", "Не удалось обновить данные депо");
+            model.addAttribute(ERROR_MESSAGE, "Не удалось обновить данные депо");
             return "home_depot_4_update";
         }
     }
 
     @GetMapping("/delete")
-    public String showDeleteDepotForm(Model model) {
+    public String showDeleteDepotForm() {
         return "home_depot_5_delete";
     }
 
@@ -123,15 +125,15 @@ public class HomeDepotController {
         if (isDeleted) {
             model.addAttribute("successMessage", "Депо успешно удалено");
         } else {
-            model.addAttribute("errorMessage", "Ошибка при удалении депо");
+            model.addAttribute(ERROR_MESSAGE, "Ошибка при удалении депо");
         }
         return "home_depot_5_delete";
     }
 
     // Метод GET для отображения формы загрузки файла
     @GetMapping("/upload-home_depots")
-    public String showUploadForm(Model model) {
-        return "home_depot_6_upload"; // Возвращаем название шаблона Thymeleaf
+    public String showUploadForm() {
+        return HOME_DEPOT_6_UPLOAD;
     }
 
     //Загрузка дорог из Excel
@@ -141,8 +143,8 @@ public class HomeDepotController {
         try {
             // Проверяем, что файл не пуст
             if (fileExcel.isEmpty()) {
-                model.addAttribute("message", "Пожалуйста, выберите файл для загрузки");
-                return "home_depot_6_upload"; // Возвращаемся к форме загрузки депо
+                model.addAttribute(MESSAGE, "Пожалуйста, выберите файл для загрузки");
+                return HOME_DEPOT_6_UPLOAD; // Возвращаемся к форме загрузки депо
             }
 
             StringBuilder message = new StringBuilder(); // Для вывода всех сообщений
@@ -164,7 +166,6 @@ public class HomeDepotController {
                         if (isRowEmpty(homeRegion) || isRowEmpty(homeDepot)) {
                             continue; // Пропускаем пустую строку
                         }
-
                         // Проверка на существование региона
                         RegionDTO region = regionService.getRegionByName(homeRegion);
                         if (region == null) {
@@ -172,7 +173,6 @@ public class HomeDepotController {
                             message.append("Регион ").append(homeRegion).append(" не найден. Пропускаем депо ").append(homeDepot).append(".<br/>");
                             continue;
                         }
-
                         // Проверка на существование депо в регионе
                         boolean depotExists = homeDepotService.existsByDepotAndRegionId(homeDepot, region.getId());
                         if (depotExists) {
@@ -180,37 +180,34 @@ public class HomeDepotController {
                             message.append("Депо ").append(homeDepot).append(" уже существует в регионе ").append(homeRegion).append(". Пропускаем.<br/>");
                             continue;
                         }
-
                         // Создаем новое депо
                         HomeDepotDTO homeDepotDTO = new HomeDepotDTO();
                         homeDepotDTO.setDepot(homeDepot);
                         homeDepotDTO.setRegionId(region.getId());
                         homeDepotDTO.setRegionName(region.getName());
-
                         // Сохраняем депо
                         homeDepotService.createHomeDepot(homeDepotDTO);
-
                         // Добавляем сообщение о создании нового депо
                         message.append("Депо ").append(homeDepot).append(" успешно добавлено в регион ").append(homeRegion).append(".<br/>");
                     }
                 }
-
-                model.addAttribute("message", message.toString()); // Отправляем все сообщения на фронт
+                model.addAttribute(MESSAGE, message.toString()); // Отправляем все сообщения на фронт
             }
         } catch (Exception e) {
-            model.addAttribute("message", "Ошибка при обработке файла: " + e.getMessage());
-            e.printStackTrace();
+            model.addAttribute(MESSAGE, "Ошибка при обработке файла: " + e.getMessage());
         }
-
-        return "home_depot_6_upload"; // Возвращаемся к той же форме загрузки с результатами
+        return HOME_DEPOT_6_UPLOAD; // Возвращаемся к той же форме загрузки с результатами
     }
 
     // Метод для безопасного чтения значений из ячейки
     private String getCellValueAsString(Cell cell) {
+        return getString(cell);
+    }
+
+    static String getString(Cell cell) {
         if (cell == null) {
             return ""; // Возвращаем пустую строку, если ячейка пустая
         }
-
         switch (cell.getCellType()) {
             case STRING:
                 return cell.getStringCellValue();

@@ -15,6 +15,13 @@ import java.util.List;
 @Controller
 @RequestMapping("/shipment_blocks")
 public class ShipmentBlockController {
+    private static final String ADMIN = "Администратор";
+    private static final String MANAGER = "Регионал";
+    private static final String REGION = "region";
+    private static final String BRIG = "Бригадир";
+    private static final String ERROR_MESSAGE = "errorMessage";
+    private static final String SHIPMENT_BLOCK = "shipmentBlock";
+    private static final String SHIPMENT_BLOCK_4_ADD = "shipmentblock_4_add";
 
     private final ShipmentBlockService shipmentBlockService;
 
@@ -31,12 +38,12 @@ public class ShipmentBlockController {
     public String getAllShipmentBlocksPage(Model model, HttpSession session) {
         String post = (String) session.getAttribute("post");
         List<ShipmentBlockDto> shipmentBlocks = Collections.emptyList();
-        if ("Администратор".equals(post)) {
+        if (ADMIN.equals(post)) {
             shipmentBlocks = shipmentBlockService.getAllShipmentBlock();
-        } else if ("Регионал".equals(post)) {
-            String region = (String) session.getAttribute("region");
+        } else if (MANAGER.equals(post)) {
+            String region = (String) session.getAttribute(REGION);
             shipmentBlocks = shipmentBlockService.getShipmentBlocksByRegion(region);
-        } else if ("Бригадир".equals(post)) {
+        } else if (BRIG.equals(post)) {
             String depot = (String) session.getAttribute("unit");
             shipmentBlocks = shipmentBlockService.getShipmentBlocksByStorageName(depot);
         }
@@ -51,20 +58,20 @@ public class ShipmentBlockController {
 
     @GetMapping("/byId")
     public String getShipmentBlockById(@RequestParam Long id, Model model, HttpSession session) {
-        String region = (String) session.getAttribute("region");
+        String region = (String) session.getAttribute(REGION);
         String post = (String) session.getAttribute("post");
         String depot = (String) session.getAttribute("unit");
 
         ShipmentBlockDto shipmentBlock = shipmentBlockService.getShipmentBlockById(id);
 
-        if (shipmentBlock != null && "Администратор".equals(post)) {
-            model.addAttribute("shipmentBlock", shipmentBlock);
-        } else if (shipmentBlock != null && "Регионал".equals(post) && region.equals(shipmentBlock.getRegion())) {
-            model.addAttribute("shipmentBlock", shipmentBlock);
-        } else if (shipmentBlock != null && "Бригадир".equals(post) && region.equals(shipmentBlock.getRegion()) && depot.equals(shipmentBlock.getStorageName())) {
-            model.addAttribute("shipmentBlock", shipmentBlock);
+        if (shipmentBlock != null && ADMIN.equals(post)) {
+            model.addAttribute(SHIPMENT_BLOCK, shipmentBlock);
+        } else if (shipmentBlock != null && MANAGER.equals(post) && region.equals(shipmentBlock.getRegion())) {
+            model.addAttribute(SHIPMENT_BLOCK, shipmentBlock);
+        } else if (shipmentBlock != null && BRIG.equals(post) && region.equals(shipmentBlock.getRegion()) && depot.equals(shipmentBlock.getStorageName())) {
+            model.addAttribute(SHIPMENT_BLOCK, shipmentBlock);
         } else {
-            model.addAttribute("errorMessage", "Запись с таким ID не найдена или у вас нет прав на просмотр");
+            model.addAttribute(ERROR_MESSAGE, "Запись с таким ID не найдена или у вас нет прав на просмотр");
         }
         return "shipmentblock_3_search";
     }
@@ -73,21 +80,21 @@ public class ShipmentBlockController {
     public String showAddShipmentBlockForm(Model model, HttpSession session) {
         String post = (String) session.getAttribute("post");
 
-        if ("Администратор".equals(post) || "Регионал".equals(post)) {
-            model.addAttribute("shipmentBlock", new ShipmentBlockRequestDto());
-            return "shipmentblock_4_add";
-        } else if ("Бригадир".equals(post)) {
+        if (ADMIN.equals(post) || MANAGER.equals(post)) {
+            model.addAttribute(SHIPMENT_BLOCK, new ShipmentBlockRequestDto());
+            return SHIPMENT_BLOCK_4_ADD;
+        } else if (BRIG.equals(post)) {
             String numberTable = (String) session.getAttribute("numberTable");
             String storageName = (String) session.getAttribute("unit");
-            String region = (String) session.getAttribute("region");
+            String region = (String) session.getAttribute(REGION);
             ShipmentBlockRequestDto shipmentBlockRequestDto = new ShipmentBlockRequestDto();
             shipmentBlockRequestDto.setNumberTable(numberTable);
             shipmentBlockRequestDto.setStorageName(storageName);
             shipmentBlockRequestDto.setRegion(region);
-            model.addAttribute("shipmentBlock", shipmentBlockRequestDto);
-            return "shipmentblock_4_add";
+            model.addAttribute(SHIPMENT_BLOCK, shipmentBlockRequestDto);
+            return SHIPMENT_BLOCK_4_ADD;
         } else {
-            model.addAttribute("errorMessage", "У вас нет прав на выполнение данной операции");
+            model.addAttribute(ERROR_MESSAGE, "У вас нет прав на выполнение данной операции");
             return "shipmentblock_1_main"; // или другая страница с ошибкой доступа
         }
     }
@@ -103,13 +110,12 @@ public class ShipmentBlockController {
                     shipmentBlockRequestDto.getBlockNumber(),
                     shipmentBlockRequestDto.getRegion()
             );
-
             model.addAttribute("createdShipmentBlock", shipmentBlockDto);
             return "shipmentblock_4_add_success";
         } catch (IllegalArgumentException e) {
-            model.addAttribute("errorMessage", "Ошибка при добавлении: " + e.getMessage());
-            model.addAttribute("shipmentBlock", shipmentBlockRequestDto);
-            return "shipmentblock_4_add";
+            model.addAttribute(ERROR_MESSAGE, "Ошибка при добавлении: " + e.getMessage());
+            model.addAttribute(SHIPMENT_BLOCK, shipmentBlockRequestDto);
+            return SHIPMENT_BLOCK_4_ADD;
         }
     }
 
@@ -123,17 +129,16 @@ public class ShipmentBlockController {
     @PostMapping("/deleteById")
     public String deleteShipmentBlockById(@RequestParam Long id, Model model, HttpSession session) {
         String post = (String) session.getAttribute("post");
-
         try {
             ShipmentBlockDto shipmentBlock = shipmentBlockService.getShipmentBlockById(id);
-            if (shipmentBlock != null && ("Администратор".equals(post) || "Регионал".equals(post) || "Бригадир".equals(post))) {
+            if (shipmentBlock != null && (ADMIN.equals(post) || MANAGER.equals(post) || BRIG.equals(post))) {
                 shipmentBlockService.deleteShipmentBlock(id);
                 model.addAttribute("successMessage", "Запись успешно удалена");
             } else {
-                model.addAttribute("errorMessage", "У вас нет прав на удаление этой записи");
+                model.addAttribute(ERROR_MESSAGE, "У вас нет прав на удаление этой записи");
             }
         } catch (Exception e) {
-            model.addAttribute("errorMessage", "Ошибка при удалении записи: " + e.getMessage());
+            model.addAttribute(ERROR_MESSAGE, "Ошибка при удалении записи: " + e.getMessage());
         }
 
         return "shipmentblock_6_delete";
