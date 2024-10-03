@@ -152,6 +152,10 @@ public class TypeLocoController {
         return getString(cell);
     }
 
+    static String getString(Cell cell) {
+        return HomeDepotController.getString(cell);
+    }
+
     // Проверяем, пустая ли строка (все ключевые значения пустые)
     private boolean isRowEmpty(String typeSection) {
         return typeSection.isEmpty();
