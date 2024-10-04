@@ -1,6 +1,8 @@
 package com.drgproject.repair.repository;
 
 import com.drgproject.repair.entity.LocoList;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -29,4 +31,8 @@ public interface LocoListRepository extends JpaRepository<LocoList, Long> {
 
     // Приверка на сущ по дороге депо прип серии секци и номеру секции
     boolean existsByHomeRegionAndHomeDepotAndTypeLocoAndLocoNumber(String homeRegion, String homeDepot, String typeLoco, String locoNumber);
+
+    // Метод для поиска с пагинацией по региону, депо и типу локомотива
+    Page<LocoList> findByHomeRegionAndHomeDepotAndTypeLoco(String regionName, String homeDepot, String typeLoco, Pageable pageable);
+
 }

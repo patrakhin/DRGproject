@@ -17,7 +17,7 @@ public class BlockOnLocoService {
 
     private final BlockOnLocoRepository blockOnLocoRepository;
     private final LocoListRepository locoListRepository;
-    private BlockRemovalTransactionalService blockRemovalTransactionalService;
+    private final BlockRemovalTransactionalService blockRemovalTransactionalService;
 
     public BlockOnLocoService(BlockOnLocoRepository blockOnLocoRepository, LocoListRepository locoListRepository,
                               BlockRemovalTransactionalService blockRemovalTransactionalService) {

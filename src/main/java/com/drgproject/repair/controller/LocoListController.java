@@ -8,15 +8,15 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.http.HttpStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import com.drgproject.repair.SectionNumberComparator;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -34,10 +34,14 @@ public class LocoListController {
     private final LocoFilterService locoFilterService;
     private final LocoInfoService locoInfoService;
 
-    public LocoListController(LocoListService locoListService, TypeLocoService typeLocoService,
-                              SystemNameService systemNameService, BlockOnLocoService blockOnLocoService,
-                              RegionService regionService, HomeDepotService homeDepotService,
-                              LocoFilterService locoFilterService, LocoInfoService locoInfoService) {
+    public LocoListController(LocoListService locoListService,
+                              TypeLocoService typeLocoService,
+                              SystemNameService systemNameService,
+                              BlockOnLocoService blockOnLocoService,
+                              RegionService regionService,
+                              HomeDepotService homeDepotService,
+                              LocoFilterService locoFilterService,
+                              LocoInfoService locoInfoService) {
         this.locoListService = locoListService;
         this.typeLocoService = typeLocoService;
         this.systemNameService = systemNameService;
@@ -70,6 +74,20 @@ public class LocoListController {
         model.addAttribute("locoLists", filteredLoco);
         return "locos_2_list"; // Вернуть шаблон Thymeleaf для отображения списка локомотивов
     }
+
+    @GetMapping("/all_by_depot_and_type")
+    public String getAllLocosByDepotAndType(Model model) {
+        // Получаем все регионы
+        List<RegionDTO> regions = regionService.getAllRegions();
+        List<TypeLocoDTO> types = typeLocoService.getAllTypeLocos();
+        model.addAttribute("regions", regions);
+        model.addAttribute("homeDepots", List.of());
+        model.addAttribute("types", types);
+
+        return "locos_2_1_by_depot_list";
+    }
+
+
 
     @GetMapping("/detail/{id}")
     public String getLocoById(@PathVariable Long id, Model model) {
@@ -272,6 +290,26 @@ public class LocoListController {
         return homeDepotService.getDepotsByRegion(regionName);
     }
 
+    // Новый метод для обработки AJAX-запроса
+    @GetMapping("/section_type")
+    @ResponseBody
+    public Page<LocoListDTO> getTypeLocoByHomeDepot(
+            @RequestParam String region,
+            @RequestParam String homeDepot,
+            @RequestParam String typeLoco,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        // Проверка валидности значения страницы
+        if (page < 0) {
+            page = 0; // Устанавливаем минимально допустимое значение
+        }
+        // Получение списка объектов DTO с пагинацией
+        return locoListService.getSectionByRegionAndHomeDepotAndTypeLoco(region, homeDepot, typeLoco, page, size);
+    }
+
+
+
+
     // Метод GET для отображения формы загрузки файла
     @GetMapping("/upload")
     public String showUploadForm(Model model) {
@@ -319,14 +357,12 @@ public class LocoListController {
                         locoFilterService.createFreeSection(homeRegion, homeDepot, typeLoco, locoNumber);
                     }
                 }
-
                 model.addAttribute("message", "Файл успешно загружен и обработан.");
             }
         } catch (Exception e) {
             model.addAttribute("message", "Ошибка при обработке файла: " + e.getMessage());
-            e.printStackTrace();
         }
-
         return "locos_9_upload"; // возвращаем ту же форму с сообщением
     }
+
 }

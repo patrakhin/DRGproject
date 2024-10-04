@@ -105,12 +105,10 @@ public class LocoInfoController {
                                  @RequestParam(defaultValue = "0") int page,
                                  @RequestParam(defaultValue = "10") int size,
                                  Model model) {
-
         // Проверка валидности значения страницы
         if (page < 0) {
             page = 0; // Устанавливаем минимально допустимое значение
         }
-
         model.addAttribute("region", region);
         model.addAttribute("locoType", locoType);
         try {

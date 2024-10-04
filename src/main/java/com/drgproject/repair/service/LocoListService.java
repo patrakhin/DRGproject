@@ -7,6 +7,9 @@ import com.drgproject.repair.entity.LocoInfo;
 import com.drgproject.repair.entity.LocoList;
 import com.drgproject.repair.repository.BlockOnLocoRepository;
 import com.drgproject.repair.repository.LocoListRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -115,15 +118,23 @@ public class LocoListService {
 
     // Получаем список список всех номеров секций по Region, homeDepot, typeLoco
     public List<LocoListDTO> getSectionByRegionAndHomeDepotAndTypeLoco(String region, String homeDepot, String typeLoco){
-        List<LocoListDTO> filteredSection = locoListRepository.findAllByHomeRegionAndHomeDepotAndTypeLoco(region, homeDepot, typeLoco).stream()
+        return locoListRepository.findAllByHomeRegionAndHomeDepotAndTypeLoco(region, homeDepot, typeLoco).stream()
                 .map(this::convertToDTO)
                 .toList();
-        return filteredSection;
     }
 
     // Приверка на сущ по дороге депо прип серии секци и номеру секции
     public boolean existsSectionByRegionAndDepotAndTypeAndNumber(String region, String depot, String type, String number){
         return locoListRepository.existsByHomeRegionAndHomeDepotAndTypeLocoAndLocoNumber(region, depot, type, number);
+    }
+
+    public Page<LocoListDTO> getSectionByRegionAndHomeDepotAndTypeLoco(String region, String homeDepot, String typeLoco, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        // Получаем данные с пагинацией из репозитория
+        Page<LocoList> locoListPage = locoListRepository.findByHomeRegionAndHomeDepotAndTypeLoco(region, homeDepot, typeLoco, pageable);
+
+        // Преобразуем сущности в DTO с сохранением данных о пагинации
+        return locoListPage.map(this::convertToDTO);
     }
 
     /**
