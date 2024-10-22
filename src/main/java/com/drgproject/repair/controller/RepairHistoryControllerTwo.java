@@ -126,7 +126,7 @@ public class RepairHistoryControllerTwo {
         return locoInfoService.getFindNumbersByPrefix(term);
     }
 
-    // Результат поиска локомотива по типу и серии
+    // Результат поиска локомотива по  серии и номеру
     @PostMapping("/search")
     public String searchLocoByTypeAndNumber(@RequestParam String typeLocoUnit, @RequestParam String numberLoco, Model model, HttpSession session) {
         LocoInfoDTO locoInfoDTO = locoInfoService.getLocoByNumber(numberLoco, typeLocoUnit);
