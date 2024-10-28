@@ -13,7 +13,7 @@
             <h1>Выбор параметров отчета</h1>
         </div>
         <div class="col-12">
-            <form action="/repair_history/filter-report-sps" method="get">
+            <form action="/completed_work/filter-report-sps" method="get">
                 <!-- Скрытые поля для сохранения выбранного региона и депо -->
                 <input type="hidden" id="selectedRegion" name="selectedRegion" th:value="${selectedRegion}">
                 <input type="hidden" id="selectedDepot" name="selectedDepot" th:value="${selectedDepot}">
@@ -53,7 +53,7 @@
 </div>
 <div class="row mt-3">
     <div class="col-12 text-end">
-        <a href="/repair_history/reports" class="btn btn-link">Отчеты</a>
+        <a href="/completed_work/reports" class="btn btn-link">Отчеты</a>
     </div>
 </div>
 <!-- jQuery -->

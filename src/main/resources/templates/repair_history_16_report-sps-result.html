@@ -15,7 +15,7 @@
     </div>
     <div class="col-12 text-end mb-3">
       <!-- Кнопка для формирования отчета в Excel -->
-      <form th:action="@{/repair_history/gen-report}" method="get" target="_blank">
+      <form th:action="@{/completed_work/gen-report}" method="get" target="_blank">
         <input type="hidden" name="depot" th:value="${depotName}">
         <input type="hidden" name="startDate" th:value="${startDate}">
         <input type="hidden" name="endDate" th:value="${endDate}">
@@ -56,7 +56,7 @@
 </div>
 <div class="row mt-3">
   <div class="col-12 text-end">
-    <a href="/repair_history/reports" class="btn btn-link">Отчеты</a>
+    <a href="/completed_work/reports" class="btn btn-link">Отчеты</a>
   </div>
 </div>
 </body>
